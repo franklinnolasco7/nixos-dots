@@ -1,19 +1,24 @@
 ## Flake & Home Manager
 
-// TODO: Add Home Manager
-// TODO: Configure Home Manager integration
-// TODO: Configure `hosts/aspire7/configuration.nix`
-// TODO: Generate and verify `hardware-configuration.nix`
+// DONE: Add Home Manager
+// DONE: Configure Home Manager integration
+// DONE: Configure `hosts/aspire7/default.nix`
+// DONE: Finish `hosts/aspire7/configuration.nix`
+// TODO: Generate and verify physical `hardware-configuration.nix`
+// DONE: Configure `hosts/aspire7/disko.nix`
+// DONE: Update and verify `flake.lock`
+// DONE: Validate flake with `nix flake check`
+// DONE: Validate NixOS system build
 
 ## NixOS Modules
 
-// TODO: Configure boot
-// TODO: Configure networking
-// TODO: Configure hardware
-// TODO: Configure NVIDIA
-// TODO: Configure audio
-// TODO: Configure Bluetooth
-// TODO: Configure users
+// DONE: Configure boot
+// DONE: Configure networking
+// DONE: Configure hardware
+// TODO: Configure NVIDIA on physical Aspire 7
+// DONE: Configure audio
+// DONE: Configure Bluetooth
+// DONE: Configure users
 // TODO: Configure virtualization
 // TODO: Configure gaming
 
@@ -115,7 +120,9 @@
 
 ## Disko & Fresh Installation
 
-// TODO: Test automatic Disko partitioning
+// DONE: Configure Disko partition layout
+// TODO: Verify physical NVMe device before running Disko
+// TODO: Test automatic Disko partitioning on the physical Aspire 7
 // TODO: Test automatic NixOS installation
 // TODO: Test Home Manager activation
 // TODO: Test automatic package installation
@@ -126,40 +133,25 @@
 // TODO: Test icons
 // TODO: Test fonts
 
-### VM Hardware Configuration
-
-// TODO: Keep `hardware-configuration.nix` VM-specific during VM testing
-// TODO: Verify `hardware-configuration.nix` uses `qemu-guest.nix` only for the VM
-// TODO: Verify VM hardware modules include `virtio_pci`
-// TODO: Verify VM hardware modules include `virtio_blk`
-// TODO: Verify VM hardware modules include `kvm-amd`
-// TODO: Keep `hardware-configuration.vm.nix` as a temporary VM-specific configuration if required
-// TODO: Do not treat the VM-generated `hardware-configuration.nix` as the final physical Aspire 7 configuration
-// TODO: Keep physical and VM hardware configurations separate
-
-### Physical Aspire 7 Hardware
+## Physical Aspire 7 Hardware
 
 // TODO: Boot the real Aspire 7 from the NixOS installer
 // TODO: Verify the physical NVMe device before running Disko
 // TODO: Run `sudo nixos-generate-config --root /mnt` on the real Aspire 7
-// TODO: Replace the VM-generated `hardware-configuration.nix` with the physical hardware configuration
-// TODO: Remove VM-specific `qemu-guest.nix` configuration from the physical hardware configuration
-// TODO: Remove VM-specific `virtio_pci` configuration from the physical hardware configuration
-// TODO: Remove VM-specific `virtio_blk` configuration from the physical hardware configuration
-// TODO: Remove VM-specific `kvm-amd` configuration if it is not generated for the physical system
+// TODO: Add generated physical `hardware-configuration.nix` to the repository
 // TODO: Verify physical NVMe, GPU, CPU, filesystem, and kernel modules
 // TODO: Verify generated filesystem UUIDs
 // TODO: Verify `/boot` configuration
 // TODO: Verify swap configuration
+// TODO: Verify generated hardware configuration does not contain VM-specific settings
 // TODO: Commit the final physical `hardware-configuration.nix`
 
-### Hardware Configuration Transition
+## Hardware Configuration
 
-// TODO: Verify current `hardware-configuration.nix` is VM-generated
-// TODO: Verify `hardware-configuration.vm.nix` is only temporary
-// TODO: Verify `hosts/aspire7/default.nix` imports the correct hardware configuration
+// TODO: Generate physical `hardware-configuration.nix` during installation
+// TODO: Verify `hosts/aspire7/default.nix` imports the generated hardware configuration
 // TODO: Verify Disko layout matches the physical hardware configuration
-// TODO: Regenerate hardware configuration after physical Disko installation
+// TODO: Verify regenerated filesystem UUIDs
 // TODO: Verify the regenerated configuration boots successfully
 // TODO: Never copy VM UUIDs into the final physical hardware configuration
 
@@ -171,8 +163,7 @@
 // TODO: Document rebuilding
 // TODO: Document updating
 // TODO: Document rollback/recovery
-// TODO: Document VM testing workflow
-// TODO: Document VM vs physical hardware configuration
+// TODO: Document Nix/flake validation workflow
 // TODO: Document physical Aspire 7 installation workflow
 
 ## Secrets
@@ -185,6 +176,9 @@
 
 ## Testing
 
+// DONE: Test `nix flake lock` in the VM
+// DONE: Test `nix flake check` in the VM
+// DONE: Test NixOS system build in the VM
 // TODO: Test `nixos-rebuild switch --flake .#aspire7`
 // TODO: Test reboot persistence
 // TODO: Test rollback
@@ -192,8 +186,6 @@
 // TODO: Verify all services start correctly
 // TODO: Verify all applications receive their configs
 // TODO: Verify scripts are executable
-// TODO: Test the VM configuration independently
-// TODO: Test the physical Aspire 7 configuration independently
 // TODO: Verify the final physical configuration contains no VM-specific hardware settings
 
 ## Release
