@@ -1,0 +1,37 @@
+result
+result-*
+.direnv/
+.envrc
+
+# Secrets
+secrets/*
+!secrets/.gitkeep
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDEs
+.vscode/
+.idea/
+
+# Editor temporary files
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+*.tmp
+*.temp
+*.bak
+*.log
+
+# Installer temporary files
+install/.tmp/
+install/tmp/
+
+# Other
+.Trash-*
+lost+found/
