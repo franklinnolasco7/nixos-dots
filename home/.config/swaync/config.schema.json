@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "file:///home/frank/.config/swaync/config.schema.json",
+  "title": "Sway Notification Center Configuration",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional link to a JSON schema file."
+    },
+    "positionX": {
+      "type": "string",
+      "enum": ["left", "center", "right"],
+      "description": "Horizontal placement of the notification center."
+    },
+    "positionY": {
+      "type": "string",
+      "enum": ["top", "center", "bottom"],
+      "description": "Vertical placement of the notification center."
+    },
+    "cssPriority": {
+      "type": "string",
+      "enum": ["user", "system"],
+      "description": "CSS load priority."
+    },
+    "control-center-width": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "control-center-height": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "control-center-margin-top": {
+      "type": "integer"
+    },
+    "control-center-margin-bottom": {
+      "type": "integer"
+    },
+    "control-center-margin-left": {
+      "type": "integer"
+    },
+    "control-center-margin-right": {
+      "type": "integer"
+    },
+    "fit-to-screen": {
+      "type": "boolean"
+    },
+    "notification-window-width": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "notification-icon-size": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "notification-body-image-height": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "notification-body-image-width": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "notification-inline-replies": {
+      "type": "boolean"
+    },
+    "notification-2fa-action": {
+      "type": "boolean"
+    },
+    "timeout": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "timeout-low": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "timeout-critical": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "keyboard-shortcuts": {
+      "type": "boolean"
+    },
+    "image-visibility": {
+      "type": "string",
+      "enum": ["always", "never", "when-available"]
+    },
+    "transition-time": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hide-on-clear": {
+      "type": "boolean"
+    },
+    "hide-on-action": {
+      "type": "boolean"
+    },
+    "script-fail-notify": {
+      "type": "boolean"
+    },
+    "widgets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "widget-config": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "backlight": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "device": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "slider": {
+              "type": "boolean"
+            },
+            "min": {
+              "type": "integer"
+            },
+            "max": {
+              "type": "integer"
+            }
+          }
+        },
+        "volume": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "show-per-app": {
+              "type": "boolean"
+            },
+            "slider": {
+              "type": "boolean"
+            }
+          }
+        },
+        "dnd": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        "mpris": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "image-size": {
+              "type": "integer"
+            },
+            "image-radius": {
+              "type": "integer"
+            },
+            "blur": {
+              "type": "boolean"
+            },
+            "autohide": {
+              "type": "boolean"
+            },
+            "blacklist": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "buttons-grid": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true,
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["button", "toggle"],
+                    "default": "button"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "update-command": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
