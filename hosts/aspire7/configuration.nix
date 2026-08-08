@@ -7,19 +7,16 @@
 }:
 
 {
-  # ---------------------------------------------------------------------------
-  # Boot
-  # ---------------------------------------------------------------------------
-
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  imports = [
+    ../../modules/nixos
+  ];
 
   # ---------------------------------------------------------------------------
-  # Networking
+  # Networking (host-specific; NetworkManager lives in
+  # modules/nixos/networking.nix)
   # ---------------------------------------------------------------------------
 
   networking.hostName = "nixos-laptop";
-  networking.networkmanager.enable = true;
 
   # ---------------------------------------------------------------------------
   # Localization
@@ -36,35 +33,6 @@
   services.displayManager.ly.enable = true;
   services.gvfs.enable = true;
   services.openssh.enable = true;
-
-  # ---------------------------------------------------------------------------
-  # User
-  # ---------------------------------------------------------------------------
-
-  users.users.frank = {
-    isNormalUser = true;
-
-    extraGroups = [
-      "wheel"
-      "networkmanager"
-    ];
-
-    packages = with pkgs; [
-      tree
-      git
-      kitty
-      neovim
-      rofi
-      thunar
-      waybar
-      micro
-      swaybg
-      fastfetch
-      btop
-      vscodium
-      chromium
-    ];
-  };
 
   # ---------------------------------------------------------------------------
   # Programs
