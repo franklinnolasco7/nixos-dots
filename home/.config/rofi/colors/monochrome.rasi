@@ -1,0 +1,11 @@
+* {
+    background:     #080808;
+    background-alt: #121212;
+    foreground:     #a6a6a6;
+    selected:       #b4b4b4;
+    active:         #c8c8c8;
+    urgent:         #f0f0f0;
+    surface:        #1a1a1a;
+    overlay:        #202020;
+    text-dim:       #444444;
+}
