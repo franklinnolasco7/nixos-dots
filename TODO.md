@@ -4,7 +4,7 @@
 // DONE: Configure Home Manager integration
 // DONE: Configure `hosts/aspire7/default.nix`
 // DONE: Finish `hosts/aspire7/configuration.nix`
-// TODO: Generate and verify physical `hardware-configuration.nix`
+// DONE: Generate and verify physical `hardware-configuration.nix`
 // DONE: Configure `hosts/aspire7/disko.nix`
 // DONE: Update and verify `flake.lock`
 // DONE: Validate flake with `nix flake check`
@@ -121,7 +121,7 @@
 ## Disko & Fresh Installation
 
 // DONE: Configure Disko partition layout
-// TODO: Verify physical NVMe device before running Disko
+// DONE: Verify physical NVMe device before running Disko
 // TODO: Test automatic Disko partitioning on the physical Aspire 7
 // TODO: Test automatic NixOS installation
 // TODO: Test Home Manager activation
@@ -135,25 +135,25 @@
 
 ## Physical Aspire 7 Hardware
 
-// TODO: Boot the real Aspire 7 from the NixOS installer
-// TODO: Verify the physical NVMe device before running Disko
-// TODO: Run `sudo nixos-generate-config --root /mnt` on the real Aspire 7
-// TODO: Add generated physical `hardware-configuration.nix` to the repository
-// TODO: Verify physical NVMe, GPU, CPU, filesystem, and kernel modules
-// TODO: Verify generated filesystem UUIDs
-// TODO: Verify `/boot` configuration
-// TODO: Verify swap configuration
-// TODO: Verify generated hardware configuration does not contain VM-specific settings
-// TODO: Commit the final physical `hardware-configuration.nix`
+// DONE: Boot the real Aspire 7 from the NixOS installer
+// DONE: Verify the physical NVMe device before running Disko
+// DONE: Run `nixos-generate-config --root /mnt` on the real Aspire 7
+// DONE: Add generated physical `hardware-configuration.nix` to the repository
+// DONE: Verify physical NVMe, GPU, CPU, filesystem, and kernel modules
+// DONE: Verify generated filesystem UUIDs
+// DONE: Verify `/boot` configuration
+// DONE: Verify swap configuration
+// DONE: Verify generated hardware configuration does not contain VM-specific settings
+// DONE: Commit the final physical `hardware-configuration.nix`
 
 ## Hardware Configuration
 
-// TODO: Generate physical `hardware-configuration.nix` during installation
-// TODO: Verify `hosts/aspire7/default.nix` imports the generated hardware configuration
-// TODO: Verify Disko layout matches the physical hardware configuration
-// TODO: Verify regenerated filesystem UUIDs
+// DONE: Generate physical `hardware-configuration.nix` during installation
+// DONE: Verify `hosts/aspire7/default.nix` imports the generated hardware configuration
+// DONE: Verify Disko layout matches the physical hardware configuration
+// DONE: Verify physical filesystem UUIDs
 // TODO: Verify the regenerated configuration boots successfully
-// TODO: Never copy VM UUIDs into the final physical hardware configuration
+// DONE: Never copy VM UUIDs into the final physical hardware configuration
 
 ## Documentation
 
