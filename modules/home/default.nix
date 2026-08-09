@@ -11,5 +11,6 @@
     ./btop.nix
     ./git.nix
     ./development.nix
+    ./themes.nix
   ];
 }

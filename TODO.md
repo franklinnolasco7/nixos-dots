@@ -80,12 +80,9 @@
 
 ## Themes
 
-// TODO: Add wallpapers
-// TODO: Add desktop wallpapers
-// TODO: Add lockscreen wallpapers
-// TODO: Add macOS-White cursor
+// TODO: Add cursor
 // TODO: Add icons
-// TODO: Add fonts
+// DONE: Add fonts
 // TODO: Configure shared color palette
 
 ## Development Environment
