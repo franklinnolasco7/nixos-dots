@@ -26,8 +26,3 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # ─── Editor ───
 export EDITOR="code-oss"
 export VISUAL="code-oss"
-
-# ─── Bun ───
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-[ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"

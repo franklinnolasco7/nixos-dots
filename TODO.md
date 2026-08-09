@@ -42,8 +42,7 @@
 ### Development
 
 // DONE: Configure Git
-// TODO: Configure Neovim
-// TODO: Configure Node.js
+// DONE: Configure Node.js
 // TODO: Configure Rust
 // TODO: Configure Python
 
