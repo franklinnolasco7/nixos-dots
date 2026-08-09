@@ -1,13 +1,22 @@
+{ config, pkgs, ... }:
+
 {
-  # NVIDIA configuration is deferred until physical Aspire 7 installation.
-  #
-  # The physical machine must be checked for:
-  # - NVIDIA GPU detection
-  # - iGPU vendor
-  # - NVIDIA/PRIME bus IDs
-  # - driver branch
-  # - PRIME offload configuration
-  # - suspend/resume behavior
-  #
-  # NVIDIA configuration will be enabled after physical hardware verification.
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    open = false;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+
+    prime = {
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+      amdgpuBusId = "PCI:5:0:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
+  };
 }
