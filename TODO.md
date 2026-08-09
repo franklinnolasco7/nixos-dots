@@ -41,7 +41,7 @@
 
 ### Development
 
-// TODO: Configure Git
+// DONE: Configure Git
 // TODO: Configure Neovim
 // TODO: Configure Node.js
 // TODO: Configure Rust

@@ -9,5 +9,6 @@
     ./starship.nix
     ./zsh.nix
     ./btop.nix
+    ./git.nix
   ];
 }
