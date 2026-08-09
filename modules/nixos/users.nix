@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   programs.zsh.enable = true;
@@ -20,7 +20,9 @@
       neovim
       rofi
       thunar
-      waybar
+      # TEMP WORKAROUND: waybar-git build (Hyprland Lua dispatch fix).
+      # Switch back to pkgs.waybar when nixpkgs ships the fix.
+      inputs.waybar.packages.${pkgs.system}.default
       libnotify
       swaynotificationcenter
       micro

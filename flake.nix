@@ -6,6 +6,11 @@
 
     hyprland.url = "github:hyprwm/Hyprland";
 
+    # TEMP WORKAROUND: waybar master until a release ships the Hyprland Lua
+    # IPC fix (PR #5013, commit e17c0d9). Revert to pkgs.waybar once nixpkgs
+    # has waybar >= 0.15.1. Remove this input then.
+    waybar.url = "github:Alexays/Waybar";
+
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
