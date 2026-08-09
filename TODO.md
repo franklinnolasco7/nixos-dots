@@ -15,7 +15,7 @@
 // DONE: Configure boot
 // DONE: Configure networking
 // DONE: Configure hardware
-// TODO: Configure NVIDIA on physical Aspire 7
+// DONE: Configure NVIDIA on physical Aspire 7
 // DONE: Configure audio
 // DONE: Configure Bluetooth
 // DONE: Configure users
@@ -152,7 +152,7 @@
 // DONE: Verify `hosts/aspire7/default.nix` imports the generated hardware configuration
 // DONE: Verify Disko layout matches the physical hardware configuration
 // DONE: Verify physical filesystem UUIDs
-// TODO: Verify the regenerated configuration boots successfully
+// DONE: Verify the regenerated configuration boots successfully
 // DONE: Never copy VM UUIDs into the final physical hardware configuration
 
 ## Documentation
@@ -179,7 +179,7 @@
 // DONE: Test `nix flake lock` in the VM
 // DONE: Test `nix flake check` in the VM
 // DONE: Test NixOS system build in the VM
-// TODO: Test `nixos-rebuild switch --flake .#aspire7`
+// DONE: Test `nixos-rebuild switch --flake .#aspire7`
 // TODO: Test reboot persistence
 // TODO: Test rollback
 // TODO: Test clean installation from scratch
