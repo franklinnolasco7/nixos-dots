@@ -44,7 +44,7 @@
 // DONE: Configure Git
 // DONE: Configure Node.js
 // TODO: Configure Rust
-// TODO: Configure Python
+// DONE: Configure Python
 
 ## Dotfiles
 
