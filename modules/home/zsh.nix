@@ -8,6 +8,11 @@
     syntaxHighlighting.enable = true;
     historySubstringSearch.enable = true;
 
+    completionInit = ''
+      autoload -U compinit
+      compinit -C
+    '';
+
     initContent = builtins.readFile ../../home/.zshrc;
   };
 
