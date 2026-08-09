@@ -28,16 +28,16 @@
 
 // DONE: Configure Hyprland
 // DONE: Configure Waybar
-// TODO: Configure Rofi
-// TODO: Configure SwayNC
+// DONE: Configure Rofi
+// DONE: Configure SwayNC
 
 ### Terminal
 
 // TODO: Configure Zsh
-// TODO: Configure Kitty
+// DONE: Configure Kitty
 // TODO: Configure btop
-// TODO: Configure Fastfetch
-// TODO: Configure Starship
+// DONE: Configure Fastfetch
+// DONE: Configure Starship
 
 ### Development
 
@@ -59,7 +59,7 @@
 ## Convert Simple Configs to Nix
 
 // TODO: Move `.zshrc` configuration into `zsh.nix`
-// TODO: Move Starship configuration into Home Manager
+// DONE: Move Starship configuration into Home Manager
 // TODO: Move `mimeapps.list` into `xdg.mimeApps`
 // TODO: Evaluate Kitty configuration
 // TODO: Evaluate btop configuration
