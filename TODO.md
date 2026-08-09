@@ -26,8 +26,8 @@
 
 ### Desktop
 
-// TODO: Configure Hyprland
-// TODO: Configure Waybar
+// DONE: Configure Hyprland
+// DONE: Configure Waybar
 // TODO: Configure Rofi
 // TODO: Configure SwayNC
 
