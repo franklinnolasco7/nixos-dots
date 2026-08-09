@@ -33,7 +33,7 @@
 
 ### Terminal
 
-// TODO: Configure Zsh
+// DONE: Configure Zsh
 // DONE: Configure Kitty
 // TODO: Configure btop
 // DONE: Configure Fastfetch
@@ -51,14 +51,14 @@
 
 // TODO: Deploy `home/.config`
 // TODO: Deploy `home/.local/bin`
-// TODO: Deploy `.zshrc`
+// DONE: Deploy `.zshrc` through Home Manager
 // TODO: Ensure shell scripts are executable
 // TODO: Verify executable permissions survive a fresh installation
 // TODO: Verify all configs are deployed to the correct paths
 
 ## Convert Simple Configs to Nix
 
-// TODO: Move `.zshrc` configuration into `zsh.nix`
+// DONE: Integrate `.zshrc` through Home Manager
 // DONE: Move Starship configuration into Home Manager
 // TODO: Move `mimeapps.list` into `xdg.mimeApps`
 // TODO: Evaluate Kitty configuration
@@ -71,10 +71,10 @@
 
 // TODO: Keep Hyprland Lua configuration as a native config
 // TODO: Keep Hyprlock configuration as a native config
-// TODO: Keep Waybar JSONC/CSS as native configs
-// TODO: Keep Rofi Rasi configuration as a native config
-// TODO: Keep Rofi scripts
-// TODO: Keep SwayNC configuration
+// DONE: Keep Waybar JSONC/CSS as native configs
+// DONE: Keep Rofi Rasi configuration as native config
+// DONE: Keep Rofi scripts
+// DONE: Keep SwayNC configuration
 // TODO: Keep Cava configuration
 // TODO: Keep Neovim Lua configuration
 // TODO: Keep Hyprctl scripts/configuration
