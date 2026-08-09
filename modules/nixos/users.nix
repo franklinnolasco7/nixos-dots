@@ -21,8 +21,9 @@
       rofi
       thunar
       waybar
+      libnotify
+      swaynotificationcenter
       micro
-      swaybg
       fastfetch
       btop
       vscodium
