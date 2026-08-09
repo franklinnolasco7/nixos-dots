@@ -10,6 +10,7 @@
 
   users.users.frank = {
     isNormalUser = true;
+    initialPassword = "changeme";
 
     extraGroups = [
       "wheel"
