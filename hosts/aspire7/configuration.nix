@@ -7,9 +7,10 @@
 }:
 
 {
+  nixpkgs.config.allowUnfree = true;
+
   imports = [
     ../../modules/nixos
-    ./hardware-configuration.nix
   ];
 
   # ---------------------------------------------------------------------------

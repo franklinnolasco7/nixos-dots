@@ -6,7 +6,6 @@
 
   services.pipewire = {
     enable = true;
-    audio.enable = true;
     pulse.enable = true; # wpctl binds + pavucontrol/waybar pulseaudio modules
     wireplumber.enable = true;
   };
