@@ -10,5 +10,6 @@
     ./zsh.nix
     ./btop.nix
     ./git.nix
+    ./development.nix
   ];
 }
