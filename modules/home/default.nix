@@ -8,5 +8,6 @@
     ./fastfetch.nix
     ./starship.nix
     ./zsh.nix
+    ./btop.nix
   ];
 }

@@ -35,7 +35,7 @@
 
 // DONE: Configure Zsh
 // DONE: Configure Kitty
-// TODO: Configure btop
+// DONE: Configure btop
 // DONE: Configure Fastfetch
 // DONE: Configure Starship
 
