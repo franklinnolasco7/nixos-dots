@@ -15,7 +15,6 @@
 
     packages = with pkgs; [
       tree
-      git
       kitty
       neovim
       rofi
