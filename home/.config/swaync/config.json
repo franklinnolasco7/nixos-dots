@@ -95,7 +95,7 @@
         },
         {
           "label": "󰍃",
-          "command": "swaync-client -cp && hyprctl dispatch \"hl.dsp.exit()\""
+          "command": "/run/current-system/sw/bin/hyprctl dispatch 'hl.dsp.exit()'"
         },
         {
           "label": "󰌐",
