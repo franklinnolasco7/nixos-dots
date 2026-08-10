@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ROFI_THEME="$HOME/.config/rofi/config.rasi"
 CACHE_FILE="${XDG_RUNTIME_DIR:-/tmp}/hypr_keybinds_cache"

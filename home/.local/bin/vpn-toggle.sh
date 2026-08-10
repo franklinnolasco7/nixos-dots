@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 INTERFACE="${VPN_INTERFACE:-wg0}"
 STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/vpn_state"

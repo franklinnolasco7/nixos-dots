@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -uo pipefail
 
 WALLPAPER_DIR="$HOME/Pictures/Wallpapers"

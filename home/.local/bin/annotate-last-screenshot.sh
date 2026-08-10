@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
 latest=$(ls -t "$SCREENSHOT_DIR"/*.png 2>/dev/null | head -n 1)
