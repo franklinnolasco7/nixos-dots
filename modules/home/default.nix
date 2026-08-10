@@ -28,6 +28,7 @@
     # Packages & theming
     ./packages.nix
     ./themes.nix
+    ./gtk.nix
     ./xdg.nix
     ./scripts.nix
   ];

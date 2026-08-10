@@ -22,7 +22,6 @@
     grim
     slurp
     satty
-    papirus-icon-theme
 
     # Hyprland Tools & Control
     hyprpicker
