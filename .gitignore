@@ -5,7 +5,7 @@ result-*
 
 # Secrets
 secrets/*
-!secrets/.gitkeep
+!secrets/secrets.yaml
 
 # Environment files
 .env
