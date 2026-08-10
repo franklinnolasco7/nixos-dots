@@ -18,6 +18,7 @@ nixos-dots/
 │       ├── default.nix
 │       ├── configuration.nix
 │       ├── hardware-configuration.nix
+│       ├── acer-battery.nix
 │       └── disko.nix
 │
 ├── modules/
@@ -26,6 +27,7 @@ nixos-dots/
 │   │   ├── boot.nix
 │   │   ├── networking.nix
 │   │   ├── hardware.nix
+│   │   ├── tuning.nix
 │   │   ├── nvidia.nix
 │   │   ├── audio.nix
 │   │   ├── bluetooth.nix
@@ -139,7 +141,7 @@ nixos-dots/
 
 Contains **machine-specific configuration**.
 
-Each host defines hardware, system configuration, boot configuration, disk layout, and host-specific hardware settings (e.g. NVIDIA PRIME bus IDs).
+Each host defines hardware, system configuration, boot configuration, disk layout, and host-specific hardware settings (e.g. NVIDIA PRIME bus IDs, Acer battery kernel module).
 
 ### `modules/nixos/`
 
@@ -147,9 +149,10 @@ Contains reusable **system-level NixOS modules**.
 
 These handle things such as:
 
-* Boot
+* Boot (bootloader, zram swap)
 * Networking
-* Hardware (graphics)
+* Hardware (graphics, power profiles daemon)
+* Tuning (swappiness, CPU governor permissions, scoped sysctl sudo)
 * NVIDIA (generic driver settings)
 * Audio (PipeWire)
 * Bluetooth
@@ -217,6 +220,7 @@ flake.nix
 hosts/aspire7/
     │
     ├── hardware-configuration.nix  (generated, hardware-specific)
+    ├── acer-battery.nix            (host-specific Acer battery module)
     ├── configuration.nix           (host settings, NVIDIA PRIME, nix.settings)
     └── disko.nix                   (disk layout, separate from nixosConfigurations)
     │
