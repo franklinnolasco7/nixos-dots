@@ -114,7 +114,7 @@ index_wallpapers
 selection=$(build_menu | rofi \
     -theme "$ROFI_THEME" \
     -dmenu \
-    -p " " \
+    -p "󰸉 " \
     -show-icons \
     -format s)
 
