@@ -11,6 +11,7 @@ nixos-dots/
 ├── TODO.md
 ├── .editorconfig
 ├── .gitignore
+├── .sops.yaml
 │
 ├── hosts/
 │   └── aspire7/
@@ -29,35 +30,38 @@ nixos-dots/
 │   │   ├── audio.nix
 │   │   ├── bluetooth.nix
 │   │   ├── users.nix
+│   │   ├── sops.nix
 │   │   ├── virtualization.nix
 │   │   └── gaming.nix
 │   │
 │   └── home/
 │       ├── default.nix
-│       ├── home.nix
+│       │
+│       ├── hyprland.nix
+│       ├── hyprctl.nix
+│       ├── waybar.nix
+│       ├── rofi.nix
+│       ├── swaync.nix
+│       ├── wallpapers.nix
+│       │
+│       ├── zsh.nix
+│       ├── starship.nix
+│       ├── kitty.nix
+│       ├── btop.nix
+│       ├── cava.nix
+│       ├── fastfetch.nix
+│       ├── htop.nix
+│       │
+│       ├── micro.nix
+│       ├── opencode.nix
+│       │
+│       ├── git.nix
+│       ├── development.nix
+│       │
 │       ├── packages.nix
-│       │
-│       ├── desktop/
-│       │   ├── hyprland.nix
-│       │   ├── waybar.nix
-│       │   ├── rofi.nix
-│       │   └── swaync.nix
-│       │
-│       ├── terminal/
-│       │   ├── zsh.nix
-│       │   ├── starship.nix
-│       │   ├── kitty.nix
-│       │   ├── btop.nix
-│       │   └── fastfetch.nix
-│       │
-│       ├── development/
-│       │   ├── git.nix
-│       │   ├── neovim.nix
-│       │   ├── node.nix
-│       │   ├── rust.nix
-│       │   └── python.nix
-│       │
-│       └── themes.nix
+│       ├── themes.nix
+│       ├── xdg.nix
+│       └── scripts.nix
 │
 ├── users/
 │   └── frank/
@@ -66,57 +70,67 @@ nixos-dots/
 │
 ├── home/
 │   ├── .zshrc
-│   └── .config/
-│       ├── hypr/
-│       │   ├── hyprland.lua
-│       │   └── hyprlock.conf
-│       ├── waybar/
-│       │   ├── config.jsonc
-│       │   └── style.css
-│       ├── rofi/
-│       │   ├── config.rasi
-│       │   └── scripts/
-│       ├── swaync/
-│       │   └── config.json
-│       ├── kitty/
-│       │   └── kitty.conf
-│       ├── btop/
-│       │   └── btop.conf
-│       ├── fastfetch/
-│       │   └── config.jsonc
-│       └── nvim/
-│           ├── init.lua
-│           └── lua/
+│   ├── .config/
+│   │   ├── hypr/
+│   │   │   ├── hyprland.lua
+│   │   │   └── hyprlock.conf
+│   │   ├── hyprctl/
+│   │   │   ├── hyprctl.json
+│   │   │   └── hyprctl.sh
+│   │   ├── waybar/
+│   │   │   ├── config.jsonc
+│   │   │   ├── config
+│   │   │   ├── style.css
+│   │   │   └── scripts/
+│   │   ├── rofi/
+│   │   │   ├── config.rasi
+│   │   │   ├── theme-wallpaper.rasi
+│   │   │   ├── colors/
+│   │   │   ├── shared/
+│   │   │   └── scripts/
+│   │   ├── swaync/
+│   │   ├── kitty/
+│   │   │   └── kitty.conf
+│   │   ├── btop/
+│   │   │   └── btop.conf
+│   │   ├── cava/
+│   │   │   ├── config
+│   │   │   ├── shaders/
+│   │   │   └── themes/
+│   │   ├── fastfetch/
+│   │   ├── htop/
+│   │   │   └── htoprc
+│   │   ├── micro/
+│   │   │   ├── bindings.json
+│   │   │   ├── settings.json
+│   │   │   └── colorschemes/
+│   │   ├── opencode/
+│   │   │   └── config.json
+│   │   ├── starship.toml
+│   │   └── mimeapps.list
+│   │
+│   └── .local/
+│       └── bin/
+│           ├── airplane-mode.sh
+│           ├── annotate-last-screenshot.sh
+│           ├── battery-notify.sh
+│           ├── toggle-laptop-kb.sh
+│           ├── toggle-laptop-tp.sh
+│           └── vpn-toggle.sh
 │
 ├── themes/
-│   ├── wallpapers/
-│   │   ├── desktop/
-│   │   └── lockscreen/
-│   ├── cursors/
-│   │   └── macOS-White/
-│   ├── icons/
-│   ├── fonts/
-│   └── colors.nix
-│
-├── pkgs/
-│   └── default.nix
-│
-├── overlays/
-│   └── default.nix
+│   ├── dimspectra.md
+│   └── wallpapers/
 │
 ├── install/
-│   ├── install.sh
-│   ├── aspire7.sh
-│   ├── rebuild.sh
-│   ├── update.sh
-│   └── format.sh
+│   ├── format.sh
+│   └── init-secrets.sh
 │
 ├── docs/
-│   ├── installation.md
 │   └── architecture.md
 │
 └── secrets/
-    └── .gitkeep
+    └── secrets.yaml (encrypted, not committed until init-secrets.sh runs)
 ```
 
 ## Structure
@@ -125,7 +139,7 @@ nixos-dots/
 
 Contains **machine-specific configuration**.
 
-Each host defines hardware, system configuration, boot configuration, and disk layout.
+Each host defines hardware, system configuration, boot configuration, disk layout, and host-specific hardware settings (e.g. NVIDIA PRIME bus IDs).
 
 ### `modules/nixos/`
 
@@ -135,58 +149,56 @@ These handle things such as:
 
 * Boot
 * Networking
-* Hardware
-* NVIDIA
-* Audio
+* Hardware (graphics)
+* NVIDIA (generic driver settings)
+* Audio (PipeWire)
 * Bluetooth
 * Users
-* Virtualization
-* Gaming
+* Secrets (sops-nix)
+* Virtualization (placeholder)
+* Gaming (placeholder)
 
 ### `modules/home/`
 
 Contains reusable **Home Manager modules**.
 
-Modules are grouped by purpose:
+Modules are organized by purpose:
 
-* `desktop/` — Hyprland, Waybar, Rofi, SwayNC
-* `terminal/` — Zsh, Starship, Kitty, Btop, Fastfetch
-* `development/` — Git, Neovim, Node.js, Rust, Python
-* `themes.nix` — fonts and theme-related packages
+* **Desktop** — Hyprland, Hyprctl, Waybar, Rofi, SwayNC, Wallpapers
+* **Terminal** — Zsh, Starship, Kitty, Btop, Cava, Fastfetch, Htop
+* **Editors** — Micro, Opencode
+* **Development** — Git, development toolchains (Node.js, Python, Rust)
+* **Packages & Theming** — User packages, fonts, XDG mimeapps, shell scripts
+
+Each module either:
+* Uses Home Manager's native `programs.*` options (Zsh, Starship, Git), or
+* Deploys raw config files via `xdg.configFile` / `home.file` for apps with complex native configs (Hyprland Lua, Waybar CSS, Rofi Rasi).
 
 ### `users/`
 
 Contains **user-specific configuration**.
 
-The `frank/` directory defines the user's Home Manager configuration separately from machine-level configuration.
+The `frank/` directory defines the user's Home Manager entry point (`home.nix`), including session paths, environment variables, and imports of all home modules.
 
 ### `home/`
 
 Contains the actual **user configuration files** managed by Home Manager.
 
-This keeps application configuration such as Hyprland, Waybar, Kitty, Fastfetch, and Neovim separate from the Nix module definitions that install or manage them.
+This keeps application configuration such as Hyprland, Waybar, Kitty, Fastfetch, and shell scripts separate from the Nix module definitions that install or manage them.
 
 ### `themes/`
 
 Contains theme assets and shared theme definitions:
 
-* Wallpapers
-* Cursors
-* Icons
-* Fonts
-* Shared colors
-
-### `pkgs/`
-
-Contains custom Nix packages defined specifically for the system.
-
-### `overlays/`
-
-Contains Nixpkgs overlays for modifying or extending packages.
+* Wallpapers (deployed to `~/wallpapers` via Home Manager)
+* Color palette documentation (dimspectra.md)
 
 ### `install/`
 
-Contains scripts for installation and common system operations such as rebuilding, updating, and formatting.
+Contains scripts for common operations:
+
+* `format.sh` — Format all Nix, Lua, shell, and TOML files
+* `init-secrets.sh` — One-time bootstrap of sops-encrypted secrets
 
 ### `docs/`
 
@@ -194,7 +206,7 @@ Project documentation.
 
 ### `secrets/`
 
-Reserved for secrets and secret-management files. Secrets should **not** be committed to Git.
+Reserved for sops-encrypted secrets. The `secrets.yaml` file is created by `init-secrets.sh` and encrypted with age. The sops module is gated behind a `pathExists` check so builds succeed before secrets are bootstrapped.
 
 ## Configuration Flow
 
@@ -204,21 +216,21 @@ flake.nix
     ▼
 hosts/aspire7/
     │
-    ├── configuration.nix
-    ├── hardware-configuration.nix
-    └── disko.nix
+    ├── hardware-configuration.nix  (generated, hardware-specific)
+    ├── configuration.nix           (host settings, NVIDIA PRIME, nix.settings)
+    └── disko.nix                   (disk layout, separate from nixosConfigurations)
     │
     ▼
-modules/nixos/
+modules/nixos/                      (reusable system modules)
     │
     ▼
-users/frank/
+users/frank/home.nix                (user entry point, sessionPath, sessionVariables)
     │
     ▼
-modules/home/
+modules/home/                       (reusable home modules)
     │
     ▼
-home/.config/
+home/.config/ + home/.local/bin/    (raw application configs + scripts)
 ```
 
 The goal is to keep **machine-specific settings, reusable modules, user configuration, and application configuration separated** while keeping the entire system reproducible through the flake.

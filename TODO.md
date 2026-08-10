@@ -48,41 +48,41 @@
 
 ## Dotfiles
 
-// TODO: Deploy `home/.config`
-// TODO: Deploy `home/.local/bin`
+// DONE: Deploy `home/.config`
+// DONE: Deploy `home/.local/bin`
 // DONE: Deploy `.zshrc` through Home Manager
-// TODO: Ensure shell scripts are executable
-// TODO: Verify executable permissions survive a fresh installation
-// TODO: Verify all configs are deployed to the correct paths
+// DONE: Ensure shell scripts are executable
+// DONE: Verify executable permissions survive a fresh installation
+// DONE: Verify all configs are deployed to the correct paths
 
 ## Convert Simple Configs to Nix
 
 // DONE: Integrate `.zshrc` through Home Manager
 // DONE: Move Starship configuration into Home Manager
-// TODO: Move `mimeapps.list` into `xdg.mimeApps`
-// TODO: Evaluate Kitty configuration
-// TODO: Evaluate btop configuration
-// TODO: Evaluate Fastfetch configuration
-// TODO: Evaluate htop configuration
-// TODO: Evaluate Micro configuration
+// DONE: Move `mimeapps.list` into `xdg.mimeApps`
+// DONE: Evaluate Kitty configuration
+// DONE: Evaluate btop configuration
+// DONE: Evaluate Fastfetch configuration
+// DONE: Evaluate htop configuration
+// DONE: Evaluate Micro configuration
 
 ## Native Configs
 
-// TODO: Keep Hyprland Lua configuration as a native config
-// TODO: Keep Hyprlock configuration as a native config
+// DONE: Keep Hyprland Lua configuration as a native config
+// DONE: Keep Hyprlock configuration as a native config
 // DONE: Keep Waybar JSONC/CSS as native configs
 // DONE: Keep Rofi Rasi configuration as native config
 // DONE: Keep Rofi scripts
 // DONE: Keep SwayNC configuration
-// TODO: Keep Cava configuration
+// DONE: Keep Cava configuration
 // TODO: Keep Neovim Lua configuration
-// TODO: Keep Hyprctl scripts/configuration
+// DONE: Keep Hyprctl scripts/configuration
 
 ## Migration: dotfiles → Home Manager
 
-// TODO: Add cava module (xdg.configFile, source home/.config/cava)
-// TODO: Add htop module (xdg.configFile, source home/.config/htop)
-// TODO: Add micro module (xdg.configFile, source home/.config/micro)
+// DONE: Add cava module (xdg.configFile, source home/.config/cava)
+// DONE: Add htop module (xdg.configFile, source home/.config/htop)
+// DONE: Add micro module (xdg.configFile, source home/.config/micro)
 // TODO: Add gtk-3.0 to repo via hm gtk module
 // TODO: Add fontconfig to repo via hm fonts.fontconfig
 
@@ -95,23 +95,23 @@
 
 ## Development Environment
 
-// TODO: Finish `shell.nix`
-// TODO: Add `nixfmt`
-// TODO: Add `stylua`
-// TODO: Add `shfmt`
-// TODO: Add `taplo`
-// TODO: Test `nix-shell`
+// DONE: Finish `shell.nix`
+// DONE: Add `nixfmt`
+// DONE: Add `stylua`
+// DONE: Add `shfmt`
+// DONE: Add `taplo`
+// DONE: Test `nix-shell`
 
 ## Formatting
 
-// TODO: Test `install/format.sh`
-// TODO: Test `check` mode
-// TODO: Test `write` mode
-// TODO: Format all Nix files
-// TODO: Format all Lua files
-// TODO: Format all shell scripts
-// TODO: Format all TOML files
-// TODO: Consider migrating `shell.nix` to `devShells`
+// DONE: Test `install/format.sh`
+// DONE: Test `check` mode
+// DONE: Test `write` mode
+// DONE: Format all Nix files
+// DONE: Format all Lua files
+// DONE: Format all shell scripts
+// DONE: Format all TOML files
+// DONE: Consider migrating `shell.nix` to `devShells`
 
 ## Installation
 
@@ -172,11 +172,11 @@
 
 ## Secrets
 
-// TODO: Choose a secrets manager
-// TODO: Configure `sops-nix` or equivalent
-// TODO: Encrypt secrets
-// TODO: Never commit plaintext secrets
-// TODO: Remove `secrets/.gitkeep` when secrets are added
+// DONE: Choose a secrets manager (sops-nix + age via ssh key)
+// DONE: Configure `sops-nix`
+// TODO: Encrypt secrets (run `bash install/init-secrets.sh` on the NixOS machine)
+// DONE: Never commit plaintext secrets
+// DONE: Remove `secrets/.gitkeep`
 
 ## Testing
 
