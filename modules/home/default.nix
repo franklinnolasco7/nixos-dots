@@ -1,16 +1,34 @@
 {
   imports = [
+    # Desktop
     ./hyprland.nix
+    ./hyprctl.nix
     ./waybar.nix
     ./rofi.nix
-    ./kitty.nix
     ./swaync.nix
-    ./fastfetch.nix
-    ./starship.nix
+    ./wallpapers.nix
+
+    # Terminal
     ./zsh.nix
+    ./starship.nix
+    ./kitty.nix
     ./btop.nix
+    ./cava.nix
+    ./fastfetch.nix
+    ./htop.nix
+
+    # Editors
+    ./micro.nix
+    ./opencode.nix
+
+    # Development
     ./git.nix
     ./development.nix
+
+    # Packages & theming
+    ./packages.nix
     ./themes.nix
+    ./xdg.nix
+    ./scripts.nix
   ];
 }

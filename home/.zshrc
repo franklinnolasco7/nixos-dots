@@ -15,14 +15,3 @@ bindkey '^[[B' history-substring-search-down
 # ─── Aliases ───
 alias ls='ls --color=auto'
 alias ..='cd ..'
-
-# ─── PATH ───
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.spicetify:$PATH"
-export PATH="$HOME/.npm-global/bin:$PATH"
-export PATH="$HOME/.opencode/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-
-# ─── Editor ───
-export EDITOR="code-oss"
-export VISUAL="code-oss"

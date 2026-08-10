@@ -3,6 +3,8 @@
 {
   programs.git = {
     enable = true;
+    userName = "Frank";
+    userEmail = "REDACTED";
 
     settings = {
       init.defaultBranch = "main";
