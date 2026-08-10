@@ -36,6 +36,8 @@
     neovim
     vscodium
     micro
+
+    # AI Tools
     opencode
 
     # Terminal & Script Tools
