@@ -15,8 +15,4 @@
 
     initContent = builtins.readFile ../../home/.zshrc;
   };
-
-  programs.starship = {
-    enable = true;
-  };
 }
