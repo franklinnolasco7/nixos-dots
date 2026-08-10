@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SOURCE="@DEFAULT_SOURCE@"
 MAX_VOLUME=600

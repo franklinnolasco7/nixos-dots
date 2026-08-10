@@ -20,6 +20,11 @@
     btop
     fastfetch
     htop
+    pulseaudio
+
+    # Audio
+    pavucontrol
+    pulseaudio
 
     # TEMP WORKAROUND: waybar-git build (Hyprland Lua dispatch fix).
     # Switch back to pkgs.waybar when nixpkgs ships the fix.

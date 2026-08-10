@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ "$1" == "menu" ]]; then
     current=$(powerprofilesctl get)

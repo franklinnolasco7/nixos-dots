@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if nmcli radio wifi | grep -q "enabled"; then
     nmcli radio wifi off
