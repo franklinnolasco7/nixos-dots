@@ -22,6 +22,7 @@
     grim
     slurp
     satty
+    glib
 
     # Hyprland Tools & Control
     hyprpicker

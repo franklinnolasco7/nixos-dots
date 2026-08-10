@@ -83,13 +83,13 @@
 // DONE: Add cava module (xdg.configFile, source home/.config/cava)
 // DONE: Add htop module (xdg.configFile, source home/.config/htop)
 // DONE: Add micro module (xdg.configFile, source home/.config/micro)
-// TODO: Add gtk-3.0 to repo via hm gtk module
+// DONE: Add gtk-3.0 to repo via hm gtk module
 // TODO: Add fontconfig to repo via hm fonts.fontconfig
 
 ## Themes
 
 // TODO: Add cursor
-// TODO: Add icons
+// DONE: Add icons
 // DONE: Add fonts
 // TODO: Configure shared color palette
 
@@ -209,5 +209,5 @@
 // DONE: Fix waybar battery when left clicking the battery limit script also need sudo
 // DONE: Fix Rofi emoji for drun not displaying properly
 // DONE: rofi wallpaper selector aint showing any images
-// TODO: opencode not installed
+// DONE: opencode not installed
 
