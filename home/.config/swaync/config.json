@@ -79,15 +79,15 @@
       "actions": [
         {
           "label": "",
-          "command": "swaync-client -cp && systemctl poweroff"
+          "command": "swaync-client -cp && poweroff"
         },
         {
           "label": "",
-          "command": "swaync-client -cp && systemctl reboot"
+          "command": "swaync-client -cp && reboot"
         },
         {
           "label": "󰤄",
-          "command": "swaync-client -cp && systemctl suspend"
+          "command": "swaync-client -cp && loginctl suspend"
         },
         {
           "label": "",
@@ -95,7 +95,7 @@
         },
         {
           "label": "󰍃",
-          "command": "swaync-client -cp && hyprctl dispatch exit"
+          "command": "swaync-client -cp && hyprctl dispatch \"hl.dsp.exit()\""
         },
         {
           "label": "󰌐",
