@@ -1,8 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
-  xdg.configFile."starship.toml" = {
-    source = ../../home/.config/starship.toml;
-    force = true;
+  programs.starship = {
+    enable = true;
+    settings = builtins.fromTOML (builtins.readFile ../../home/.config/starship.toml);
   };
 }
