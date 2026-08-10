@@ -2,7 +2,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.zramSwap = {
+  zramSwap = {
     enable = true;
     algorithm = "zstd";
   };
