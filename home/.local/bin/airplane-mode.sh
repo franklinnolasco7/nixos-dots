@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/airplane_mode_state"
 

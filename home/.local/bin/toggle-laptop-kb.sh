@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/laptop_kb_state"
 
