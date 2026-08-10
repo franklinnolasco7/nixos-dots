@@ -78,6 +78,14 @@
 // TODO: Keep Neovim Lua configuration
 // TODO: Keep Hyprctl scripts/configuration
 
+## Migration: dotfiles → Home Manager
+
+// TODO: Add cava module (xdg.configFile, source home/.config/cava)
+// TODO: Add htop module (xdg.configFile, source home/.config/htop)
+// TODO: Add micro module (xdg.configFile, source home/.config/micro)
+// TODO: Add gtk-3.0 to repo via hm gtk module
+// TODO: Add fontconfig to repo via hm fonts.fontconfig
+
 ## Themes
 
 // TODO: Add cursor
