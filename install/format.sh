@@ -11,12 +11,6 @@ case "${1:-}" in
 esac
 
 for ext in nix lua sh toml; do
-  files=$(find . -type f -name "*.$ext" -not -path "./.git/*")
-  if [[ -z "$files" ]]; then
-    echo "[skip] no .$ext files"
-    continue
-  fi
-
   case "$ext" in
     nix)
       cmd="nixfmt"
@@ -33,19 +27,19 @@ for ext in nix lua sh toml; do
   esac
 
   if ! command -v "$cmd" >/dev/null 2>&1; then
-    echo "[skip] $cmd not installed (run: nix-shell)"
+    echo "[skip] $cmd not installed (run: nix develop)"
     continue
   fi
 
   echo "[$cmd] $mode"
   case "$ext:$mode" in
-    nix:check) "$cmd" --check "$files" ;;
-    nix:write) "$cmd" "$files" ;;
-    lua:check) "$cmd" --check "$files" ;;
-    lua:write) "$cmd" "$files" ;;
-    sh:check) "$cmd" -i 2 -ci -bn -s -d "$files" ;;
-    sh:write) "$cmd" -i 2 -ci -bn -s -w "$files" ;;
-    toml:check) "$cmd" fmt --check "$files" ;;
-    toml:write) "$cmd" fmt "$files" ;;
+    nix:check) find . -type f -name "*.nix" -not -path "./.git/*" -exec "$cmd" --check {} + ;;
+    nix:write) find . -type f -name "*.nix" -not -path "./.git/*" -exec "$cmd" {} + ;;
+    lua:check) find . -type f -name "*.lua" -not -path "./.git/*" -exec "$cmd" --check {} + ;;
+    lua:write) find . -type f -name "*.lua" -not -path "./.git/*" -exec "$cmd" {} + ;;
+    sh:check)  find . -type f -name "*.sh" -not -path "./.git/*" -exec "$cmd" -i 2 -ci -bn -s -d {} + ;;
+    sh:write)  find . -type f -name "*.sh" -not -path "./.git/*" -exec "$cmd" -i 2 -ci -bn -s -w {} + ;;
+    toml:check) find . -type f -name "*.toml" -not -path "./.git/*" -exec "$cmd" fmt --check {} + ;;
+    toml:write) find . -type f -name "*.toml" -not -path "./.git/*" -exec "$cmd" fmt {} + ;;
   esac
 done
