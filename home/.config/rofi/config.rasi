@@ -3,7 +3,7 @@ configuration {
 	modi: "drun,run,window";
     show-icons:                 true;
     icon-theme:                 "Papirus-Dark";
-    display-drun:               "";
+    display-drun:               "󰀻";
     display-run:                "";
     display-window:             "";
     kb-mode-next:               "Shift+Right,Control+Tab";
