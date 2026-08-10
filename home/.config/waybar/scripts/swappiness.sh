@@ -28,7 +28,7 @@ if [[ "$1" == "menu" ]]; then
     if [[ -n "$selected" ]]; then
         value=$(echo "$selected" | sed 's/^[●  ]*//' | cut -d' ' -f1)
 
-        echo "$value" | sudo tee /proc/sys/vm/swappiness > /dev/null
+        sudo sysctl -w vm.swappiness="$value" > /dev/null
         notify-send -i "preferences-system-symbolic" "Swappiness" "Set to $value (runtime only)" -t 2000
     fi
 fi

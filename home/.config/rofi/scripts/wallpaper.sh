@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/wallpapers}"
-[[ ! -d "$WALLPAPER_DIR" && -d "$HOME/Pictures/Wallpapers" ]] && WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
+WALLPAPER_DIR="$HOME/nixos-dots/themes/wallpapers"
 DRY_RUN=0
 case "${1:-}" in
     --dry-run) DRY_RUN=1 ;;
@@ -115,7 +114,7 @@ index_wallpapers
 selection=$(build_menu | rofi \
     -theme "$ROFI_THEME" \
     -dmenu \
-    -p "󰉔 " \
+    -p " " \
     -show-icons \
     -format s)
 

@@ -37,7 +37,7 @@ selected=$(printf '%s' "${menu%$'\n'}" | rofi -dmenu -p "CPU Governor")
 
 governor="${selected#* }"
 
-sudo cpupower frequency-set -g "$governor"
+echo "$governor" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
 
 if [[ $? -eq 0 ]]; then
     notify-send \
