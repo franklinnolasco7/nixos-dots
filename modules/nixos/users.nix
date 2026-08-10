@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 {
   programs.zsh.enable = true;
@@ -11,24 +11,6 @@
     extraGroups = [
       "wheel"
       "networkmanager"
-    ];
-
-    packages = with pkgs; [
-      tree
-      kitty
-      neovim
-      rofi
-      thunar
-      # TEMP WORKAROUND: waybar-git build (Hyprland Lua dispatch fix).
-      # Switch back to pkgs.waybar when nixpkgs ships the fix.
-      inputs.waybar.packages.${pkgs.system}.default
-      libnotify
-      swaynotificationcenter
-      micro
-      fastfetch
-      btop
-      vscodium
-      chromium
     ];
   };
 }

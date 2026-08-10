@@ -9,5 +9,6 @@
     ./users.nix
     ./virtualization.nix
     ./gaming.nix
+    ./sops.nix
   ];
 }
