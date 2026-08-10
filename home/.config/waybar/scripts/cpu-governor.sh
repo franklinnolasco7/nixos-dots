@@ -3,7 +3,7 @@
 if [[ "$1" == "menu" ]]; then
     current=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "unknown")
 
-    options=("performance" "powersave")
+    options=("performance" "powersave" "schedutil" "ondemand")
     menu=""
     for governor in "${options[@]}"; do
         [[ "$governor" == "$current" ]] && menu+="● $governor"$'\n' || menu+="  $governor"$'\n'
@@ -13,9 +13,9 @@ if [[ "$1" == "menu" ]]; then
 
     if [[ -n "$selected" ]]; then
         governor="${selected#* }"
-        sudo cpupower frequency-set -g "$governor"
+        for syspath in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+            echo "$governor" | sudo tee "$syspath" > /dev/null
+        done
         notify-send -i "preferences-system-symbolic" "CPU Governor" "Set to $governor" -t 2000
     fi
 fi
-
-
