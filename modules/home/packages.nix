@@ -50,6 +50,7 @@
     curl
     lua
     wireguard-tools
+    cava
 
     # Audio
     pavucontrol
