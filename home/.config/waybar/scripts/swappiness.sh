@@ -26,9 +26,12 @@ if [[ "$1" == "menu" ]]; then
     selected=$(echo -e "$menu" | rofi -dmenu -p "Swappiness (ZRAM)")
 
     if [[ -n "$selected" ]]; then
-        value=$(echo "$selected" | sed 's/^[●  ]*//' | cut -d' ' -f1)
+        value=$(echo "$selected" | tr -d '●' | xargs | cut -d' ' -f1)
 
-        sudo sysctl -w vm.swappiness="$value" > /dev/null
-        notify-send -i "preferences-system-symbolic" "Swappiness" "Set to $value (runtime only)" -t 2000
+        if sudo sysctl -w vm.swappiness="$value" > /dev/null; then
+            notify-send -i "preferences-system-symbolic" "Swappiness" "Set to $value (runtime only)" -t 2000
+        else
+            notify-send -i "dialog-error-symbolic" "Swappiness" "Failed to set $value" -t 3000
+        fi
     fi
 fi
