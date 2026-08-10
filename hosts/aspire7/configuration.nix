@@ -14,6 +14,24 @@
   ];
 
   # ---------------------------------------------------------------------------
+  # Nix
+  # ---------------------------------------------------------------------------
+
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    auto-optimise-store = true;
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+
+  # ---------------------------------------------------------------------------
   # Networking (host-specific; NetworkManager lives in
   # modules/nixos/networking.nix)
   # ---------------------------------------------------------------------------
@@ -50,6 +68,19 @@
 
     portalPackage =
       inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
+  };
+
+  # ---------------------------------------------------------------------------
+  # NVIDIA PRIME (host-specific bus IDs)
+  # ---------------------------------------------------------------------------
+
+  hardware.nvidia.prime = {
+    offload = {
+      enable = true;
+      enableOffloadCmd = true;
+    };
+    amdgpuBusId = "PCI:5:0:0";
+    nvidiaBusId = "PCI:1:0:0";
   };
 
   # ---------------------------------------------------------------------------
