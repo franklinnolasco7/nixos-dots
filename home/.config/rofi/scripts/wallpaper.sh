@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
+WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/wallpapers}"
+[[ ! -d "$WALLPAPER_DIR" && -d "$HOME/Pictures/Wallpapers" ]] && WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
 DRY_RUN=0
 case "${1:-}" in
     --dry-run) DRY_RUN=1 ;;
