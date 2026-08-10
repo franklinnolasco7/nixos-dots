@@ -30,6 +30,7 @@
     hyprlock
     brightnessctl
     playerctl
+    linuxPackages.cpupower
 
     # Editors
     neovim

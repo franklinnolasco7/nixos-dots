@@ -204,10 +204,10 @@
 
 
 ## TO DO PRIO (things to do while im testing)
-// TODO: Fix waybar cpu governor and swappiness on rofi options not working
-// TODO: Fix waybar scroll on modules to adjust volumes of mic or audio not working
-// TODO: Fix waybar battery when left clicking the battery limit script says "Driver not loaded"
-// TODO: Fix Rofi emoji for drun not displaying properly
+// TODO: Fix waybar cpu governor and swappiness on rofi options not working (need sudo)
+// DONE: Fix waybar scroll on modules to adjust volumes of mic or audio not working
+// TODO: Fix waybar battery when left clicking the battery limit script also need sudo
+// DONE: Fix Rofi emoji for drun not displaying properly
 // TODO: rofi wallpaper selector aint showing any images
 // TODO: opencode not installed
 
