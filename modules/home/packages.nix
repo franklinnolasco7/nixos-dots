@@ -22,6 +22,7 @@
     grim
     slurp
     satty
+    papirus-icon-theme
 
     # Hyprland Tools & Control
     hyprpicker
@@ -34,6 +35,7 @@
     neovim
     vscodium
     micro
+    opencode
 
     # Terminal & Script Tools
     tree
@@ -48,6 +50,7 @@
 
     # Audio
     pavucontrol
+    pulseaudio
 
     # TEMP WORKAROUND: waybar-git build (Hyprland Lua dispatch fix).
     # Switch back to pkgs.waybar when nixpkgs ships the fix.

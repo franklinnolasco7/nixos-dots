@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-CONFIG_FILE="/etc/sysctl.d/99-swappiness.conf"
-
 if [[ "$1" == "menu" ]]; then
     current=$(sysctl -n vm.swappiness)
 
@@ -31,7 +29,6 @@ if [[ "$1" == "menu" ]]; then
         value=$(echo "$selected" | sed 's/^[●  ]*//' | cut -d' ' -f1)
 
         echo "$value" | sudo tee /proc/sys/vm/swappiness > /dev/null
-        echo "vm.swappiness=$value" | sudo tee "$CONFIG_FILE" > /dev/null
-        notify-send -i "preferences-system-symbolic" "Swappiness" "Set to $value (persistent)" -t 2000
+        notify-send -i "preferences-system-symbolic" "Swappiness" "Set to $value (runtime only)" -t 2000
     fi
 fi
