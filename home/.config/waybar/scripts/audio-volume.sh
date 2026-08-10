@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SINK="@DEFAULT_SINK@"
 MAX_VOLUME=600

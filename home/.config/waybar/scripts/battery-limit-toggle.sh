@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 HEALTH_MODE="/sys/bus/wmi/drivers/acer-wmi-battery/health_mode"
 

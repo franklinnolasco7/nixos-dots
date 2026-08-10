@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CONFIG_FILE="/etc/sysctl.d/99-swappiness.conf"
 
