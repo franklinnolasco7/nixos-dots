@@ -22,10 +22,13 @@
       "nix-command"
       "flakes"
     ];
+
     auto-optimise-store = true;
+
     substituters = [
       "https://hyprland.cachix.org"
     ];
+
     trusted-public-keys = [
       "hyprland.cachix.org-1:a7HPphkgeWcTfiMMCAmjvxnygJzylcsEB7W4AVUXv4U="
     ];
@@ -64,9 +67,11 @@
 
   xdg.portal = {
     enable = true;
+
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
     ];
+
     config = {
       common = {
         default = [ "hyprland" "gtk" ];
@@ -83,12 +88,8 @@
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
-
-    package =
-      inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-
-    portalPackage =
-      inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    package = pkgs.hyprland;
+    portalPackage = pkgs.xdg-desktop-portal-hyprland;
   };
 
   # ---------------------------------------------------------------------------
@@ -100,6 +101,7 @@
       enable = true;
       enableOffloadCmd = true;
     };
+
     amdgpuBusId = "PCI:5:0:0";
     nvidiaBusId = "PCI:1:0:0";
   };
