@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if rfkill list bluetooth | grep -q "Soft blocked: no"; then
-    rfkill block bluetooth
+  rfkill block bluetooth
 else
-    rfkill unblock bluetooth
+  rfkill unblock bluetooth
 fi

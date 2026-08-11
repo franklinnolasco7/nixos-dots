@@ -36,7 +36,7 @@ sops() {
 
 echo "[1/5] checking age key matches .sops.yaml ..."
 actual=$(ssh-to-age -i "$HOME/.ssh/id_ed25519.pub")
-if [[ "$actual" != "$EXPECTED_PUBKEY" ]]; then
+if [[ $actual != "$EXPECTED_PUBKEY" ]]; then
   echo "error: age key mismatch" >&2
   echo "  expected: $EXPECTED_PUBKEY" >&2
   echo "  actual:   $actual" >&2
@@ -47,10 +47,10 @@ fi
 echo "  ok"
 
 echo "[2/5] collecting Context7 API key ..."
-if [[ -z "${CONTEXT7_API_KEY:-}" ]]; then
+if [[ -z ${CONTEXT7_API_KEY:-} ]]; then
   read -rp "  Context7 API key (https://context7.com/dashboard): " CONTEXT7_API_KEY
 fi
-if [[ -z "$CONTEXT7_API_KEY" ]]; then
+if [[ -z $CONTEXT7_API_KEY ]]; then
   echo "error: no Context7 API key" >&2
   exit 1
 fi
@@ -58,13 +58,13 @@ fi
 echo "[3/5] collecting GitHub token ..."
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
   GITHUB_TOKEN="$(gh auth token)"
-elif [[ -n "${GITHUB_TOKEN:-}" ]]; then
+elif [[ -n ${GITHUB_TOKEN:-} ]]; then
   :
 else
   read -rsp "  GitHub personal access token: " GITHUB_TOKEN
   echo
 fi
-if [[ -z "$GITHUB_TOKEN" ]]; then
+if [[ -z $GITHUB_TOKEN ]]; then
   echo "error: no GitHub token" >&2
   exit 1
 fi
@@ -72,7 +72,7 @@ fi
 echo "[4/5] encrypting secrets/secrets.yaml ..."
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
-cat > "$tmpdir/secrets.json" <<EOF
+cat >"$tmpdir/secrets.json" <<EOF
 {
   "context7-api-key": "$CONTEXT7_API_KEY",
   "github-token": "$GITHUB_TOKEN"

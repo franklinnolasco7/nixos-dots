@@ -5,7 +5,7 @@
 # installation with nixos-generate-config.
 
 {
-imports = [
+  imports = [
     ./hardware-configuration.nix
     ./acer-battery.nix
     ./configuration.nix

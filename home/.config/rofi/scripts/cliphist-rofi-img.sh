@@ -3,14 +3,14 @@
 tmp_dir="/tmp/cliphist"
 rm -rf "$tmp_dir"
 
-if [[ -n "$1" ]]; then
-    shopt -s nullglob
-    image_files=("$tmp_dir/$1".*)
-    if [[ ${#image_files[@]} -gt 0 ]]; then
-        imv "${image_files[0]}" 2>/dev/null &
-    fi
-    cliphist decode <<<"$1" | wl-copy
-    exit
+if [[ -n $1 ]]; then
+  shopt -s nullglob
+  image_files=("$tmp_dir/$1".*)
+  if [[ ${#image_files[@]} -gt 0 ]]; then
+    imv "${image_files[0]}" 2>/dev/null &
+  fi
+  cliphist decode <<<"$1" | wl-copy
+  exit
 fi
 
 mkdir -p "$tmp_dir"

@@ -37,8 +37,8 @@ for ext in nix lua sh toml; do
     nix:write) find . -type f -name "*.nix" -not -path "./.git/*" -exec "$cmd" {} + ;;
     lua:check) find . -type f -name "*.lua" -not -path "./.git/*" -exec "$cmd" --check {} + ;;
     lua:write) find . -type f -name "*.lua" -not -path "./.git/*" -exec "$cmd" {} + ;;
-    sh:check)  find . -type f -name "*.sh" -not -path "./.git/*" -exec "$cmd" -i 2 -ci -bn -s -d {} + ;;
-    sh:write)  find . -type f -name "*.sh" -not -path "./.git/*" -exec "$cmd" -i 2 -ci -bn -s -w {} + ;;
+    sh:check) find . -type f -name "*.sh" -not -path "./.git/*" -exec "$cmd" -i 2 -ci -bn -s -d {} + ;;
+    sh:write) find . -type f -name "*.sh" -not -path "./.git/*" -exec "$cmd" -i 2 -ci -bn -s -w {} + ;;
     toml:check) find . -type f -name "*.toml" -not -path "./.git/*" -exec "$cmd" fmt --check {} + ;;
     toml:write) find . -type f -name "*.toml" -not -path "./.git/*" -exec "$cmd" fmt {} + ;;
   esac
