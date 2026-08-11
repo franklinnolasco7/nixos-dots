@@ -1,8 +1,9 @@
+{ pkgs, ... }:
 {
-  # Virtualization
-  #
-  # NOT CONFIGURED YET.
-  #
-  # Placeholder module: QEMU/KVM/libvirt/virt-manager configuration will be
-  # added here in a later phase. TODO stays open until then.
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
+  environment.systemPackages = with pkgs; [
+    virt-viewer
+    spice-gtk
+  ];
 }
