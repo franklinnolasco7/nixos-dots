@@ -136,7 +136,7 @@ echo
 echo "done. Next steps on this machine:"
 echo "  1. fill real values (encryption needs no identity):"
 echo "     printf '{\"context7-api-key\":\"...\",\"github-token\":\"...\"}\\n' > /tmp/secrets.json"
-echo "     nix shell nixpkgs#sops -c sops -e --input-type json --output-type yaml \\"
+echo '     nix shell nixpkgs#sops -c sops -e --input-type json --output-type yaml \'
 echo "       --filename-override $SECRETS_FILE --output $SECRETS_FILE /tmp/secrets.json"
 echo "     rm -f /tmp/secrets.json"
 echo "  2. git add .sops.yaml $SECRETS_FILE && git commit && git push"
