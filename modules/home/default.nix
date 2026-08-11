@@ -29,6 +29,8 @@
     ./packages.nix
     ./themes.nix
     ./gtk.nix
+    ./qt.nix
+    ./cursor.nix
     ./xdg.nix
     ./scripts.nix
   ];
