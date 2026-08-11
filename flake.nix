@@ -30,72 +30,73 @@
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
   };
 
-  outputs = inputs@{
-    self,
-    nixpkgs,
-    hyprland,
-    hyprland-plugins,
-    disko,
-    home-manager,
-    sops-nix,
-    chaotic,
-    ...
-  }:
-  let
-    system = "x86_64-linux";
-  in
-  {
-    nixosConfigurations.aspire7 = nixpkgs.lib.nixosSystem {
-      inherit system;
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      hyprland,
+      hyprland-plugins,
+      disko,
+      home-manager,
+      sops-nix,
+      chaotic,
+      ...
+    }:
+    let
+      system = "x86_64-linux";
+    in
+    {
+      nixosConfigurations.aspire7 = nixpkgs.lib.nixosSystem {
+        inherit system;
 
-      specialArgs = {
-        inherit inputs;
+        specialArgs = {
+          inherit inputs;
+        };
+
+        modules = [
+          ./hosts/aspire7
+          hyprland.nixosModules.default
+
+          {
+            nixpkgs.overlays = [ (import ./overlays) ];
+          }
+
+          chaotic.nixosModules.default
+          sops-nix.nixosModules.sops
+
+          home-manager.nixosModules.home-manager
+
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+            };
+
+            home-manager.users.frank = import ./users/frank/default.nix;
+          }
+        ];
       };
 
-      modules = [
-        ./hosts/aspire7
-        hyprland.nixosModules.default
+      diskoConfigurations.aspire7 = {
+        modules = [
+          ./hosts/aspire7/disko.nix
+        ];
+      };
 
-        {
-          nixpkgs.overlays = [ (import ./overlays) ];
-        }
+      apps.${system}.disko = {
+        type = "app";
+        program = "${disko.packages.${system}.disko}/bin/disko";
+      };
 
-        chaotic.nixosModules.default
-        sops-nix.nixosModules.sops
-
-        home-manager.nixosModules.home-manager
-
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-
-          home-manager.extraSpecialArgs = {
-            inherit inputs;
-          };
-
-          home-manager.users.frank = import ./users/frank/default.nix;
-        }
-      ];
+      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
+        packages = with nixpkgs.legacyPackages.${system}; [
+          nixfmt
+          stylua
+          shfmt
+          taplo
+        ];
+      };
     };
-
-    diskoConfigurations.aspire7 = {
-      modules = [
-        ./hosts/aspire7/disko.nix
-      ];
-    };
-
-    apps.${system}.disko = {
-      type = "app";
-      program = "${disko.packages.${system}.disko}/bin/disko";
-    };
-
-    devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
-      packages = with nixpkgs.legacyPackages.${system}; [
-        nixfmt
-        stylua
-        shfmt
-        taplo
-      ];
-    };
-  };
 }

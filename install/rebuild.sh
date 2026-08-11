@@ -9,7 +9,7 @@ ACTION="switch"
 
 # Allow passing action (e.g. boot, test) or flags
 if [[ $# -gt 0 ]]; then
-  if [[ "$1" == "boot" || "$1" == "test" || "$1" == "switch" ]]; then
+  if [[ $1 == "boot" || $1 == "test" || $1 == "switch" ]]; then
     ACTION="$1"
     shift
   fi

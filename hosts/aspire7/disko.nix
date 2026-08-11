@@ -39,9 +39,7 @@
   disko.devices.disk.main = {
     type = "disk";
 
-    device =
-      lib.mkDefault
-        "/dev/disk/by-id/nvme-HFM512GD3JX016N_FYB3N036910803I0I";
+    device = lib.mkDefault "/dev/disk/by-id/nvme-HFM512GD3JX016N_FYB3N036910803I0I";
 
     content = {
       type = "gpt";

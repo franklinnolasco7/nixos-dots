@@ -7,8 +7,8 @@
       package = pkgs.graphite-gtk-theme.override {
         themeVariants = [ "default" ];
         colorVariants = [ "dark" ];
-        sizeVariants  = [ "standard" ];
-        tweaks        = [ "rimless" ];
+        sizeVariants = [ "standard" ];
+        tweaks = [ "rimless" ];
       };
     };
     iconTheme = {
@@ -25,7 +25,8 @@
     };
   };
 
-  xdg.configFile."gtk-4.0/assets".source = "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
+  xdg.configFile."gtk-4.0/assets".source =
+    "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -35,4 +36,3 @@
     };
   };
 }
-

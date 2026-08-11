@@ -4,7 +4,10 @@
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {
-      monospace = [ "JetBrainsMono Nerd Font" "JetBrains Mono" ];
+      monospace = [
+        "JetBrainsMono Nerd Font"
+        "JetBrains Mono"
+      ];
       sansSerif = [ "Inter" ];
       serif = [ "Noto Serif" ];
       emoji = [ "Noto Color Emoji" ];

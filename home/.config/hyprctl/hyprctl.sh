@@ -10,20 +10,20 @@
 sleep 3
 script=$(readlink -f $0)
 path=$(dirname $script)
-if [ ! -f $path/hyprctl.json ] ;then
-    echo ":: ERROR: hyprctl.json not found"
-    exit 1
+if [ ! -f $path/hyprctl.json ]; then
+  echo ":: ERROR: hyprctl.json not found"
+  exit 1
 fi
 
 jq -c '.[]' $path/hyprctl.json | while read i; do
-    _val() {
-        echo "$1" | jq -r '.value'
-    }
-    _key() {
-        echo "$1" | jq -r '.key'
-    }
-    key=$(_key "$i")
-    val=$(_val "$i")
-    echo ":: Execute: hyprctl keyword $key $val"
-    hyprctl keyword $key $val
+  _val() {
+    echo "$1" | jq -r '.value'
+  }
+  _key() {
+    echo "$1" | jq -r '.key'
+  }
+  key=$(_key "$i")
+  val=$(_val "$i")
+  echo ":: Execute: hyprctl keyword $key $val"
+  hyprctl keyword $key $val
 done

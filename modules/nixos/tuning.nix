@@ -13,13 +13,15 @@
 
   # Scoped passwordless sudo for swappiness only (/proc has no udev)
   # Consumer: home/.config/waybar/scripts/swappiness.sh
-  security.sudo.extraRules = [{
-    groups = [ "wheel" ];
-    commands = [
-      {
-        command = "/run/current-system/sw/bin/sysctl -w vm.swappiness=*";
-        options = [ "NOPASSWD" ];
-      }
-    ];
-  }];
+  security.sudo.extraRules = [
+    {
+      groups = [ "wheel" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/sysctl -w vm.swappiness=*";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 }
