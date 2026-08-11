@@ -160,12 +160,6 @@
     "on-click": "$HOME/.config/waybar/scripts/power-profile.sh menu",
     "on-click-right": "$HOME/.config/waybar/scripts/battery-limit-toggle.sh"
   },
-  "custom/cava": {
-    "exec": "$HOME/.config/waybar/scripts/waybar-cava.sh",
-    "format": "{}",
-    "return-type": "plain",
-    "tooltip": false
-  },
   "hyprland/window": {
     "format": "{class}",
     "max-length": 20
