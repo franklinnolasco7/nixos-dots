@@ -51,6 +51,7 @@
     lua
     wireguard-tools
     cava
+    gh
 
     # Audio
     pavucontrol
