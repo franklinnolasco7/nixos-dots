@@ -161,11 +161,11 @@
 
 ## Documentation
 
-// TODO: Write `docs/installation.md`
-// TODO: Write `docs/architecture.md`
-// TODO: Update `README.md`
-// TODO: Document rebuilding
-// TODO: Document updating
+// DONE: Write `docs/installation.md`
+// DONE: Write `docs/architecture.md`
+// DONE: Update `README.md`
+// DONE: Document rebuilding
+// DONE: Document updating
 // TODO: Document rollback/recovery
 // TODO: Document Nix/flake validation workflow
 // TODO: Document physical Aspire 7 installation workflow
@@ -198,7 +198,7 @@
 // TODO: Clean unused files and packages
 // TODO: Run formatter
 // TODO: Run final installation test
-// TODO: Update documentation
+// DONE: Update documentation
 // TODO: Commit initial stable configuration
 // TODO: Create first release/tag
 
