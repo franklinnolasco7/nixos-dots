@@ -9,7 +9,7 @@ nixos-dots/
 ├── flake.nix      # entry point: inputs, nixosConfigurations.aspire7
 ├── hosts/         # per-machine config (aspire7: hardware, disko, PRIME)
 ├── modules/
-│   ├── nixos/     # reusable system modules (boot, networking, audio, ...)
+│   ├── nixos/     # reusable system modules (boot, gc, networking, audio, ...)
 │   └── home/      # reusable home modules (hyprland, zsh, git, ...)
 ├── users/frank/   # home-manager entry point (session paths, imports)
 ├── home/          # raw app configs + scripts deployed by home modules
