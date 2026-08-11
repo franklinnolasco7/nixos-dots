@@ -20,6 +20,9 @@ cd nixos-dots
 sudo ./install/install.sh <hostname>
 ```
 
+> [!IMPORTANT]
+> The installer runs Disko partitioning and `nixos-install`. This will **wipe the target disk**.
+
 Once `nixos-install` completes:
 
 ```bash
@@ -28,7 +31,10 @@ sudo reboot
 
 ## 2. Post-Installation Setup
 
-After booting into your new NixOS system, verify `/etc/ssh/ssh_host_ed25519_key` exists (generated on first boot), then run:
+After booting into your new NixOS system:
+
+> [!WARNING]
+> Verify `/etc/ssh/ssh_host_ed25519_key` exists (generated on first boot) before running `init-secrets.sh`. Sops-nix needs this key.
 
 ```bash
 cd nixos-dots
