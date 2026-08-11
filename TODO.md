@@ -177,7 +177,7 @@
 
 // DONE: Choose a secrets manager (sops-nix + age via ssh key)
 // DONE: Configure `sops-nix`
-// TODO: Encrypt secrets (run `bash install/init-secrets.sh` on the NixOS machine)
+// DONE: Encrypt secrets (run `bash install/init-secrets.sh` on the NixOS machine)
 // DONE: Never commit plaintext secrets
 // DONE: Remove `secrets/.gitkeep`
 
