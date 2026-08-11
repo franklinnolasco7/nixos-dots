@@ -44,45 +44,68 @@
     }:
     let
       system = "x86_64-linux";
-    in
-    {
-      nixosConfigurations.aspire7 = nixpkgs.lib.nixosSystem {
-        inherit system;
 
-        specialArgs = {
-          inherit inputs;
+      # Build a NixOS configuration for a host.
+      #
+      # hostDir: path to hosts/<name>/ (hardware-configuration.nix,
+      #   disko.nix, configuration.nix).
+      # user: the declarative username — home-manager config is imported from
+      #   users/<user>/ and the name is passed to NixOS modules via specialArgs
+      #   (modules/nixos/users.nix, modules/nixos/sops.nix).
+      mkSystem =
+        {
+          hostDir,
+          user,
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+
+          specialArgs = {
+            inherit inputs user;
+          };
+
+          modules = [
+            hostDir
+            hyprland.nixosModules.default
+
+            {
+              nixpkgs.overlays = [ (import ./overlays) ];
+            }
+
+            chaotic.nixosModules.default
+            sops-nix.nixosModules.sops
+
+            home-manager.nixosModules.home-manager
+
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+
+              home-manager.extraSpecialArgs = {
+                inherit inputs;
+              };
+
+              home-manager.users.${user} = import ./users/${user}/default.nix;
+            }
+          ];
         };
 
+      mkDisko = hostDir: {
         modules = [
-          ./hosts/aspire7
-          hyprland.nixosModules.default
-
-          {
-            nixpkgs.overlays = [ (import ./overlays) ];
-          }
-
-          chaotic.nixosModules.default
-          sops-nix.nixosModules.sops
-
-          home-manager.nixosModules.home-manager
-
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-            };
-
-            home-manager.users.frank = import ./users/frank/default.nix;
-          }
+          (hostDir + "/disko.nix")
         ];
       };
+    in
+    {
+      nixosConfigurations = {
+        aspire7 = mkSystem {
+          hostDir = ./hosts/aspire7;
+          user = "frank";
+        };
+      };
 
-      diskoConfigurations.aspire7 = {
-        modules = [
-          ./hosts/aspire7/disko.nix
-        ];
+      diskoConfigurations = {
+        aspire7 = mkDisko ./hosts/aspire7;
       };
 
       apps.${system}.disko = {

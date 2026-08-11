@@ -55,7 +55,7 @@ backup_to() {
   echo "done. Backup saved in: $dest"
   echo
   echo "During the real install, point the installer at it:"
-  echo "  sudo HOST_KEY_SRC=$dest ./install/aspire7.sh"
+  echo "  sudo HOST_KEY_SRC=$dest ./install/install.sh <host>"
   echo
   echo "note: FAT/exFAT filesystems do not enforce POSIX permissions (0600)."
 }

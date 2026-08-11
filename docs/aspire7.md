@@ -30,6 +30,9 @@ sudo reboot
 The installer aborts unless that backup exists and asks you to type `yes`
 before wiping the disk.
 
+`./install/aspire7.sh` is a thin wrapper around the generic
+`./install/install.sh aspire7`.
+
 Post-install (SSH key, secrets, commit regenerated hardware config):
 [installation.md](installation.md#post-install).
 

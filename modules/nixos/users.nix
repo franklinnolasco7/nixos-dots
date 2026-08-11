@@ -1,9 +1,13 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  user,
+  ...
+}:
 
 {
   programs.zsh.enable = true;
 
-  users.users.frank = {
+  users.users.${user} = {
     isNormalUser = true;
     initialPassword = "changeme";
     shell = pkgs.zsh;
