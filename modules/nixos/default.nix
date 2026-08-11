@@ -1,6 +1,7 @@
 {
   imports = [
     ./boot.nix
+    ./gc.nix
     ./networking.nix
     ./hardware.nix
     ./tuning.nix
