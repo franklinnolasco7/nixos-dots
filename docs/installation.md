@@ -80,7 +80,9 @@ cd /root/nixos-dots
 mkdir -p /root/ssh-host-key-backup
 ssh-keygen -t ed25519 -N "" -f /root/ssh-host-key-backup/ssh_host_ed25519_key
 HOST_KEY_SRC=/root/ssh-host-key-backup ./install/install.sh vm
-reboot
+poweroff
+# back on the host — boot the installed system (no ISO):
+./install/run-vm.sh
 ```
 
 > [!NOTE]
