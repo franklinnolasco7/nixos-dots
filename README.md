@@ -1,21 +1,26 @@
-# nixos-dots
+NixOS system configuration with Home Manager, managed with Flakes and Disko.
 
-Personal NixOS & Home Manager dotfiles managed with Flakes and Disko.
+```text
+DESKTOP    Hyprland (Lua), Waybar, Rofi, SwayNC, Hyprlock, Hypridle
+TERMINAL   Zsh, Starship, Kitty, Btop, Cava, Fastfetch
+EDITORS    Micro, Opencode
+TOOLING    Git, Node.js, Rust, Python
+THEME      Dimspectra dark, GTK/Qt, macOS cursors, wallpaper picker
+PLATFORM   Flakes, Disko, Home Manager, sops-nix, NVIDIA PRIME offload
+```
 
-## Features
+## Docs
 
-- **Window Manager**: Hyprland (Lua configuration, Waybar, Rofi, SwayNC)
-- **Environment**: Flakes + Home Manager
-- **Disk Management**: Disko partitioning & Btrfs subvolumes
-- **Secrets Management**: sops-nix with age / SSH key encryption
-- **Theming**: Dimspectra dark color palette & macOS cursors (`apple-cursor`)
-
-## Documentation
-
-- [Maintenance (rebuild, update, format, validate)](docs/maintenance.md)
-- [Installation Guide](docs/installation.md)
-- [Troubleshooting & Rollback](docs/troubleshooting.md)
+- [Installation](docs/installation.md)
+- [Maintenance](docs/maintenance.md)
+- [Architecture](docs/architecture.md)
+- [Troubleshooting](docs/troubleshooting.md)
 - [Secrets](docs/secrets.md)
-- [Per-Host: Aspire 7](docs/aspire7.md)
-- [Architecture Overview](docs/architecture.md)
-- [Theme Specification](themes/dimspectra.md)
+- [Per-host: Aspire 7](docs/aspire7.md)
+- [Theme](themes/dimspectra.md)
+
+## Contributing
+
+- [Contributing Guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [License](LICENSE)

@@ -1,30 +1,30 @@
 # Secrets
 
-sops-nix with age keys (SSH key `~/.ssh/id_ed25519`). Config: `.sops.yaml` + `modules/nixos/sops.nix`.
+sops-nix + age (SSH key `~/.ssh/id_ed25519`). Config: `.sops.yaml`, module: `modules/nixos/sops.nix`.
 
-## Bootstrap (one-time, on the NixOS machine)
+## Bootstrap
 
-```bash
-bash install/init-secrets.sh   # checks age key, collects keys, encrypts secrets/secrets.yaml
-git add secrets/secrets.yaml && git commit && git push
-./install/rebuild.sh
-```
-
-## Edit / Add Secrets
+On the NixOS machine:
 
 ```bash
-sops secrets/secrets.yaml      # opens editor, encrypts on save
+bash install/init-secrets.sh   # checks age key, encrypts secrets/secrets.yaml
 ```
 
-For a new secret: add the key inside the file, then wire it up in `modules/nixos/sops.nix` (path, owner, mode) and rebuild.
+## Edit / Add
 
-## Re-Encrypt (new key added)
+```bash
+sops secrets/secrets.yaml   # edits, encrypts on save
+```
+
+New secret: add key in file, wire it in `modules/nixos/sops.nix`, rebuild.
+
+## Re-Encrypt (new key)
 
 ```bash
 nix run nixpkgs#sops -- updatekeys secrets/secrets.yaml
 ```
 
-Update the recipient in `.sops.yaml` first.
+Update recipient in `.sops.yaml` first.
 
 > [!NOTE]
-> Builds succeed before secrets exist — the sops module is gated behind a `pathExists` check.
+> Builds work before secrets exist — module is gated behind `pathExists`.

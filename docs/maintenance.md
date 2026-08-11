@@ -1,19 +1,17 @@
 # Maintenance
 
-Daily operations. Requires `nix` — use `nix develop` for the dev shell if a command is missing.
-
 ## Rebuild
 
 ```bash
 ./install/rebuild.sh            # switch (default)
-./install/rebuild.sh boot       # activate on next boot only
-./install/rebuild.sh test       # activate for this boot, reboot reverts
+./install/rebuild.sh boot       # next boot only
+./install/rebuild.sh test       # this boot only, reboot reverts
 ```
 
 ## Update
 
 ```bash
-./install/update.sh             # flake inputs update + rebuild
+./install/update.sh             # flake inputs + rebuild
 ```
 
 ## Format
@@ -23,19 +21,17 @@ Daily operations. Requires `nix` — use `nix develop` for the dev shell if a co
 ./install/format.sh check       # verify only
 ```
 
-Formats Nix, Lua, shell, and TOML files.
+Nix, Lua, shell, TOML. Needs `nix develop`.
 
 ## Before Rebuilding
 
-Validate first, then switch:
-
 ```bash
-nix flake check                                  # full evaluation (NixOS + disko)
-sudo nixos-rebuild dry-activate --flake .#<host> # show changes, apply nothing
-nixos-rebuild build --flake .#<host>             # build without touching system
+nix flake check
+sudo nixos-rebuild dry-activate --flake .#<host>
+nixos-rebuild build --flake .#<host>
 ./install/format.sh check
 ```
 
-Only when all pass: `./install/rebuild.sh`.
+All pass → `./install/rebuild.sh`.
 
-If a rebuild breaks something: [troubleshooting.md](troubleshooting.md).
+Broken system: [troubleshooting.md](troubleshooting.md).
