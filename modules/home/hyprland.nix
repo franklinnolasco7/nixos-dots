@@ -30,8 +30,8 @@
     force = true;
   };
 
-  xdg.configFile."hypr/hypridle.lua" = {
-    source = ../../home/.config/hypr/hypridle.lua;
+  xdg.configFile."hypr/hypridle.conf" = {
+    source = ../../home/.config/hypr/hypridle.conf;
     force = true;
   };
 }
