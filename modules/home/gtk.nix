@@ -1,17 +1,21 @@
 { pkgs, ... }:
-
 {
   gtk = {
     enable = true;
-
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
+      name = "Graphite-Dark";
+      package = pkgs.graphite-gtk-theme.override {
+        themeVariants = [ "default" ];
+        colorVariants = [ "dark" ];
+        sizeVariants  = [ "standard" ];
+        tweaks        = [ "rimless" ];
+      };
     };
-
     iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
+      name = "Tela-circle-black-dark";
+      package = pkgs.tela-circle-icon-theme.override {
+        colorVariants = [ "black" ];
+      };
     };
   };
 }
