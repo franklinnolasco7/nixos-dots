@@ -1,12 +1,12 @@
 { ... }:
-
 {
   programs.git = {
     enable = true;
-    userName = "Frank";
-    userEmail = "REDACTED";
-
     settings = {
+      user = {
+        name = "Frank";
+        email = "116436582+franklinnolasco7@users.noreply.github.com";
+      };
       init.defaultBranch = "main";
       fetch.prune = true;
       push.autoSetupRemote = true;
