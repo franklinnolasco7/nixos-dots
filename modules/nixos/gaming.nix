@@ -1,9 +1,7 @@
 {
-  # Gaming
-  #
-  # NOT CONFIGURED YET.
-  #
-  # Placeholder module: Steam/GameMode/Gamescope and related settings will be
-  # added here AFTER physical GPU/PRIME verification on the real Aspire 7.
-  # TODO stays open until then.
+  programs.steam.enable = true;
+  programs.steam.gamescopeSession.enable = true;
+
+  programs.gamemode.enable = true;
+  programs.gamescope.enable = true;
 }
