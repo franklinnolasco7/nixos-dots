@@ -5,6 +5,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     hyprland.url = "github:hyprwm/Hyprland";
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
+    };
     # NOTE: Intentionally not following nixpkgs — Hyprland pins its own for ABI compatibility.
 
     disko = {
@@ -29,6 +33,7 @@
     self,
     nixpkgs,
     hyprland,
+    hyprland-plugins,
     disko,
     home-manager,
     sops-nix,
@@ -48,6 +53,7 @@
 
       modules = [
         ./hosts/aspire7
+        hyprland.nixosModules.default
 
         {
           nixpkgs.overlays = [ (import ./overlays) ];
