@@ -54,6 +54,20 @@
   services.gvfs.enable = true;
   services.openssh.enable = true;
 
+  programs.dconf.enable = true;
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+    ];
+    config = {
+      common = {
+        default = [ "hyprland" "gtk" ];
+      };
+    };
+  };
+
   # ---------------------------------------------------------------------------
   # Programs
   # ---------------------------------------------------------------------------
@@ -91,6 +105,7 @@
   environment.systemPackages = with pkgs; [
     vim
     wget
+    gsettings-desktop-schemas
   ];
 
   # ---------------------------------------------------------------------------
