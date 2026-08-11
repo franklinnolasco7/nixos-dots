@@ -12,6 +12,7 @@
   imports = [
     ../../modules/nixos
     ../../modules/nixos/nvidia.nix
+    ../../modules/nixos/sops.nix
   ];
 
   # ---------------------------------------------------------------------------
