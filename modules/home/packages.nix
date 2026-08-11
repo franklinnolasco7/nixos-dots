@@ -56,8 +56,6 @@
     pavucontrol
     pulseaudio
 
-    # TEMP WORKAROUND: waybar-git build (Hyprland Lua dispatch fix).
-    # Switch back to pkgs.waybar when nixpkgs ships the fix.
-    inputs.waybar.packages.${pkgs.system}.default
+    waybar
   ];
 }
