@@ -23,8 +23,12 @@ sudo reboot
 ```
 
 `install/backup-host-key.sh` with no argument scans for removable drives
-(`lsblk RM=1`), lets you pick one, mounts it if needed, and saves the backup to
-`<mount>/ssh-host-key-backup` — pass that path as `HOST_KEY_SRC`.
+(`lsblk RM=1`), picks the **largest** usable partition (skips Ventoy's
+`VTOYEFI`/EFI partitions), mounts it if needed, saves the backup to
+`<mount>/ssh-host-key-backup`, and prints the path — pass it as `HOST_KEY_SRC`.
+
+The installer aborts unless that backup exists and asks you to type `yes`
+before wiping the disk.
 
 Post-install (SSH key, secrets, commit regenerated hardware config):
 [installation.md](installation.md#post-install).
