@@ -9,6 +9,7 @@
 // DONE: Update and verify `flake.lock`
 // DONE: Validate flake with `nix flake check`
 // DONE: Validate NixOS system build
+// TODO: Evaluate specific chaotic-nyx packages once needed (hyprvibr: NO, not present in chaotic-nyx package set — standalone plugin by devcexx; mesa_git for PRIME stability)
 
 ## NixOS Modules
 
@@ -84,14 +85,14 @@
 // DONE: Add htop module (xdg.configFile, source home/.config/htop)
 // DONE: Add micro module (xdg.configFile, source home/.config/micro)
 // DONE: Add gtk-3.0 to repo via hm gtk module
-// TODO: Add fontconfig to repo via hm fonts.fontconfig
+// DONE: Add fontconfig to repo via hm fonts.fontconfig
 
 ## Themes
 
-// TODO: Add cursor
+// DONE: Add cursor
 // DONE: Add icons
 // DONE: Add fonts
-// TODO: Configure shared color palette
+// DONE: Configure shared color palette
 
 ## Development Environment
 
@@ -115,11 +116,11 @@
 
 ## Installation
 
-// TODO: Implement `install/install.sh`
-// TODO: Implement `install/aspire7.sh`
-// TODO: Implement `install/rebuild.sh`
-// TODO: Implement `install/update.sh`
-// TODO: Add error handling to installation scripts
+// DONE: Implement `install/install.sh`
+// DONE: Implement `install/aspire7.sh`
+// DONE: Implement `install/rebuild.sh`
+// DONE: Implement `install/update.sh`
+// DONE: Add error handling to installation scripts
 // TODO: Test installation from a fresh NixOS minimal ISO
 
 ## Disko & Fresh Installation
@@ -161,11 +162,11 @@
 
 ## Documentation
 
-// TODO: Write `docs/installation.md`
-// TODO: Write `docs/architecture.md`
-// TODO: Update `README.md`
-// TODO: Document rebuilding
-// TODO: Document updating
+// DONE: Write `docs/installation.md`
+// DONE: Write `docs/architecture.md`
+// DONE: Update `README.md`
+// DONE: Document rebuilding
+// DONE: Document updating
 // TODO: Document rollback/recovery
 // TODO: Document Nix/flake validation workflow
 // TODO: Document physical Aspire 7 installation workflow
@@ -198,7 +199,7 @@
 // TODO: Clean unused files and packages
 // TODO: Run formatter
 // TODO: Run final installation test
-// TODO: Update documentation
+// DONE: Update documentation
 // TODO: Commit initial stable configuration
 // TODO: Create first release/tag
 
