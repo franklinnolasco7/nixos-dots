@@ -17,11 +17,17 @@ Host config: `hosts/aspire7/`.
 ## Install
 
 ```bash
-sudo ./install/aspire7.sh   # Disko wipe + nixos-install
+sudo bash install/backup-host-key.sh   # detects USB drives and prompts (sops identities)
+sudo HOST_KEY_SRC=<backup-dir> ./install/aspire7.sh # Disko wipe + nixos-install
 sudo reboot
 ```
 
-Post-install (SSH key, secrets): [installation.md](installation.md#post-install).
+`install/backup-host-key.sh` with no argument scans for removable drives
+(`lsblk RM=1`), lets you pick one, mounts it if needed, and saves the backup to
+`<mount>/ssh-host-key-backup` — pass that path as `HOST_KEY_SRC`.
+
+Post-install (SSH key, secrets, commit regenerated hardware config):
+[installation.md](installation.md#post-install).
 
 ## Checklist (fresh install)
 
@@ -32,6 +38,7 @@ fc-list | grep -iE "jetbrains|noto"      # fonts
 ls ~/.config/hypr ~/.config/waybar       # app configs
 ls -l ~/.local/bin | grep "^-rwx"        # scripts executable
 lsblk -f                                 # disk layout = disko.nix
+ls -l ~/.config/opencode/context7-key    # sops secrets decrypted
 grep -iE "qemu|virtualbox" /etc/nixos/hardware-configuration.nix   # no VM remnants
 ```
 

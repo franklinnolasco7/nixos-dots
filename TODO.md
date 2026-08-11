@@ -120,6 +120,11 @@
 
 // DONE: Implement `install/install.sh`
 // DONE: Implement `install/aspire7.sh`
+// DONE: Implement `install/backup-host-key.sh` (sops identity backup pre-wipe, USB auto-detect + select)
+// DONE: Pin Disko via flake + use `--mode destroy,format,mount` in installer
+// DONE: Regenerate `hardware-configuration.nix` during install (stale UUIDs → no boot)
+// DONE: Restore SSH host key into `/mnt/etc/ssh` before `nixos-install` (sops activation)
+// DONE: Register user age key as second sops activation identity
 // DONE: Implement `install/rebuild.sh`
 // DONE: Implement `install/update.sh`
 // DONE: Add error handling to installation scripts
