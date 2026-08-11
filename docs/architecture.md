@@ -6,7 +6,7 @@
 
 ```text
 nixos-dots/
-├── flake.nix      # entry point: inputs, nixosConfigurations.aspire7
+├── flake.nix      # entry point: inputs, mkSystem/mkDisko helpers, nixosConfigurations
 ├── hosts/         # per-machine config (aspire7: hardware, disko, PRIME)
 ├── modules/
 │   ├── nixos/     # reusable system modules (boot, gc, networking, audio, ...)

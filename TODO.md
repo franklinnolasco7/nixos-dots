@@ -118,8 +118,11 @@
 
 ## Installation
 
-// DONE: Implement `install/install.sh`
-// DONE: Implement `install/aspire7.sh`
+// DONE: Implement `install/install.sh` (generic multi-host installer)
+// DONE: Implement `install/aspire7.sh` (thin wrapper around install.sh)
+// DONE: Generalize installer to any host (hosts/<name>/default.nix + disko.nix, disko/hw-config/nixos-install parameterized)
+// DONE: Declarable user per host (mkSystem { user }, users/<user>/, parameterized users.nix + sops.nix)
+// DONE: Move NVIDIA module to hosts/aspire7 (shared modules are hardware-agnostic)
 // DONE: Implement `install/backup-host-key.sh` (sops identity backup pre-wipe, USB auto-detect + select)
 // DONE: Pin Disko via flake + use `--mode destroy,format,mount` in installer
 // DONE: Regenerate `hardware-configuration.nix` during install (stale UUIDs → no boot)

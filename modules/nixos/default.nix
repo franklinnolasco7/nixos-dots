@@ -5,7 +5,6 @@
     ./networking.nix
     ./hardware.nix
     ./tuning.nix
-    ./nvidia.nix
     ./audio.nix
     ./bluetooth.nix
     ./users.nix
