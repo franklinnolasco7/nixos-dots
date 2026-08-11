@@ -7,9 +7,9 @@ cd "$(dirname "$0")/.."
 HOST="aspire7"
 ACTION="switch"
 
-# Allow passing action (e.g. boot, test) or flags
+# Allow passing action (e.g. boot, test, build, dry-build) or flags
 if [[ $# -gt 0 ]]; then
-  if [[ $1 == "boot" || $1 == "test" || $1 == "switch" ]]; then
+  if [[ $1 == "boot" || $1 == "test" || $1 == "switch" || $1 == "build" || $1 == "dry-build" ]]; then
     ACTION="$1"
     shift
   fi
