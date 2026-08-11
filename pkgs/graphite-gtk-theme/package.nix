@@ -3,7 +3,6 @@
   stdenvNoCC,
   fetchFromGitHub,
   gnome-themes-extra,
-  gtk-engine-murrine,
   jdupes,
   sassc,
   themeVariants ? [ ],
@@ -59,9 +58,7 @@ stdenvNoCC.mkDerivation rec {
     gnome-themes-extra
   ];
 
-  propagatedUserEnvPkgs = [
-    gtk-engine-murrine
-  ];
+
 
   installPhase = ''
     runHook preInstall
