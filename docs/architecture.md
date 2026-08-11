@@ -62,6 +62,9 @@ nixos-dots/
 │       │
 │       ├── packages.nix
 │       ├── themes.nix
+│       ├── cursor.nix
+│       ├── gtk.nix
+│       ├── qt.nix
 │       ├── xdg.nix
 │       └── scripts.nix
 │
@@ -84,13 +87,39 @@ nixos-dots/
 │   │   │   ├── config
 │   │   │   ├── style.css
 │   │   │   └── scripts/
+│   │   │       ├── audio-microphone.sh
+│   │   │       ├── audio-volume.sh
+│   │   │       ├── battery-limit-toggle.sh
+│   │   │       ├── bluetooth-toggle.sh
+│   │   │       ├── cpu-governor.sh
+│   │   │       ├── is-fullscreen.sh
+│   │   │       ├── power-profile.sh
+│   │   │       ├── swappiness.sh
+│   │   │       └── wifi-toggle.sh
 │   │   ├── rofi/
 │   │   │   ├── config.rasi
 │   │   │   ├── theme-wallpaper.rasi
 │   │   │   ├── colors/
+│   │   │   │   └── monochrome.rasi
 │   │   │   ├── shared/
+│   │   │   │   ├── colors.rasi
+│   │   │   │   └── fonts.rasi
 │   │   │   └── scripts/
+│   │   │       ├── cliphist-rofi-img.sh
+│   │   │       ├── hypr-keybinds.lua
+│   │   │       ├── hypr-keybinds.sh
+│   │   │       ├── rofi-web-search.sh
+│   │   │       └── wallpaper.sh
 │   │   ├── swaync/
+│   │   │   ├── config.json
+│   │   │   ├── config.schema.json
+│   │   │   ├── style.css
+│   │   │   ├── scripts/
+│   │   │   │   ├── critical-sound.sh
+│   │   │   │   └── default-sound.sh
+│   │   │   └── sounds/
+│   │   │       ├── default.ogg
+│   │   │       └── important.ogg
 │   │   ├── kitty/
 │   │   │   └── kitty.conf
 │   │   ├── btop/
@@ -98,14 +127,25 @@ nixos-dots/
 │   │   ├── cava/
 │   │   │   ├── config
 │   │   │   ├── shaders/
+│   │   │   │   ├── bar_spectrum.frag
+│   │   │   │   ├── eye_of_phi.frag
+│   │   │   │   ├── northern_lights.frag
+│   │   │   │   ├── pass_through.vert
+│   │   │   │   ├── spectrogram.frag
+│   │   │   │   └── winamp_line_style_spectrum.frag
 │   │   │   └── themes/
+│   │   │       ├── solarized_dark
+│   │   │       └── tricolor
 │   │   ├── fastfetch/
+│   │   │   ├── config.jsonc
+│   │   │   └── logo.jpg
 │   │   ├── htop/
 │   │   │   └── htoprc
 │   │   ├── micro/
 │   │   │   ├── bindings.json
 │   │   │   ├── settings.json
 │   │   │   └── colorschemes/
+│   │   │       └── dimspectra.micro
 │   │   ├── opencode/
 │   │   │   └── config.json
 │   │   ├── starship.toml
@@ -121,18 +161,24 @@ nixos-dots/
 │           └── vpn-toggle.sh
 │
 ├── themes/
+│   ├── colors.nix
 │   ├── dimspectra.md
 │   └── wallpapers/
 │
 ├── install/
+│   ├── aspire7.sh
 │   ├── format.sh
-│   └── init-secrets.sh
+│   ├── init-secrets.sh
+│   ├── install.sh
+│   ├── rebuild.sh
+│   └── update.sh
 │
 ├── docs/
-│   └── architecture.md
+│   ├── architecture.md
+│   └── installation.md
 │
 └── secrets/
-    └── secrets.yaml (encrypted, not committed until init-secrets.sh runs)
+    └── (empty; secrets.yaml created by init-secrets.sh)
 ```
 
 ## Structure
@@ -171,11 +217,10 @@ Modules are organized by purpose:
 * **Terminal** — Zsh, Starship, Kitty, Btop, Cava, Fastfetch, Htop
 * **Editors** — Micro, Opencode
 * **Development** — Git, development toolchains (Node.js, Python, Rust)
-* **Packages & Theming** — User packages, fonts, XDG mimeapps, shell scripts
+* **Packages & Theming** — User packages, fonts, GTK/Qt theming, cursor, XDG mimeapps, shell scripts
 
-Each module either:
-* Uses Home Manager's native `programs.*` options (Zsh, Starship, Git), or
-* Deploys raw config files via `xdg.configFile` / `home.file` for apps with complex native configs (Hyprland Lua, Waybar CSS, Rofi Rasi).
+> [!NOTE]
+> Each module either uses Home Manager's native `programs.*` options (Zsh, Starship, Git) or deploys raw config files via `xdg.configFile` / `home.file` for apps with complex native configs (Hyprland Lua, Waybar CSS, Rofi Rasi).
 
 ### `users/`
 
@@ -195,21 +240,29 @@ Contains theme assets and shared theme definitions:
 
 * Wallpapers (deployed to `~/wallpapers` via Home Manager)
 * Color palette documentation (dimspectra.md)
+* Dimspectra color palette definitions (`colors.nix`) — available for adoption by modules
 
 ### `install/`
 
 Contains scripts for common operations:
 
+* `aspire7.sh` — Host installer for the Aspire 7 (Disko partitioning + `nixos-install`)
 * `format.sh` — Format all Nix, Lua, shell, and TOML files
 * `init-secrets.sh` — One-time bootstrap of sops-encrypted secrets
+* `install.sh` — General entrypoint that dispatches to the per-host installer
+* `rebuild.sh` — Rebuild the system flake (`switch`/`boot`/`test`)
+* `update.sh` — Update flake inputs, then rebuild
 
 ### `docs/`
 
-Project documentation.
+Project documentation (`architecture.md`, `installation.md`).
 
 ### `secrets/`
 
-Reserved for sops-encrypted secrets. The `secrets.yaml` file is created by `init-secrets.sh` and encrypted with age. The sops module is gated behind a `pathExists` check so builds succeed before secrets are bootstrapped.
+Reserved for sops-encrypted secrets. The `secrets.yaml` file is created by `init-secrets.sh` and encrypted with age.
+
+> [!TIP]
+> The sops module is gated behind a `pathExists` check so builds succeed before secrets are bootstrapped.
 
 ## Configuration Flow
 
@@ -238,3 +291,25 @@ home/.config/ + home/.local/bin/    (raw application configs + scripts)
 ```
 
 The goal is to keep **machine-specific settings, reusable modules, user configuration, and application configuration separated** while keeping the entire system reproducible through the flake.
+
+## Flake Inputs & Infrastructure
+
+### Chaotic-Nyx Integration
+
+`chaotic-nyx` (`github:chaotic-cx/nyx/nyxpkgs-unstable`) is registered via `chaotic.nixosModules.default` on `aspire7`.
+
+* **Purpose**: Bleeding-edge packages (e.g., `mesa_git`, `linux_cachyos`, `firefox_nightly`, `sway_git`, `gamescope_git`) and binary cache (`chaotic.nyx.cache.enable = true`).
+
+> [!NOTE]
+> Infrastructure-only pass. No packages or custom `chaotic.*` options enabled yet.
+
+> [!IMPORTANT]
+> `inputs.chaotic.inputs.nixpkgs.follows` intentionally omitted — Chaotic-Nyx pins its own nixpkgs to preserve binary cache hits.
+
+### Reproducibility Notes
+
+> [!WARNING]
+> `nyxpkgs-unstable` moves independently from `nixos-unstable`. `flake.lock` maintains deterministic builds, but cross-channel version skew adds maintenance overhead.
+
+> [!CAUTION]
+> `chaotic.nyx.cache.enable = true` trusts a third-party binary cache and external `nixpkgs` pin, introducing a second trust root into the system closure.
