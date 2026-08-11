@@ -20,8 +20,8 @@
   ];
 
   home.sessionVariables = {
-    EDITOR = "code-oss";
-    VISUAL = "code-oss";
+    EDITOR = "micro";
+    VISUAL = "micro";
   };
 
   programs.home-manager.enable = true;

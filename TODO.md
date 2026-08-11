@@ -183,7 +183,7 @@
 // DONE: Register user age key (`~/.config/sops/age/keys.txt`) for passwordless editing
 // DONE: Re-encrypt `secrets/secrets.yaml` to host + user key
 // DONE: Rewrite `docs/secrets.md`
-// TODO: Rotate context7 + GitHub tokens (both were pasted in chat during setup)
+// DONE: Rotate context7 + GitHub tokens (both were pasted in chat during setup)
 
 ## Testing
 
