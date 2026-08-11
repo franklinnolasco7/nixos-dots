@@ -8,8 +8,12 @@
         email = "116436582+franklinnolasco7@users.noreply.github.com";
         signingkey = "/home/frank/.ssh/id_ed25519.pub";
       };
+      core = {
+        editor = "vim";
+      };
       gpg = {
         format = "ssh";
+        ssh.allowedSignersFile = "/home/frank/.config/git/allowed_signers";
       };
       commit = {
         gpgsign = true;
