@@ -27,7 +27,7 @@ if ! command -v nix >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ ! -f "$HOST_KEY_PUB" ]]; then
+if [[ ! -f $HOST_KEY_PUB ]]; then
   echo "error: $HOST_KEY_PUB not found" >&2
   echo "  enable services.openssh or verify the host key path" >&2
   exit 1
@@ -83,7 +83,7 @@ EOF
     echo "  - &$anchor $recipient" >>"$tmpdir/sops.yaml"
   fi
   echo "creation_rules:" >>"$tmpdir/sops.yaml"
-  echo "  - path_regex: ^secrets/secrets\\.yaml\$" >>"$tmpdir/sops.yaml"
+  echo '  - path_regex: ^secrets/secrets\.yaml$' >>"$tmpdir/sops.yaml"
   age_list=""
   for n in "${names[@]}"; do
     [[ $n != "$anchor" ]] && age_list+="*$n, "
@@ -101,7 +101,7 @@ EOF
 fi
 
 echo "[3/4] ensuring $SECRETS_FILE ..."
-if [[ ! -f "$SECRETS_FILE" ]]; then
+if [[ ! -f $SECRETS_FILE ]]; then
   echo "  creating encrypted skeleton (empty values)"
   cat >"$tmpdir/secrets.json" <<EOF
 {
