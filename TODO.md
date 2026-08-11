@@ -88,7 +88,7 @@
 
 ## Themes
 
-// TODO: Add cursor
+// DONE: Add cursor
 // DONE: Add icons
 // DONE: Add fonts
 // TODO: Configure shared color palette
