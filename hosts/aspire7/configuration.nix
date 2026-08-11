@@ -23,6 +23,12 @@
       "flakes"
     ];
     auto-optimise-store = true;
+    substituters = [
+      "https://hyprland.cachix.org"
+    ];
+    trusted-public-keys = [
+      "hyprland.cachix.org-1:a7HPphkgeWcTfiMMCAmjvxnygJzylcsEB7W4AVUXv4U="
+    ];
   };
 
   nix.gc = {
