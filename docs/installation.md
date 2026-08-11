@@ -4,15 +4,33 @@
 
 NixOS Minimal ISO, internet.
 
+> [!WARNING]
+> Before wiping, back up the sops decryption identities — a fresh install
+> regenerates the SSH host key, making committed secrets unreadable:
+
+```bash
+sudo bash install/backup-host-key.sh              # detects USB drives and prompts
+sudo bash install/backup-host-key.sh <dest-dir>   # or save to an explicit dir
+```
+
 ## Install
 
 ```bash
 git clone https://github.com/franklinnolasco7/nixos-dots.git
 cd nixos-dots
 
-sudo ./install/install.sh <hostname>   # Disko wipe + nixos-install
+sudo HOST_KEY_SRC=<usb-backup-dir> ./install/install.sh <hostname>   # Disko wipe + nixos-install
 sudo reboot
 ```
+
+`HOST_KEY_SRC` defaults to `/root/ssh-host-key-backup`. The installer:
+
+1. Wipes and partitions the disk (Disko, pinned via the flake).
+2. Regenerates `hosts/<hostname>/hardware-configuration.nix` from the **new**
+   partitions — the committed copy pins the old disk's UUIDs, so it must be
+   refreshed or the system won't boot.
+3. Restores the backed-up SSH host key so sops can decrypt during activation.
+4. Runs `nixos-install --flake .#<hostname>`.
 
 > [!IMPORTANT]
 > Wipes the target disk.
@@ -21,7 +39,10 @@ sudo reboot
 
 ```bash
 cd nixos-dots
-./install/init-secrets.sh   # first verify /etc/ssh/ssh_host_ed25519_key exists
+
+git add hosts/<hostname>/hardware-configuration.nix && git commit   # new UUIDs
+passwd frank                                                         # was "changeme"
+./install/init-secrets.sh                                            # register new host in .sops.yaml
 ```
 
 Secrets afterward: [secrets.md](secrets.md).
