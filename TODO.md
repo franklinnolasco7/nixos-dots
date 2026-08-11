@@ -9,6 +9,7 @@
 // DONE: Update and verify `flake.lock`
 // DONE: Validate flake with `nix flake check`
 // DONE: Validate NixOS system build
+// TODO: Evaluate specific chaotic-nyx packages once needed (hyprvibr: NO, not present in chaotic-nyx package set — standalone plugin by devcexx; mesa_git for PRIME stability)
 
 ## NixOS Modules
 
