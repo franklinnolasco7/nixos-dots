@@ -55,7 +55,9 @@
       };
 
       modules = [
-        ./hosts/aspire7/default.nix
+        {
+          nixpkgs.overlays = [ (import ./overlays) ];
+        }
 
         chaotic.nixosModules.default
         sops-nix.nixosModules.sops
