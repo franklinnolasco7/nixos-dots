@@ -21,8 +21,8 @@
 // DONE: Configure audio
 // DONE: Configure Bluetooth
 // DONE: Configure users
-// TODO: Configure virtualization
-// TODO: Configure gaming
+// DONE: Configure virtualization
+// DONE: Configure gaming
 
 ## Home Manager Modules
 
