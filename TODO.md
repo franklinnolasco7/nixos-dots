@@ -84,14 +84,14 @@
 // DONE: Add htop module (xdg.configFile, source home/.config/htop)
 // DONE: Add micro module (xdg.configFile, source home/.config/micro)
 // DONE: Add gtk-3.0 to repo via hm gtk module
-// TODO: Add fontconfig to repo via hm fonts.fontconfig
+// DONE: Add fontconfig to repo via hm fonts.fontconfig
 
 ## Themes
 
 // DONE: Add cursor
 // DONE: Add icons
 // DONE: Add fonts
-// TODO: Configure shared color palette
+// DONE: Configure shared color palette
 
 ## Development Environment
 
@@ -115,11 +115,11 @@
 
 ## Installation
 
-// TODO: Implement `install/install.sh`
-// TODO: Implement `install/aspire7.sh`
-// TODO: Implement `install/rebuild.sh`
-// TODO: Implement `install/update.sh`
-// TODO: Add error handling to installation scripts
+// DONE: Implement `install/install.sh`
+// DONE: Implement `install/aspire7.sh`
+// DONE: Implement `install/rebuild.sh`
+// DONE: Implement `install/update.sh`
+// DONE: Add error handling to installation scripts
 // TODO: Test installation from a fresh NixOS minimal ISO
 
 ## Disko & Fresh Installation
