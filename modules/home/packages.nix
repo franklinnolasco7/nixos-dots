@@ -4,6 +4,7 @@
   home.packages = with pkgs; [
     # Desktop & Utilities
     kitty
+    obsidian
     rofi
     rofimoji
     thunar
