@@ -21,7 +21,15 @@
 
 This repository holds my complete NixOS setup: system configuration, Home Manager dotfiles, and disk layouts, built entirely from Nix flakes for reproducible, declarative deployment across hosts.
 
-The goal is simple: a system that's fully reproducible and easy to set up on anything, from a fresh install to a running desktop in one command.
+<br>
+
+## Philosophy
+
+- **Reproducible.** Every machine should be rebuildable from this repo alone, no manual steps, no "it works on my laptop."
+- **Easy to set up.** A fresh install should go from ISO to a fully configured desktop in as few commands as possible.
+- **Stateless.** Nothing important should live outside version control. If a machine dies, the config doesn't.
+- **Declarative over imperative.** Describe the end state, let Nix figure out how to get there.
+- **Secure by default.** Secrets stay out of the store, and the system should fail safe, not silently.
 
 <br>
 
@@ -44,3 +52,9 @@ The goal is simple: a system that's fully reproducible and easy to set up on any
 - [Contributing Guide](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [License](LICENSE)
+
+<br>
+
+<p align="center">
+  <sub>This repo changes frequently as the setup evolves. Expect things to shift.</sub>
+</p>
