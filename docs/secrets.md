@@ -1,40 +1,83 @@
 # Secrets
 
-sops-nix + age, **host SSH key** (`/etc/ssh/ssh_host_ed25519_key`). Config: `.sops.yaml`, module: `modules/nixos/sops.nix`.
+sops-nix + age with two identities:
 
-Age recipients are per-host: each NixOS host derives its own recipient from its host key. One shared `secrets/secrets.yaml`, encrypted to every registered host.
+- **Host SSH key** (`/etc/ssh/ssh_host_ed25519_key`) — decrypts at activation via `sops-nix` (`modules/nixos/sops.nix`).
+- **User age key** (`~/.config/sops/age/keys.txt`) — lets you edit secrets without `sudo`.
 
-## Bootstrap / Register a host
+Config: `.sops.yaml`, module: `modules/nixos/sops.nix`, encrypted data: `secrets/secrets.yaml` (encrypted to every registered recipient).
 
-On the host (after clone/pull), run the idempotent bootstrap:
+## Is it safe to commit secrets.yaml?
 
-```bash
-bash install/init-secrets.sh   # registers host key in .sops.yaml, creates/re-encrypts secrets file
-```
+Yes. `secrets/secrets.yaml` is encrypted (sops/age) to the recipients registered in `.sops.yaml` — anyone without one of those keys sees only an opaque blob. Secrets live in git safely.
 
-It derives the host's age recipient from the host SSH key, appends it to `.sops.yaml` if missing, creates an encrypted skeleton (`secrets/secrets.yaml`) if absent, and re-encrypts to every registered host. Run once per host.
+Keep these private and backed up — either one decrypts everything:
 
-## Fill values
+- `/etc/ssh/ssh_host_ed25519_key` (and `.pub`)
+- `~/.config/sops/age/keys.txt`
 
-On any registered host:
-
-```bash
-sops secrets/secrets.yaml   # edits, encrypts to all hosts on save
-```
-
-New secret: add key in file, wire it in `modules/nixos/sops.nix`, rebuild.
-
-## Re-Encrypt (new key / host)
-
-```bash
-nix run nixpkgs#sops -- updatekeys secrets/secrets.yaml
-```
-
-Append the host to `.sops.yaml` first (or just re-run `install/init-secrets.sh`).
-
-## Reinstalls
-
-Host keys regenerate on reinstall → old secrets become unreadable. Back up `/etc/ssh/` before wiping (or use impermanence), restore it after.
+A reinstall regenerates the host key, making old secrets unreadable — restore `/etc/ssh/` (or the user key) after reinstalling.
 
 > [!NOTE]
-> Builds work before secrets exist — module is gated behind `pathExists`.
+> Builds work before secrets exist — the sops module is gated behind `pathExists` on the secrets file.
+
+## Bootstrap (first host)
+
+Requires `nix` and an interactive `sudo` (step 4 prompts for the password). Idempotent:
+
+```bash
+bash install/init-secrets.sh
+```
+
+It derives the host's age recipient from the host SSH key, registers it in `.sops.yaml`, creates `secrets/secrets.yaml` if missing (or re-encrypts it), and verifies decryption via the host key.
+
+Then set up the **user age key** so you can edit without `sudo`:
+
+```bash
+mkdir -p ~/.config/sops/age && chmod 700 ~/.config/sops/age
+nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt
+chmod 600 ~/.config/sops/age/keys.txt
+nix shell nixpkgs#age -c age-keygen -y ~/.config/sops/age/keys.txt   # prints the age1... recipient
+```
+
+Add that recipient to `.sops.yaml` under `keys:` and to the `age:` list in `creation_rules`, then re-encrypt so both keys can decrypt (see below).
+
+## Set / edit values
+
+**Easiest (no identity needed):** encrypt from a plaintext file to the current recipients:
+
+```bash
+printf '{"context7-api-key":"...","github-token":"..."}\n' > /tmp/secrets.json
+nix shell nixpkgs#sops -c sops -e --input-type json --output-type yaml \
+  --filename-override secrets/secrets.yaml --output secrets/secrets.yaml /tmp/secrets.json
+rm -f /tmp/secrets.json
+```
+
+**Interactive edit** (needs the user age key registered):
+
+```bash
+nix shell nixpkgs#sops -c sops secrets/secrets.yaml   # decrypts with ~/.config/sops/age/keys.txt, re-encrypts on save
+```
+
+New secret: add a key in the file, wire it up in `modules/nixos/sops.nix`, rebuild.
+
+## Re-encrypt (new key / host)
+
+```bash
+nix shell nixpkgs#sops -c sops updatekeys --yes secrets/secrets.yaml
+```
+
+> [!IMPORTANT]
+> `updatekeys` must decrypt the data key first, so it only works from a host that has an identity for an **already-registered** recipient. A brand-new host cannot self-join an existing secrets file.
+
+## Adding a new host
+
+1. On the new host: clone the repo, run `bash install/init-secrets.sh`. It registers the new host in `.sops.yaml` and pushes/commits it.
+2. On any existing (already-decrypting) host: pull, then `sops updatekeys --yes secrets/secrets.yaml` to re-encrypt to the new recipient.
+3. Commit + push; rebuild on the new host.
+
+If the new host must read the secrets before an existing host can re-encrypt, first add the new recipient, then re-encrypt from plaintext as above.
+
+## Reinstalls / recovery
+
+Restore `/etc/ssh/ssh_host_ed25519_key` (and `.pub`) and/or `~/.config/sops/age/keys.txt` from backup — otherwise previously committed secrets cannot be decrypted.
