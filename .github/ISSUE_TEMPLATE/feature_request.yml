@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest something new
+title: "[Feature] "
+labels: [enhancement]
+assignees: []
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: The feature in one sentence
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: Pain point it solves
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: How it could work
+      description: Module, host, theme, option — rough idea is fine
+      placeholder: |
+        e.g. new module in modules/home/, new option in themes/colors.nix
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

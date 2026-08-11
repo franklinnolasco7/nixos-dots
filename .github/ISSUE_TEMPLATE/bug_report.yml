@@ -1,0 +1,56 @@
+name: Bug report
+description: Report something broken
+title: "[Bug] "
+labels: [bug]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Fill in what you can — the more, the faster the fix.
+        Check [troubleshooting](https://github.com/franklinnolasco7/nixos-dots/blob/main/docs/troubleshooting.md) and [maintenance](https://github.com/franklinnolasco7/nixos-dots/blob/main/docs/maintenance.md) first.
+  - type: input
+    id: host
+    attributes:
+      label: Host
+      value: aspire7
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Repo revision
+      description: Output of `git log -1 --format=%h`
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      description: Paste `nixos-rebuild` / `nix flake check` output here
+      render: text
+  - type: input
+    id: change
+    attributes:
+      label: Change that broke it (if known)
+      description: Commit hash, module, or dotfile
