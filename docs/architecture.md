@@ -9,9 +9,13 @@ nixos-dots/
 ├── shell.nix
 ├── README.md
 ├── TODO.md
-├── .editorconfig
-├── .gitignore
-├── .sops.yaml
+│
+├── pkgs/
+│   └── graphite-gtk-theme/
+│       └── package.nix
+│
+├── overlays/
+│   └── default.nix
 │
 ├── hosts/
 │   └── aspire7/
@@ -22,7 +26,6 @@ nixos-dots/
 │       └── disko.nix
 │
 ├── modules/
-│   ├── nixos/
 │   │   ├── default.nix
 │   │   ├── boot.nix
 │   │   ├── networking.nix
@@ -183,6 +186,18 @@ nixos-dots/
 
 ## Structure
 
+### `pkgs/`
+
+Contains **custom Nix derivations** built in-tree.
+
+Used for packages that are not in nixpkgs or were removed upstream (e.g., `graphite-gtk-theme`).
+
+### `overlays/`
+
+Contains **Nixpkgs overlays**.
+
+`overlays/default.nix` exports custom packages from `pkgs/` onto `pkgs`, making them accessible globally across NixOS and Home Manager modules (e.g., `pkgs.graphite-gtk-theme`).
+
 ### `hosts/`
 
 Contains **machine-specific configuration**.
@@ -268,6 +283,8 @@ Reserved for sops-encrypted secrets. The `secrets.yaml` file is created by `init
 
 ```text
 flake.nix
+    │
+    ├── overlays/ (exports pkgs/ derivations into pkgs namespace)
     │
     ▼
 hosts/aspire7/
