@@ -1,7 +1,8 @@
-{ lib, ... }:
+{ lib, inputs, ... }:
 
 {
   imports = [
+    inputs.hyprland.homeManagerModules.default
     ../../modules/home
   ];
 
