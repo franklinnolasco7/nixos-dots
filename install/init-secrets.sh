@@ -101,6 +101,7 @@ EOF
 fi
 
 echo "[3/4] ensuring $SECRETS_FILE ..."
+mkdir -p "$(dirname "$SECRETS_FILE")"
 if [[ ! -f $SECRETS_FILE ]]; then
   echo "  creating encrypted skeleton (empty values)"
   cat >"$tmpdir/secrets.json" <<EOF
@@ -109,7 +110,8 @@ if [[ ! -f $SECRETS_FILE ]]; then
   "github-token": ""
 }
 EOF
-  sops --input-type json --output-type yaml \
+  sops -e --input-type json --output-type yaml \
+    --filename-override "$SECRETS_FILE" \
     --output "$SECRETS_FILE" \
     "$tmpdir/secrets.json"
 else
@@ -119,12 +121,24 @@ fi
 chmod 600 "$SECRETS_FILE"
 
 echo "[4/4] verifying decryption ..."
-sops -d "$SECRETS_FILE" >/dev/null
+abs_secrets="$(realpath "$SECRETS_FILE")"
+sudo bash -c '
+  set -euo pipefail
+  tmp=$(mktemp)
+  trap "rm -f \"$tmp\"" EXIT
+  nix shell nixpkgs#ssh-to-age -c ssh-to-age -private-key -i /etc/ssh/ssh_host_ed25519_key > "$tmp"
+  chmod 600 "$tmp"
+  SOPS_AGE_KEY_FILE="$tmp" nix shell nixpkgs#sops -c sops -d "$1" >/dev/null
+' _ "$abs_secrets"
 echo "  decryption ok"
 
 echo
 echo "done. Next steps on this machine:"
-echo "  1. fill real values: sops $SECRETS_FILE"
+echo "  1. fill real values (encryption needs no identity):"
+echo "     printf '{\"context7-api-key\":\"...\",\"github-token\":\"...\"}\\n' > /tmp/secrets.json"
+echo "     nix shell nixpkgs#sops -c sops -e --input-type json --output-type yaml \\"
+echo "       --filename-override $SECRETS_FILE --output $SECRETS_FILE /tmp/secrets.json"
+echo "     rm -f /tmp/secrets.json"
 echo "  2. git add .sops.yaml $SECRETS_FILE && git commit && git push"
 echo "  3. sudo nixos-rebuild switch --flake .#HOSTNAME"
 echo "  4. opencode → /status → context7 and github should show connected"

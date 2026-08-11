@@ -1,6 +1,6 @@
 keys:
-  # aspire7 host key
-  - &host-aspire7 age1q969ujg7l62vgcg7df4jlnqa5unmuvczjulvfyx469ygk73lzzd5q
+  # nixos-laptop host key
+  - &host-nixos-laptop age1wvrflc26s33z8regje0sc599s8qlakx4pd8c45905r8g2mghqv5s2qq8d8
 creation_rules:
   - path_regex: ^secrets/secrets\.yaml$
-    age: [*host-aspire7]
+    age: [*host-nixos-laptop]
