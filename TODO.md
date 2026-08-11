@@ -131,6 +131,7 @@
 // DONE: Implement `install/rebuild.sh`
 // DONE: Implement `install/update.sh`
 // DONE: Add error handling to installation scripts
+// DONE: Add hosts/vm rehearsal host + install/run-vm.sh (QEMU/KVM + OVMF, disko/install rehearsal without real hardware)
 // TODO: Test installation from a fresh NixOS minimal ISO
 
 ## Disko & Fresh Installation

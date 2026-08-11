@@ -102,10 +102,16 @@
           hostDir = ./hosts/aspire7;
           user = "frank";
         };
+
+        vm = mkSystem {
+          hostDir = ./hosts/vm;
+          user = "frank";
+        };
       };
 
       diskoConfigurations = {
         aspire7 = mkDisko ./hosts/aspire7;
+        vm = mkDisko ./hosts/vm;
       };
 
       apps.${system}.disko = {

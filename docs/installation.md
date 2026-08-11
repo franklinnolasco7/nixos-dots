@@ -63,3 +63,27 @@ Secrets afterward: [secrets.md](secrets.md).
 6. Install (backup keys first): `sudo ./install/install.sh <hostname>`
 
 Per-host: [Aspire 7](aspire7.md). Daily ops: [maintenance.md](maintenance.md).
+
+## Rehearse in a VM
+
+Run the exact installer flow (Disko wipe → hw-config regen → host-key restore →
+`nixos-install`) against a throwaway virtio disk, **without touching real
+hardware**. The `vm` host (`hosts/vm/`) uses the same GPT layout as the Aspire 7
+but targets `/dev/vda` and skips host-specific modules (nvidia, acer-battery,
+sops).
+
+```bash
+./install/run-vm.sh /path/to/nixos-minimal.iso      # QEMU/KVM + UEFI (OVMF), 40G disk
+# in the VM:
+git clone https://github.com/franklinnolasco7/nixos-dots.git /root/nixos-dots
+cd /root/nixos-dots
+mkdir -p /root/ssh-host-key-backup
+ssh-keygen -t ed25519 -N "" -f /root/ssh-host-key-backup/ssh_host_ed25519_key
+HOST_KEY_SRC=/root/ssh-host-key-backup ./install/install.sh vm
+reboot
+```
+
+> [!NOTE]
+> The VM must boot with UEFI/OVMF (`ls /sys/firmware/efi` non-empty) —
+> systemd-boot requires it. No USB in the VM, so a freshly generated host key
+> satisfies the backup gate (sops is not active for the `vm` host anyway).
