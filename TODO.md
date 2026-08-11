@@ -9,6 +9,7 @@
 // DONE: Update and verify `flake.lock`
 // DONE: Validate flake with `nix flake check`
 // DONE: Validate NixOS system build
+// DONE: Source Hyprland ecosystem from flake inputs (hyprland, hyprland-plugins, hyprland.cachix.org)
 // TODO: Evaluate specific chaotic-nyx packages once needed (hyprvibr: NO, not present in chaotic-nyx package set — standalone plugin by devcexx; mesa_git for PRIME stability)
 
 ## NixOS Modules
@@ -71,6 +72,7 @@
 
 // DONE: Keep Hyprland Lua configuration as a native config
 // DONE: Keep Hyprlock configuration as a native config
+// DONE: Keep Hypridle configuration as a native config
 // DONE: Keep Waybar JSONC/CSS as native configs
 // DONE: Keep Rofi Rasi configuration as native config
 // DONE: Keep Rofi scripts
@@ -129,14 +131,14 @@
 // DONE: Verify physical NVMe device before running Disko
 // TODO: Test automatic Disko partitioning on the physical Aspire 7
 // TODO: Test automatic NixOS installation
-// TODO: Test Home Manager activation
-// TODO: Test automatic package installation
-// TODO: Test automatic config deployment
-// TODO: Test automatic executable permissions
-// TODO: Test wallpapers
-// TODO: Test cursors
-// TODO: Test icons
-// TODO: Test fonts
+// DONE: Test Home Manager activation
+// DONE: Test automatic package installation
+// DONE: Test automatic config deployment
+// DONE: Test automatic executable permissions
+// DONE: Test wallpapers
+// DONE: Test cursors
+// DONE: Test icons
+// DONE: Test fonts
 
 ## Physical Aspire 7 Hardware
 
@@ -167,9 +169,9 @@
 // DONE: Update `README.md`
 // DONE: Document rebuilding
 // DONE: Document updating
-// TODO: Document rollback/recovery
-// TODO: Document Nix/flake validation workflow
-// TODO: Document physical Aspire 7 installation workflow
+// DONE: Document rollback/recovery
+// DONE: Document Nix/flake validation workflow
+// DONE: Document physical Aspire 7 installation workflow
 
 ## Secrets
 
@@ -203,12 +205,11 @@
 // TODO: Commit initial stable configuration
 // TODO: Create first release/tag
 
-
 ## TO DO PRIO (things to do while im testing)
+
 // DONE: Fix waybar cpu governor and swappiness on rofi options not working (need sudo)
 // DONE: Fix waybar scroll on modules to adjust volumes of mic or audio not working
 // DONE: Fix waybar battery when left clicking the battery limit script also need sudo
 // DONE: Fix Rofi emoji for drun not displaying properly
 // DONE: rofi wallpaper selector aint showing any images
 // DONE: opencode not installed
-

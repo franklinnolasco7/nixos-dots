@@ -7,6 +7,7 @@ nixos-dots/
 ├── flake.nix
 ├── flake.lock
 ├── shell.nix
+├── .sops.yaml
 ├── README.md
 ├── TODO.md
 │
@@ -26,6 +27,7 @@ nixos-dots/
 │       └── disko.nix
 │
 ├── modules/
+│   ├── nixos/
 │   │   ├── default.nix
 │   │   ├── boot.nix
 │   │   ├── networking.nix
@@ -81,6 +83,7 @@ nixos-dots/
 │   ├── .config/
 │   │   ├── hypr/
 │   │   │   ├── hyprland.lua
+│   │   │   ├── hypridle.conf
 │   │   │   └── hyprlock.conf
 │   │   ├── hyprctl/
 │   │   │   ├── hyprctl.json
@@ -178,7 +181,11 @@ nixos-dots/
 │
 ├── docs/
 │   ├── architecture.md
-│   └── installation.md
+│   ├── maintenance.md
+│   ├── installation.md
+│   ├── troubleshooting.md
+│   ├── secrets.md
+│   └── aspire7.md
 │
 └── secrets/
     └── (empty; secrets.yaml created by init-secrets.sh)
@@ -270,7 +277,7 @@ Contains scripts for common operations:
 
 ### `docs/`
 
-Project documentation (`architecture.md`, `installation.md`).
+Project documentation (`architecture.md`, `maintenance.md`, `installation.md`, `troubleshooting.md`, `secrets.md`, `aspire7.md`).
 
 ### `secrets/`
 
@@ -322,6 +329,18 @@ The goal is to keep **machine-specific settings, reusable modules, user configur
 
 > [!IMPORTANT]
 > `inputs.chaotic.inputs.nixpkgs.follows` intentionally omitted — Chaotic-Nyx pins its own nixpkgs to preserve binary cache hits.
+
+### Hyprland Ecosystem
+
+Hyprland and its plugins are flake inputs (`github:hyprwm/Hyprland`, `github:hyprwm/hyprland-plugins`) rather than nixpkgs packages, pinned by `flake.lock`:
+
+* **Module**: `hyprland.nixosModules.default` imported in `flake.nix`; host config sets `programs.hyprland` with `package` and `portalPackage = pkgs.xdg-desktop-portal-hyprland`.
+* **Plugins**: `hyprland-plugins` follows the `hyprland` input (`inputs.hyprland.follows = "hyprland"`); modules reference plugins via `inputs.hyprland-plugins.packages.${system}`.
+* **Cachix**: `hyprland.cachix.org` substituter + trusted public key configured in `hosts/aspire7/configuration.nix`.
+* **Portals**: `xdg.portal` enabled with `xdg-desktop-portal-gtk` as extra portal, `hyprland` + `gtk` as defaults.
+
+> [!NOTE]
+> Hyprland intentionally does **not** follow nixpkgs — it pins its own for reproducible builds and `hyprland.cachix.org` cache hits (same trade-off as Chaotic-Nyx above). `hyprland-plugins` following the `hyprland` input is what keeps plugins ABI-matched to the pinned Hyprland.
 
 ### Reproducibility Notes
 
