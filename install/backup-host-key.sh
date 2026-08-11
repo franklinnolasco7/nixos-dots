@@ -6,8 +6,9 @@
 #   sudo bash install/backup-host-key.sh /some/path # save to an explicit dir
 #
 # With no argument it lists removable drives (lsblk RM=1), lets you pick one,
-# mounts it if needed, and saves the backup there. With a dest-dir argument it
-# saves straight there (no prompt).
+# mounts it if needed, and saves the backup there (to the largest partition
+# with a usable filesystem, so Ventoy-style VTOYEFI/EFI partitions are skipped).
+# With a dest-dir argument it saves straight there (no prompt).
 #
 # Backs up:
 #   1. /etc/ssh/ssh_host_ed25519_key{,.pub}  — sops age identity derived from
@@ -66,21 +67,21 @@ fi
 
 # --- interactive: detect removable drives and let the user pick one ---------
 
-mount_point_of() { # $1 = disk name -> echo mountpoint (or nothing)
-  lsblk -r -n -o NAME,MOUNTPOINT "/dev/$1" 2>/dev/null \
-    | awk '$2 != "" { mp = $2 } END { print mp }'
+mount_point_of() { # $1 = device (e.g. /dev/sdb2) -> echo mountpoint (or nothing)
+  lsblk -r -n -o MOUNTPOINT "$1" 2>/dev/null
 }
 
-usable_dev_of() { # $1 = disk name -> echo first mountable dev (or nothing)
-  lsblk -r -n -o NAME,FSTYPE "/dev/$1" 2>/dev/null \
+usable_dev_of() { # $1 = disk name -> echo largest mountable dev (or nothing)
+  lsblk -r -n -o NAME,SIZE,FSTYPE "/dev/$1" 2>/dev/null \
     | awk '
-      $2 ~ /^(vfat|exfat|ntfs|ext2|ext3|ext4|btrfs|xfs)$/ { print $1; exit }
-    '
+      $3 ~ /^(vfat|exfat|ntfs|ext2|ext3|ext4|btrfs|xfs)$/ { print $1, $2 }
+    ' | sort -k2 -h -r | head -1 | cut -d' ' -f1
 }
 
 declare -a names sizes models
 while read -r name rm size model; do
   [[ $rm == "1" ]] || continue
+  model="$(printf '%b' "$model")"
   names+=("$name")
   sizes+=("$size")
   models+=("$model")
@@ -101,13 +102,16 @@ fi
 
 labels=()
 for i in "${!names[@]}"; do
-  mp=$(mount_point_of "${names[$i]}")
-  if [[ -n $mp ]]; then
-    minfo="mounted at $mp"
-  elif [[ -n "$(usable_dev_of "${names[$i]}")" ]]; then
-    minfo="not mounted (will mount)"
-  else
+  mdev=$(usable_dev_of "${names[$i]}")
+  if [[ -z $mdev ]]; then
     minfo="no usable filesystem"
+  else
+    mp=$(mount_point_of "/dev/$mdev")
+    if [[ -n $mp ]]; then
+      minfo="mounted at $mp"
+    else
+      minfo="not mounted (will mount)"
+    fi
   fi
   labels+=("/dev/${names[$i]}  ${sizes[$i]}  ${models[$i]}  — $minfo")
 done
@@ -123,14 +127,14 @@ select _ in "${labels[@]}"; do
 done
 
 disk="${names[$idx]}"
-mp=$(mount_point_of "$disk")
+mdev=$(usable_dev_of "$disk")
+if [[ -z $mdev ]]; then
+  echo "error: no mountable filesystem found on /dev/$disk" >&2
+  exit 1
+fi
+mp=$(mount_point_of "/dev/$mdev")
 if [[ -z $mp ]]; then
-  mdev=$(usable_dev_of "$disk")
-  if [[ -z $mdev ]]; then
-    echo "error: no mountable filesystem found on /dev/$disk" >&2
-    exit 1
-  fi
-  mp="/mnt/backup-usb-$disk"
+  mp="/mnt/backup-usb-$mdev"
   mkdir -p "$mp"
   echo "==> mounting /dev/$mdev at $mp ..."
   mount "/dev/$mdev" "$mp"

@@ -23,7 +23,9 @@ sudo HOST_KEY_SRC=<usb-backup-dir> ./install/install.sh <hostname>   # Disko wip
 sudo reboot
 ```
 
-`HOST_KEY_SRC` defaults to `/root/ssh-host-key-backup`. The installer:
+`HOST_KEY_SRC` defaults to `/root/ssh-host-key-backup`. The installer
+**refuses to start without a verified key backup** and asks you to type `yes`
+to confirm the wipe. Then it:
 
 1. Wipes and partitions the disk (Disko, pinned via the flake).
 2. Regenerates `hosts/<hostname>/hardware-configuration.nix` from the **new**
