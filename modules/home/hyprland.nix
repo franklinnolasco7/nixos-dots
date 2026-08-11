@@ -5,6 +5,8 @@
     enable = true;
     package = pkgs.hyprland;
 
+    extraConfig = builtins.readFile ../../home/.config/hypr/hyprland.lua;
+
     plugins = [
       # Example plugin:
       # inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.hyprbars
@@ -19,11 +21,6 @@
   services.hypridle = {
     enable = true;
     package = pkgs.hypridle;
-  };
-
-  xdg.configFile."hypr/hyprland.lua" = {
-    source = ../../home/.config/hypr/hyprland.lua;
-    force = true;
   };
 
   xdg.configFile."hypr/hyprlock.conf" = {
