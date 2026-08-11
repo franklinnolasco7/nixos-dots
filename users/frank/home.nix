@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 
 {
   imports = [
@@ -6,7 +6,7 @@
   ];
 
   home.username = "frank";
-  home.homeDirectory = "/home/frank";
+  home.homeDirectory = lib.mkForce "/home/frank";
 
   home.stateVersion = "26.05";
 

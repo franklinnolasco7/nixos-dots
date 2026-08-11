@@ -55,6 +55,8 @@
       };
 
       modules = [
+        ./hosts/aspire7
+
         {
           nixpkgs.overlays = [ (import ./overlays) ];
         }
