@@ -43,7 +43,7 @@ backup_to() {
   install -m 0644 /etc/ssh/ssh_host_ed25519_key.pub "$dest/ssh_host_ed25519_key.pub"
   echo "  host key      -> $dest/ssh_host_ed25519_key{,.pub}"
 
-  if [[ -f "$user_age_key" ]]; then
+  if [[ -f $user_age_key ]]; then
     install -m 0600 "$user_age_key" "$dest/user-age-key.txt"
     echo "  user age key  -> $dest/user-age-key.txt"
   else
@@ -59,7 +59,7 @@ backup_to() {
   echo "note: FAT/exFAT filesystems do not enforce POSIX permissions (0600)."
 }
 
-if [[ -n "$DEST_ARG" ]]; then
+if [[ -n $DEST_ARG ]]; then
   backup_to "$DEST_ARG"
   exit 0
 fi
@@ -67,13 +67,13 @@ fi
 # --- interactive: detect removable drives and let the user pick one ---------
 
 mount_point_of() { # $1 = disk name -> echo mountpoint (or nothing)
-  lsblk -r -n -o NAME,MOUNTPOINT "/dev/$1" 2>/dev/null |
-    awk '$2 != "" { mp = $2 } END { print mp }'
+  lsblk -r -n -o NAME,MOUNTPOINT "/dev/$1" 2>/dev/null \
+    | awk '$2 != "" { mp = $2 } END { print mp }'
 }
 
 usable_dev_of() { # $1 = disk name -> echo first mountable dev (or nothing)
-  lsblk -r -n -o NAME,FSTYPE "/dev/$1" 2>/dev/null |
-    awk '
+  lsblk -r -n -o NAME,FSTYPE "/dev/$1" 2>/dev/null \
+    | awk '
       $2 ~ /^(vfat|exfat|ntfs|ext2|ext3|ext4|btrfs|xfs)$/ { print $1; exit }
     '
 }
@@ -102,7 +102,7 @@ fi
 labels=()
 for i in "${!names[@]}"; do
   mp=$(mount_point_of "${names[$i]}")
-  if [[ -n "$mp" ]]; then
+  if [[ -n $mp ]]; then
     minfo="mounted at $mp"
   elif [[ -n "$(usable_dev_of "${names[$i]}")" ]]; then
     minfo="not mounted (will mount)"
@@ -115,7 +115,7 @@ done
 echo "Removable storage found:"
 PS3="Pick a device [1-${#names[@]}]: "
 select _ in "${labels[@]}"; do
-  if [[ -n "$REPLY" ]] && ((REPLY >= 1 && REPLY <= ${#names[@]})); then
+  if [[ -n $REPLY ]] && ((REPLY >= 1 && REPLY <= ${#names[@]})); then
     idx=$((REPLY - 1))
     break
   fi
@@ -124,9 +124,9 @@ done
 
 disk="${names[$idx]}"
 mp=$(mount_point_of "$disk")
-if [[ -z "$mp" ]]; then
+if [[ -z $mp ]]; then
   mdev=$(usable_dev_of "$disk")
-  if [[ -z "$mdev" ]]; then
+  if [[ -z $mdev ]]; then
     echo "error: no mountable filesystem found on /dev/$disk" >&2
     exit 1
   fi
@@ -139,7 +139,7 @@ fi
 
 backup_to "$mp/ssh-host-key-backup"
 
-if [[ -n "${mounted_by_us:-}" ]]; then
+if [[ -n ${mounted_by_us:-} ]]; then
   echo "==> unmounting $mp ..."
   umount "$mp"
 fi
