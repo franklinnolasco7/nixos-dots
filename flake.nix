@@ -29,6 +29,8 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
   };
 
   outputs = inputs@{
@@ -38,6 +40,7 @@
     disko,
     home-manager,
     sops-nix,
+    chaotic,
     ...
   }:
   let
@@ -54,6 +57,7 @@
       modules = [
         ./hosts/aspire7/default.nix
 
+        chaotic.nixosModules.default
         sops-nix.nixosModules.sops
 
         home-manager.nixosModules.home-manager
