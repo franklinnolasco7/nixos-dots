@@ -5,8 +5,7 @@ let
     owner = "vinceliuice";
     repo = "Graphite-kde-theme";
     rev = "2022-02-08";
-    # TODO: first build will fail with hash mismatch — copy the "got:" hash here.
-    hash = lib.fakeHash;
+    hash = "sha256-bltA0RDxE76iVqT5dVGsMXgaxkEDMV28vvM1t4Mu1l4=";
   };
 in
 {
@@ -14,8 +13,8 @@ in
     kdePackages.qtstyleplugin-kvantum
     libsForQt5.qtstyleplugin-kvantum
 
-    qt6ct
-    qt5ct
+    qt6Packages.qt6ct
+    libsForQt5.qt5ct
   ];
 
   qt = {
