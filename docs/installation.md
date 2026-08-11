@@ -16,7 +16,7 @@ Boot into the NixOS installer environment, open a terminal, and run:
 git clone https://github.com/franklinnolasco7/nixos-dots.git
 cd nixos-dots
 
-# Run installer (default target host: aspire7)
+# Run installer for a target host
 sudo ./install/install.sh <hostname>
 ```
 
@@ -43,7 +43,18 @@ cd nixos-dots
 ./install/init-secrets.sh
 ```
 
-## Maintenance Commands
+Ongoing secrets work (edit/add/re-encrypt): [secrets.md](secrets.md).
 
-- **Rebuild changes**: `./install/rebuild.sh`
-- **Update packages**: `./install/update.sh`
+## 3. Adding a New Host
+
+1. Boot the installer and generate hardware config: `nixos-generate-config --root /mnt`
+2. Copy the generated `hardware-configuration.nix` into `hosts/<hostname>/`
+3. Add a `disko.nix` matching the target disk layout
+4. Wire it into `flake.nix` (`nixosConfigurations.<hostname>` + `diskoConfigurations.<hostname>`)
+5. Install with `sudo ./install/install.sh <hostname>`
+
+Per-host guides: [Aspire 7](aspire7.md)
+
+## Day-to-Day
+
+Rebuild, update, format, and pre-rebuild validation: [maintenance.md](maintenance.md).

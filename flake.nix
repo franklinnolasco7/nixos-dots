@@ -9,7 +9,8 @@
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
     };
-    # NOTE: Intentionally not following nixpkgs — Hyprland pins its own for ABI compatibility.
+    # NOTE: Intentionally not following nixpkgs — Hyprland pins its own nixpkgs
+    # for reproducible builds and binary-cache hits.
 
     disko = {
       url = "github:nix-community/disko";

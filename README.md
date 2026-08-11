@@ -10,25 +10,12 @@ Personal NixOS & Home Manager dotfiles managed with Flakes and Disko.
 - **Secrets Management**: sops-nix with age / SSH key encryption
 - **Theming**: Dimspectra dark color palette & macOS cursors (`apple-cursor`)
 
-## Quick Commands
-
-Rebuild system configuration:
-```bash
-./install/rebuild.sh
-```
-
-Update flake inputs & rebuild:
-```bash
-./install/update.sh
-```
-
-Format codebase (Nix, Lua, Shell, TOML):
-```bash
-./install/format.sh
-```
-
 ## Documentation
 
+- [Maintenance (rebuild, update, format, validate)](docs/maintenance.md)
 - [Installation Guide](docs/installation.md)
+- [Troubleshooting & Rollback](docs/troubleshooting.md)
+- [Secrets](docs/secrets.md)
+- [Per-Host: Aspire 7](docs/aspire7.md)
 - [Architecture Overview](docs/architecture.md)
 - [Theme Specification](themes/dimspectra.md)
