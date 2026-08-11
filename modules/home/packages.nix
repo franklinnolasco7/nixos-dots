@@ -23,8 +23,9 @@
     slurp
     satty
     glib
+
     # Hyprland Tools & Control
-    inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprpicker
+    hyprpicker
     hyprshot
     brightnessctl
     playerctl

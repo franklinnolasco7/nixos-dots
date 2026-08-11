@@ -12,12 +12,12 @@
 
   programs.hyprlock = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprlock;
+    package = pkgs.hyprlock;
   };
 
   services.hypridle = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hypridle;
+    package = pkgs.hypridle;
   };
 
   xdg.configFile."hypr/hyprland.lua" = {
