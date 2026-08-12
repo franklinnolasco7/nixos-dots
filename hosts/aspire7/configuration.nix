@@ -6,8 +6,8 @@
 {
   imports = [
     ../../modules/nixos
-    ../../modules/nixos/nvidia.nix
-    ../../modules/nixos/sops.nix
+    ../../modules/nixos/tools/nvidia.nix
+    ../../modules/nixos/tools/sops.nix
   ];
 
   # ---------------------------------------------------------------------------
@@ -31,7 +31,7 @@
 
   # ---------------------------------------------------------------------------
   # Networking (host-specific; NetworkManager lives in
-  # modules/nixos/networking.nix)
+  # modules/nixos/system/networking.nix)
   # ---------------------------------------------------------------------------
 
   networking.hostName = "nixos-laptop";

@@ -12,7 +12,7 @@
   '';
 
   # Scoped passwordless sudo for swappiness only (/proc has no udev)
-  # Consumer: modules/home/waybar/scripts.nix (swappiness)
+  # Consumer: modules/home/wayland/waybar/scripts.nix (swappiness)
   security.sudo.extraRules = [
     {
       groups = [ "wheel" ];

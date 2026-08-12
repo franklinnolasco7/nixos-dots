@@ -5,7 +5,7 @@
 }:
 
 let
-  secretsFile = ../../secrets/secrets.yaml;
+  secretsFile = ../../../secrets/secrets.yaml;
   hasSecrets = builtins.pathExists secretsFile;
   homeDir = "/home/${user}";
 in

@@ -51,7 +51,7 @@
       #   disko.nix, configuration.nix).
       # user: the declarative username — home-manager config is imported from
       #   users/<user>/ and the name is passed to NixOS modules via specialArgs
-      #   (modules/nixos/users.nix, modules/nixos/sops.nix).
+      #   (modules/nixos/system/users.nix, modules/nixos/tools/sops.nix).
       mkSystem =
         {
           hostDir,

@@ -1,15 +1,6 @@
 {
   imports = [
-    ./common.nix
-    ./boot.nix
-    ./gc.nix
-    ./networking.nix
-    ./hardware.nix
-    ./tuning.nix
-    ./audio.nix
-    ./bluetooth.nix
-    ./users.nix
-    ./virtualization.nix
-    ./gaming.nix
+    ./system
+    ./tools
   ];
 }
