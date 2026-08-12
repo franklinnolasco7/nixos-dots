@@ -2,36 +2,22 @@
   imports = [
     # Desktop
     ./wayland
-    ./hyprctl
-    ./waybar
-    ./rofi
-    ./swaync
-    ./wallpapers.nix
 
     # Terminal
-    ./zsh
-    ./starship
-    ./kitty
-    ./btop.nix
-    ./cava
-    ./fastfetch
-    ./htop
+    ./terminal
 
-    # Editors
-    ./micro
-    ./opencode
+    # Editors & apps
+    ./programs
 
     # Development
-    ./git.nix
-    ./development.nix
+    ./development
 
     # Packages & theming
     ./packages.nix
-    ./themes.nix
-    ./gtk.nix
-    ./qt.nix
-    ./cursor.nix
-    ./xdg.nix
+    ./styling
+    ./xdg
+
+    # Scripts
     ./scripts
   ];
 }

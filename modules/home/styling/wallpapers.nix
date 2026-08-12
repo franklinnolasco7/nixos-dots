@@ -2,7 +2,7 @@
 
 {
   home.file."wallpapers" = {
-    source = ../../themes/wallpapers;
+    source = ../../../themes/wallpapers;
     recursive = true;
   };
 }

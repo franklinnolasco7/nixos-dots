@@ -1,9 +1,10 @@
-{ ... }:
-
 {
   imports = [
-    ./hyprland
     ./hypridle
+    ./hyprland
     ./hyprlock
+    ./rofi
+    ./swaync
+    ./waybar
   ];
 }
