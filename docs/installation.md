@@ -68,16 +68,16 @@ The Proton profile stays out of the flake — `wg0.conf` is personal.
    > Proton). wg-quick pushes DNS through the resolver only when the `DNS`
    > key is present — without it the tunnel comes up but resolution leaks to
    > the clearnet.
-3. Toggle with `vpn-toggle.sh` (a toggle button in the swaync control center,
+3. Toggle with `vpn-toggle` (a toggle button in the swaync control center,
    `home/.config/swaync/config.json`):
    ```bash
-   vpn-toggle.sh            # toggle connect/disconnect
-   vpn-toggle.sh status     # prints true/false (feeds the swaync toggle state)
+   vpn-toggle            # toggle connect/disconnect
+   vpn-toggle status     # prints true/false (feeds the swaync toggle state)
    ```
 
    DNS goes through systemd-resolved (`services.resolved.enable` +
    `networking.networkmanager.dns = "systemd-resolved"`), and
-   `vpn-toggle.sh` clears a stale `/run/resolvconf/lock` before each
+   `vpn-toggle` clears a stale `/run/resolvconf/lock` before each
    `wg-quick` run so the DNS hook can't hang.
 
 ## New Host

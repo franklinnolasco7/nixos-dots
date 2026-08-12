@@ -51,7 +51,7 @@
 ## Dotfiles
 
 // DONE: Deploy `home/.config`
-// DONE: Deploy `home/.local/bin`
+// DONE: Port `home/.local/bin` scripts into `modules/home/scripts.nix`
 // DONE: Deploy `.zshrc` through Home Manager
 // DONE: Ensure shell scripts are executable
 // DONE: Verify executable permissions survive a fresh installation

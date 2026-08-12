@@ -43,7 +43,7 @@ ls ~/wallpapers                          # wallpapers deployed
 ls ~/.icons                              # cursor theme
 fc-list | grep -iE "jetbrains|noto"      # fonts
 ls ~/.config/hypr ~/.config/waybar       # app configs
-ls -l ~/.local/bin | grep "^-rwx"        # scripts executable
+which airplane-mode vpn-toggle toggle-laptop-kb  # scripts on PATH
 lsblk -f                                 # disk layout = disko.nix
 ls -l ~/.config/opencode/context7-key    # sops secrets decrypted
 grep -iE "qemu|virtualbox" /etc/nixos/hardware-configuration.nix   # no VM remnants
