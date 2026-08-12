@@ -18,7 +18,7 @@
     ./htop
 
     # Editors
-    ./micro.nix
+    ./micro
     ./opencode.nix
 
     # Development

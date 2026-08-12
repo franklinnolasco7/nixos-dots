@@ -35,7 +35,6 @@
     # Editors
     neovim
     vscodium
-    micro
 
     # AI Tools
     opencode
