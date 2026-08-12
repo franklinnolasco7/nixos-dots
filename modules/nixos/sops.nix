@@ -37,5 +37,12 @@ in
       group = "users";
       mode = "0400";
     };
+
+    sops.secrets.github-project-token = {
+      path = "${homeDir}/.config/github/projects-token";
+      owner = user;
+      group = "users";
+      mode = "0400";
+    };
   };
 }

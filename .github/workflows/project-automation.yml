@@ -1,0 +1,148 @@
+name: Project automation
+
+on:
+  issues:
+    types: [opened, reopened, closed]
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, closed]
+
+permissions:
+  contents: read
+
+jobs:
+  manage-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync project board
+        uses: actions/github-script@v7
+        env:
+          PROJECTS_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+          PROJECT_OWNER: franklinnolasco7
+          PROJECT_NUMBER: 2
+        with:
+          github-token: ${{ secrets.PROJECTS_TOKEN }}
+          script: |
+            const { PROJECTS_TOKEN, PROJECT_OWNER, PROJECT_NUMBER } = process.env;
+
+            if (!PROJECTS_TOKEN) {
+              core.warning(
+                'PROJECTS_TOKEN secret is not set — skipping project board sync. ' +
+                'Create a fine-grained PAT with Projects: Read and write and store it ' +
+                'as the PROJECTS_TOKEN repository secret.',
+              );
+              return;
+            }
+
+            const projectNumber = parseInt(PROJECT_NUMBER, 10);
+
+            const proj = await github.graphql(
+              `query($owner: String!, $number: Int!) {
+                user(login: $owner) {
+                  projectV2(number: $number) {
+                    id
+                    field(name: "Status") {
+                      ... on ProjectV2SingleSelectField {
+                        id
+                        options { id name }
+                      }
+                    }
+                  }
+                }
+              }`,
+              { owner: PROJECT_OWNER, number: projectNumber },
+            );
+
+            const project = proj.user.projectV2;
+            if (!project) {
+              core.warning(`Project #${projectNumber} not found for @${PROJECT_OWNER} — skipping.`);
+              return;
+            }
+
+            const statusFieldId = project.field?.id;
+            const optionByName = Object.fromEntries(
+              (project.field?.options ?? []).map((o) => [o.name, o.id]),
+            );
+
+            async function place(contentId, statusName) {
+              const optionId = optionByName[statusName];
+              if (!optionId) {
+                core.warning(
+                  `Board has no Status option named "${statusName}" — skipping this move. ` +
+                  'Add it in the project Settings > Fields, or fix the mapping in this workflow.',
+                );
+                return;
+              }
+              const added = await github.graphql(
+                `mutation($project: ID!, $content: ID!) {
+                  addProjectV2ItemById(input: { projectId: $project, contentId: $content }) {
+                    item { id }
+                  }
+                }`,
+                { project: project.id, content: contentId },
+              );
+              const itemId = added.addProjectV2ItemById.item.id;
+              await github.graphql(
+                `mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $project,
+                    itemId: $item,
+                    fieldId: $field,
+                    value: { singleSelectOptionId: $option },
+                  }) {
+                    projectV2Item { id }
+                  }
+                }`,
+                { project: project.id, item: itemId, field: statusFieldId, option: optionId },
+              );
+              core.info(`Set item ${itemId} -> ${statusName}`);
+            }
+
+            const event = context.eventName;
+            const payload = context.payload;
+
+            if (event === 'issues') {
+              const issue = payload.issue;
+              const status = payload.action === 'closed' ? 'Done' : 'To Do';
+              await place(issue.node_id, status);
+              return;
+            }
+
+            const pr = payload.pull_request;
+
+            async function linkedIssues() {
+              const res = await github.graphql(
+                `query($owner: String!, $repo: String!, $number: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    pullRequest(number: $number) {
+                      closingIssuesReferences(first: 20) {
+                        nodes { id }
+                      }
+                    }
+                  }
+                }`,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  number: pr.number,
+                },
+              );
+              return res.repository.pullRequest.closingIssuesReferences.nodes.map((n) => n.id);
+            }
+
+            let prStatus;
+            if (payload.action === 'closed') {
+              prStatus = pr.merged ? 'Done' : 'To Do';
+            } else if (payload.action === 'ready_for_review') {
+              prStatus = 'In Review';
+            } else {
+              prStatus = 'In Progress';
+            }
+
+            await place(pr.node_id, prStatus);
+
+            if (prStatus === 'In Progress' || prStatus === 'In Review') {
+              for (const issueId of await linkedIssues()) {
+                await place(issueId, prStatus);
+              }
+            }

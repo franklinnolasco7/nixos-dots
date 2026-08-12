@@ -42,6 +42,7 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 | [Architecture](docs/architecture.md) | How the flake and modules are organized |
 | [Troubleshooting](docs/troubleshooting.md) | Common issues and fixes |
 | [Secrets](docs/secrets.md) | Secrets management |
+| [Kanban](docs/kanban.md) | Project board workflow and automation |
 | [Per-host: Aspire 7](docs/aspire7.md) | Hardware-specific config for the Aspire 7 |
 
 <br>
