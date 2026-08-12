@@ -5,7 +5,7 @@
     ./hyprctl.nix
     ./waybar
     ./rofi
-    ./swaync.nix
+    ./swaync
     ./wallpapers.nix
 
     # Terminal

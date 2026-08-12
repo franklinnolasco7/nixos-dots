@@ -7,7 +7,6 @@
     rofimoji
     thunar
     libnotify
-    swaynotificationcenter
     chromium
     firefox
     xdg-utils
