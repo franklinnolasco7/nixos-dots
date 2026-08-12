@@ -49,7 +49,6 @@
     curl
     lua
     wireguard-tools
-    cava
     gh
 
     # Audio

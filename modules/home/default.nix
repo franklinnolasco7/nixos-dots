@@ -13,7 +13,7 @@
     ./starship.nix
     ./kitty.nix
     ./btop.nix
-    ./cava.nix
+    ./cava
     ./fastfetch.nix
     ./htop.nix
 
