@@ -46,6 +46,7 @@
     lua
     wireguard-tools
     gh
+    rtk
 
     # Audio
     pavucontrol
