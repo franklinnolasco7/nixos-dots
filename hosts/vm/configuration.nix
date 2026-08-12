@@ -7,7 +7,7 @@
 
   # ---------------------------------------------------------------------------
   # Networking (host-specific; NetworkManager lives in
-  # modules/nixos/networking.nix)
+  # modules/nixos/system/networking.nix)
   # ---------------------------------------------------------------------------
 
   networking.hostName = "nixos-vm";
