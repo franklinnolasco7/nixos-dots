@@ -69,7 +69,7 @@ The Proton profile stays out of the flake — `wg0.conf` is personal.
    > key is present — without it the tunnel comes up but resolution leaks to
    > the clearnet.
 3. Toggle with `vpn-toggle` (a toggle button in the swaync control center,
-   `home/.config/swaync/config.json`):
+   `modules/home/swaync/default.nix`):
    ```bash
    vpn-toggle            # toggle connect/disconnect
    vpn-toggle status     # prints true/false (feeds the swaync toggle state)
