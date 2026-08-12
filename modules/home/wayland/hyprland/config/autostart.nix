@@ -18,7 +18,6 @@ in
             hl.exec_cmd("waypaper --restore")
             hl.exec_cmd("waybar")
             hl.exec_cmd("battery-notify &")
-            hl.exec_cmd("hyprctl-apply")
             hl.exec_cmd("airplane-mode restore")
             hl.exec_cmd("toggle-laptop-kb restore")
             hl.exec_cmd("toggle-laptop-tp restore")
@@ -33,7 +32,6 @@ in
         "config.reloaded"
         (inline ''
           function()
-            hl.exec_cmd(os.getenv("HOME") .. "/.config/hyprctl/hyprctl.sh")
             hl.exec_cmd("toggle-laptop-kb restore")
             hl.exec_cmd("toggle-laptop-tp restore")
           end
