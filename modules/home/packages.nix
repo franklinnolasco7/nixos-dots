@@ -4,7 +4,6 @@
   home.packages = with pkgs; [
     # Desktop & Utilities
     obsidian
-    rofi
     rofimoji
     thunar
     libnotify
@@ -14,7 +13,11 @@
     xdg-utils
     wl-clipboard
     wl-clip-persist
-    cliphist
+    (cliphist.overrideAttrs (old: {
+      postInstall = old.postInstall + ''
+        rm -f $out/bin/cliphist-rofi-img
+      '';
+    }))
     imv
     imagemagick
     awww

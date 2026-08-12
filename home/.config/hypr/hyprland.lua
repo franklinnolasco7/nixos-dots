@@ -18,8 +18,7 @@ hl.monitor({
 -- ============================================================================
 local terminal = "kitty"
 local fileManager = "thunar"
-local rofi_theme = os.getenv("HOME") .. "/.config/rofi/config.rasi"
-local web_search = os.getenv("HOME") .. "/.config/rofi/scripts/rofi-web-search.sh"
+local web_search = "rofi-web-search"
 
 -- ============================================================================
 --  AUTOSTART
@@ -225,15 +224,12 @@ local mainMod = "SUPER"
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("firefox"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show drun -theme " .. rofi_theme))
-hl.bind(
-  mainMod .. " + R",
-  hl.dsp.exec_cmd("rofi -show run -theme " .. rofi_theme .. " -run-command 'kitty -e fish -c \"{cmd}; read\"'")
-)
-hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("rofi -show window -theme " .. rofi_theme))
+hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show drun"))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("rofi -show run -run-command 'kitty -e fish -c \"{cmd}; read\"'"))
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("rofi -show window"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd(web_search))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/rofi/scripts/wallpaper.sh"))
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("wallpaper"))
 
 -- --- Window Management ---
 hl.bind(mainMod .. " + C", hl.dsp.window.close())
@@ -304,27 +300,16 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind(
   mainMod .. " + V",
   hl.dsp.exec_cmd(
-    "rofi -dmenu -display-columns 2 -p '' -show-icons -theme "
-      .. rofi_theme
-      .. " -theme-str 'listview { columns: 1; }'"
-      .. " < <("
-      .. os.getenv("HOME")
-      .. "/.config/rofi/scripts/cliphist-rofi-img.sh)"
-      .. " | xargs -I {} "
-      .. os.getenv("HOME")
-      .. "/.config/rofi/scripts/cliphist-rofi-img.sh {}"
+    "rofi -dmenu -display-columns 2 -p '' -show-icons -theme-str 'listview { columns: 1; }'"
+      .. " < <(cliphist-rofi-img)"
+      .. " | xargs -I {} cliphist-rofi-img {}"
   )
 )
 hl.bind(
   mainMod .. " + PERIOD",
-  hl.dsp.exec_cmd(
-    "rofimoji --selector rofi --action clipboard --prompt '󰞅'"
-      .. " --selector-args='-no-show-icons -theme "
-      .. rofi_theme
-      .. "'"
-  )
+  hl.dsp.exec_cmd("rofimoji --selector rofi --action clipboard --prompt '󰞅'" .. " --selector-args='-no-show-icons'")
 )
-hl.bind(mainMod .. " + I", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/rofi/scripts/hypr-keybinds.sh"))
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("hypr-keybinds"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + CTRL + F12", hl.dsp.exec_cmd("toggle-laptop-kb"))
