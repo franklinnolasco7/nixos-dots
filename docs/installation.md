@@ -24,15 +24,18 @@ sudo reboot
 ```
 
 `HOST_KEY_SRC` defaults to `/root/ssh-host-key-backup`. The installer
-**refuses to start without a verified key backup** and asks you to type `yes`
-to confirm the wipe. Then it:
+**refuses to start without a verified key backup**, verifies that the backup
+host key can decrypt `secrets/secrets.yaml` (so the wipe can't lock you out of
+your secrets), and asks you to type `yes` to confirm the wipe. Then it:
 
 1. Wipes and partitions the disk (Disko, pinned via the flake).
 2. Regenerates `hosts/<hostname>/hardware-configuration.nix` from the **new**
    partitions — the committed copy pins the old disk's UUIDs, so it must be
-   refreshed or the system won't boot.
+   refreshed after install or the system won't boot.
 3. Restores the backed-up SSH host key so sops can decrypt during activation.
 4. Runs `nixos-install --flake .#<hostname>`.
+5. Writes `safe.directory` for root on the new system (no `nixos-rebuild`
+   ownership friction later).
 
 > [!IMPORTANT]
 > Wipes the target disk.
@@ -43,11 +46,39 @@ to confirm the wipe. Then it:
 cd nixos-dots
 
 git add hosts/<hostname>/hardware-configuration.nix && git commit   # new UUIDs
-passwd frank                                                         # was "changeme"
+passwd frank                                                         # was "123"
 ./install/init-secrets.sh                                            # register new host in .sops.yaml
 ```
 
 Secrets afterward: [secrets.md](secrets.md).
+
+## WireGuard VPN (manual)
+
+The Proton profile stays out of the flake — `wg0.conf` is personal.
+
+1. Get `wg0.conf` from Proton (VPN → WireGuard configuration → generate keys).
+2. Install it:
+   ```bash
+   sudo mkdir -p /etc/wireguard
+   sudo cp wg0.conf /etc/wireguard/wg0.conf
+   sudo chmod 600 /etc/wireguard/wg0.conf
+   ```
+   > [!IMPORTANT]
+   > `DNS = <proton-dns>` is **required** in `wg0.conf` (e.g. `10.2.0.2` for
+   > Proton). wg-quick pushes DNS through the resolver only when the `DNS`
+   > key is present — without it the tunnel comes up but resolution leaks to
+   > the clearnet.
+3. Toggle with `vpn-toggle.sh` (a toggle button in the swaync control center,
+   `home/.config/swaync/config.json`):
+   ```bash
+   vpn-toggle.sh            # toggle connect/disconnect
+   vpn-toggle.sh status     # prints true/false (feeds the swaync toggle state)
+   ```
+
+   DNS goes through systemd-resolved (`services.resolved.enable` +
+   `networking.networkmanager.dns = "systemd-resolved"`), and
+   `vpn-toggle.sh` clears a stale `/run/resolvconf/lock` before each
+   `wg-quick` run so the DNS hook can't hang.
 
 ## New Host
 
