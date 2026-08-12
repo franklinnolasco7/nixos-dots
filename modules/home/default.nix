@@ -1,7 +1,7 @@
 {
   imports = [
     # Desktop
-    ./hyprland.nix
+    ./wayland
     ./hyprctl
     ./waybar
     ./rofi
