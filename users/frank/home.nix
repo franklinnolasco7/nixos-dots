@@ -2,6 +2,8 @@
   config,
   lib,
   inputs,
+  pkgs,
+  user,
   ...
 }:
 
@@ -11,8 +13,8 @@
     ../../modules/home
   ];
 
-  home.username = "frank";
-  home.homeDirectory = lib.mkForce "/home/frank";
+  home.username = user;
+  home.homeDirectory = lib.mkForce "/home/${user}";
 
   # Git identity (shared modules/home/git.nix keeps the generic settings).
   programs.git.settings.user = {
@@ -31,13 +33,20 @@
     "$HOME/.cargo/bin"
     "$HOME/.npm-global/bin"
     "$HOME/.opencode/bin"
-    "$HOME/.spicetify"
   ];
 
   home.sessionVariables = {
     EDITOR = "micro";
     VISUAL = "micro";
   };
+
+  home.activation.createSshKey = lib.mkAfter ''
+    if [[ ! -f "$HOME/.ssh/id_ed25519" ]]; then
+      mkdir -p "$HOME/.ssh"
+      chmod 700 "$HOME/.ssh"
+      ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -N "" -C "${user}@local" -f "$HOME/.ssh/id_ed25519"
+    fi
+  '';
 
   programs.home-manager.enable = true;
 }
