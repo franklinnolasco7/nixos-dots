@@ -11,8 +11,11 @@
 ```
 
 `rebuild.sh` runs `nixos-rebuild` via `sudo`, and the nix flake fetcher (libgit2)
-refuses git repos not owned by root. Fix once per machine (repo owned by your
-user, rebuilt as root):
+refuses git repos not owned by root. The installer already writes
+`safe.directory` for root on every fresh install, so new systems are covered.
+
+Only an existing multi-user system that never ran the installer needs it once
+(repo owned by your user, rebuilt as root):
 
 ```bash
 sudo git config --global --add safe.directory "$(pwd)"
