@@ -100,30 +100,30 @@
         {
           "label": "󰌐",
           "type": "toggle",
-          "command": "$HOME/.local/bin/toggle-laptop-kb.sh apply \"$SWAYNC_TOGGLE_STATE\"",
-          "update-command": "$HOME/.local/bin/toggle-laptop-kb.sh status"
+          "command": "toggle-laptop-kb apply \"$SWAYNC_TOGGLE_STATE\"",
+          "update-command": "toggle-laptop-kb status"
         },
         {
           "label": "󰍾",
           "type": "toggle",
-          "command": "$HOME/.local/bin/toggle-laptop-tp.sh apply \"$SWAYNC_TOGGLE_STATE\"",
-          "update-command": "$HOME/.local/bin/toggle-laptop-tp.sh status"
+          "command": "toggle-laptop-tp apply \"$SWAYNC_TOGGLE_STATE\"",
+          "update-command": "toggle-laptop-tp status"
         },
         {
           "label": "󰀝",
           "type": "toggle",
-          "command": "$HOME/.local/bin/airplane-mode.sh apply \"$SWAYNC_TOGGLE_STATE\"",
-          "update-command": "$HOME/.local/bin/airplane-mode.sh status"
+          "command": "airplane-mode apply \"$SWAYNC_TOGGLE_STATE\"",
+          "update-command": "airplane-mode status"
         },
         {
           "label": "󰖂",
           "type": "toggle",
-          "command": "$HOME/.local/bin/vpn-toggle.sh apply \"$SWAYNC_TOGGLE_STATE\"",
-          "update-command": "$HOME/.local/bin/vpn-toggle.sh status"
+          "command": "vpn-toggle apply \"$SWAYNC_TOGGLE_STATE\"",
+          "update-command": "vpn-toggle status"
         },
         {
           "label": "󱇣",
-          "command": "$HOME/.local/bin/annotate-last-screenshot.sh"
+          "command": "annotate-last-screenshot"
         }
       ]
     }

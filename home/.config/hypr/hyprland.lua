@@ -36,18 +36,18 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("waypaper --restore")
   hl.exec_cmd("swaync")
   hl.exec_cmd("waybar")
-  hl.exec_cmd(os.getenv("HOME") .. "/.local/bin/battery-notify.sh &")
+  hl.exec_cmd("battery-notify &")
   hl.exec_cmd(os.getenv("HOME") .. "/.config/hyprctl/hyprctl.sh")
-  hl.exec_cmd(os.getenv("HOME") .. "/.local/bin/airplane-mode.sh restore")
-  hl.exec_cmd(os.getenv("HOME") .. "/.local/bin/toggle-laptop-kb.sh restore")
-  hl.exec_cmd(os.getenv("HOME") .. "/.local/bin/toggle-laptop-tp.sh restore")
+  hl.exec_cmd("airplane-mode restore")
+  hl.exec_cmd("toggle-laptop-kb restore")
+  hl.exec_cmd("toggle-laptop-tp restore")
 end)
 
 -- exec-always equivalent: re-run on reload
 hl.on("config.reloaded", function()
   hl.exec_cmd(os.getenv("HOME") .. "/.config/hyprctl/hyprctl.sh")
-  hl.exec_cmd(os.getenv("HOME") .. "/.local/bin/toggle-laptop-kb.sh restore")
-  hl.exec_cmd(os.getenv("HOME") .. "/.local/bin/toggle-laptop-tp.sh restore")
+  hl.exec_cmd("toggle-laptop-kb restore")
+  hl.exec_cmd("toggle-laptop-tp restore")
 end)
 
 -- ============================================================================
@@ -327,8 +327,8 @@ hl.bind(
 hl.bind(mainMod .. " + I", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/rofi/scripts/hypr-keybinds.sh"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mainMod .. " + CTRL + F12", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/toggle-laptop-kb.sh"))
-hl.bind(mainMod .. " + CTRL + F11", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/toggle-laptop-tp.sh"))
+hl.bind(mainMod .. " + CTRL + F12", hl.dsp.exec_cmd("toggle-laptop-kb"))
+hl.bind(mainMod .. " + CTRL + F11", hl.dsp.exec_cmd("toggle-laptop-tp"))
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 
 -- --- Minimize ---
