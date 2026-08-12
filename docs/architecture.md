@@ -14,7 +14,7 @@ nixos-dots/
 ├── users/frank/   # home-manager entry point (session paths, imports)
 ├── home/          # raw app configs + scripts deployed by home modules
 ├── pkgs/          # custom derivations (graphite-gtk-theme), exported via overlays/
-├── themes/        # dimspectra palette (colors.nix), wallpapers
+├── themes/        # wallpapers
 ├── install/       # ops: install, rebuild, update, format, init-secrets
 ├── docs/          # one page per topic
 └── secrets/       # sops-encrypted, gated behind pathExists
