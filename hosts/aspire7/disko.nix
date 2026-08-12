@@ -14,14 +14,8 @@
 #
 # Do NOT replace this with /dev/nvme0n1.
 #
-# Partition layout:
-#
-#   GPT
-#   ├── 1 GiB  EFI System Partition  -> /boot
-#   ├── 8 GiB  swap
-#   └── rest    ext4                  -> /
-#
-# The root partition is last and uses the remaining disk space.
+# The partition layout lives in modules/disko/gpt-layout.nix (shared with
+# other hosts); this file only pins the target device.
 #
 # This file is intentionally NOT imported into the normal
 # nixosConfigurations.aspire7 module list.
@@ -35,50 +29,6 @@
 
 { lib, ... }:
 
-{
-  disko.devices.disk.main = {
-    type = "disk";
-
-    device = lib.mkDefault "/dev/disk/by-id/nvme-HFM512GD3JX016N_FYB3N036910803I0I";
-
-    content = {
-      type = "gpt";
-
-      partitions = {
-        boot = {
-          size = "1G";
-          type = "EF00";
-
-          content = {
-            type = "filesystem";
-            format = "vfat";
-            mountpoint = "/boot";
-
-            mountOptions = [
-              "fmask=0022"
-              "dmask=0022"
-            ];
-          };
-        };
-
-        swap = {
-          size = "8G";
-
-          content = {
-            type = "swap";
-          };
-        };
-
-        root = {
-          size = "100%";
-
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/";
-          };
-        };
-      };
-    };
-  };
+import ../../modules/disko/gpt-layout.nix {
+  device = lib.mkDefault "/dev/disk/by-id/nvme-HFM512GD3JX016N_FYB3N036910803I0I";
 }

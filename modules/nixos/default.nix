@@ -1,5 +1,6 @@
 {
   imports = [
+    ./common.nix
     ./boot.nix
     ./gc.nix
     ./networking.nix
