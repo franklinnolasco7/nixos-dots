@@ -50,7 +50,5 @@
     # Audio
     pavucontrol
     pulseaudio
-
-    waybar
   ];
 }

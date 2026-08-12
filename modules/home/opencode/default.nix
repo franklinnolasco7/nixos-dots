@@ -1,16 +1,13 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
-  home.packages = [ pkgs.opencode ];
+  programs.opencode = {
+    enable = true;
 
-  xdg.configFile."opencode/config.json" = {
-    text = builtins.toJSON {
-      "$schema" = "https://opencode.ai/config.json";
+    settings = {
       permission = {
         external_directory = "ask";
       };
-      mcp = { };
     };
-    force = true;
   };
 }
