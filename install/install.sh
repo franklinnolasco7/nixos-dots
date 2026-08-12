@@ -10,7 +10,8 @@
 #
 # Safety gates before anything destructive:
 #   1. Aborts unless the host key backup exists (see backup-host-key.sh).
-#   2. Requires typing 'yes' to confirm the disk wipe.
+#   2. Aborts if the backup host key cannot decrypt secrets/secrets.yaml (sops).
+#   3. Requires typing 'yes' to confirm the disk wipe.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -44,6 +45,26 @@ if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
   exit 1
 fi
 
+echo "==> [0/6] Verifying sops decryption from the backup host key..."
+if [[ -f secrets/secrets.yaml ]]; then
+  tmp=$(mktemp)
+  trap 'rm -f "$tmp"' EXIT
+  if nix --experimental-features "nix-command flakes" shell nixpkgs#ssh-to-age \
+    -c ssh-to-age -private-key -i "$HOST_KEY_SRC/ssh_host_ed25519_key" >"$tmp" \
+    && chmod 600 "$tmp" \
+    && SOPS_AGE_KEY_FILE="$tmp" nix --experimental-features "nix-command flakes" shell \
+      nixpkgs#sops -c sops -d "$(realpath secrets/secrets.yaml)" >/dev/null; then
+    echo "  decryption ok"
+  else
+    echo "Error: backup host key cannot decrypt secrets/secrets.yaml." >&2
+    echo "  Aborting before the wipe — fix HOST_KEY_SRC or run" >&2
+    echo "  install/init-secrets.sh to register this host first." >&2
+    exit 1
+  fi
+else
+  echo "  no secrets/secrets.yaml in this repo — skipping"
+fi
+
 disko_dev="$(sed -n 's/.*device = \(lib\.mkDefault \)\?"\([^"]*\)".*/\2/p' "hosts/$HOST/disko.nix" | head -1)"
 resolved="$(readlink -f "$disko_dev" 2>/dev/null || true)"
 if [[ -n $resolved && $resolved != "$disko_dev" ]]; then
@@ -61,30 +82,40 @@ if [[ $answer != "yes" ]]; then
 fi
 echo
 
-echo "==> [1/5] Partitioning and mounting disk with Disko (pinned via flake)..."
+echo "==> [1/6] Partitioning and mounting disk with Disko (pinned via flake)..."
 nix --experimental-features "nix-command flakes" run .#disko -- \
   --mode destroy,format,mount "hosts/$HOST/disko.nix"
 
-echo "==> [2/5] Regenerating hardware-configuration.nix for the new partitions..."
+echo "==> [2/6] Regenerating hardware-configuration.nix for the new partitions..."
 nixos-generate-config --root /mnt
 cp /mnt/etc/nixos/hardware-configuration.nix "hosts/$HOST/hardware-configuration.nix"
 echo "  wrote hosts/$HOST/hardware-configuration.nix (new filesystem UUIDs)"
 
-echo "==> [3/5] Restoring SSH host key for sops decryption..."
+echo "==> [3/6] Restoring SSH host key for sops decryption..."
 install -d -m 0700 /mnt/etc/ssh
 install -m 0600 "$HOST_KEY_SRC/ssh_host_ed25519_key" /mnt/etc/ssh/ssh_host_ed25519_key
 install -m 0644 "$HOST_KEY_SRC/ssh_host_ed25519_key.pub" /mnt/etc/ssh/ssh_host_ed25519_key.pub
 echo "  restored /etc/ssh/ssh_host_ed25519_key{,.pub} into the new system"
 
-echo "==> [4/5] Installing NixOS system flake (.#$HOST)..."
+echo "==> [4/6] Installing NixOS system flake (.#$HOST)..."
 nixos-install --flake ".#$HOST"
 
-echo "==> [5/5] Installation complete! Reboot into NixOS with: reboot"
+echo "==> [5/6] Setting safe.directory for root on the new system..."
+if command -v git >/dev/null 2>&1; then
+  install -d -m 0700 /mnt/root
+  git config --file /mnt/root/.gitconfig --add safe.directory '*'
+  echo "  wrote /mnt/root/.gitconfig (safe.directory = *) — no sudo rebuild friction"
+else
+  echo "  git not found — set safe.directory manually after reboot:"
+  echo "    sudo git config --global --add safe.directory '*'"
+fi
+
+echo "==> [6/6] Installation complete! Reboot into NixOS with: reboot"
 echo
 echo "After reboot:"
 echo "  1. Commit the regenerated hardware config:"
-echo "       cd $(pwd) && git add hosts/$HOST/hardware-configuration.nix && git commit"
-echo "  2. Change your user's password (initialPassword is 'changeme'):"
+echo "       cd /path/to/nixos-dots && git add hosts/$HOST/hardware-configuration.nix && git commit"
+echo "  2. Change your user's password (initialPassword is '123'):"
 echo "       passwd <your-user>"
 echo "  3. Restore the user age key if wanted:"
 echo "       install -m 0600 $HOST_KEY_SRC/user-age-key.txt ~/.config/sops/age/keys.txt"
