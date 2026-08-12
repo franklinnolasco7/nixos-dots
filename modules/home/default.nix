@@ -2,7 +2,7 @@
   imports = [
     # Desktop
     ./hyprland.nix
-    ./hyprctl.nix
+    ./hyprctl
     ./waybar
     ./rofi
     ./swaync
