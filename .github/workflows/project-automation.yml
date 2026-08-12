@@ -103,7 +103,7 @@ jobs:
 
             if (event === 'issues') {
               const issue = payload.issue;
-              const status = payload.action === 'closed' ? 'Done' : 'To Do';
+              const status = payload.action === 'closed' ? 'Done' : 'Ready';
               await place(issue.node_id, status);
               return;
             }
@@ -132,16 +132,16 @@ jobs:
 
             let prStatus;
             if (payload.action === 'closed') {
-              prStatus = pr.merged ? 'Done' : 'To Do';
+              prStatus = pr.merged ? 'Done' : 'Ready';
             } else if (payload.action === 'ready_for_review') {
-              prStatus = 'In Review';
+              prStatus = 'In review';
             } else {
-              prStatus = 'In Progress';
+              prStatus = 'In progress';
             }
 
             await place(pr.node_id, prStatus);
 
-            if (prStatus === 'In Progress' || prStatus === 'In Review') {
+            if (prStatus === 'In progress' || prStatus === 'In review') {
               for (const issueId of await linkedIssues()) {
                 await place(issueId, prStatus);
               }
