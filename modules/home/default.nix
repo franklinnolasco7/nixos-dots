@@ -15,7 +15,7 @@
     ./btop.nix
     ./cava
     ./fastfetch
-    ./htop.nix
+    ./htop
 
     # Editors
     ./micro.nix
