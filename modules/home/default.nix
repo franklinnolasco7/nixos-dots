@@ -14,7 +14,7 @@
     ./kitty.nix
     ./btop.nix
     ./cava
-    ./fastfetch.nix
+    ./fastfetch
     ./htop.nix
 
     # Editors

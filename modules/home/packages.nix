@@ -42,7 +42,6 @@
 
     # Terminal & Script Tools
     tree
-    fastfetch
     htop
     jq
     gawk
