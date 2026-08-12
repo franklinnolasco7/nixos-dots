@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "file:///home/frank/.config/swaync/config.schema.json",
+  "$id": "file:///.config/swaync/config.schema.json",
   "title": "Sway Notification Center Configuration",
   "type": "object",
   "additionalProperties": true,
