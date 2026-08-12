@@ -1,5 +1,9 @@
 { ... }:
 
+let
+  colors = import ../../../styling/palette.nix;
+  rgba = c: a: "rgba(${c}${a})";
+in
 {
   wayland.windowManager.hyprland.settings = {
     config = {
@@ -8,8 +12,8 @@
         gaps_out = 0;
         border_size = 2;
         col = {
-          active_border = "rgba(c4c4c4ee)";
-          inactive_border = "rgba(1a1a1aee)";
+          active_border = rgba (builtins.substring 1 6 colors.borderActive) "ee";
+          inactive_border = rgba (builtins.substring 1 6 colors.borderInactive) "ee";
         };
         resize_on_border = false;
         allow_tearing = false;
