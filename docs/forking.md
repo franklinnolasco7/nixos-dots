@@ -20,13 +20,13 @@ nixosConfigurations.<hostname> = mkSystem {
 };
 ```
 
-The user is passed to both the NixOS modules (`users.nix`, `sops.nix`) and
+The user is passed to both the NixOS modules (`modules/nixos/system/users.nix`, `modules/nixos/tools/sops.nix`) and
 home-manager (`extraSpecialArgs`), so `home.username` and
 `home.homeDirectory` follow automatically.
 
 ## 3. Replace the git identity
 
-`users/<your-user>/home.nix`:
+`users/<your-user>/default.nix`:
 
 - `programs.git.settings.user` → your `name` + `email` + `signingkey`.
 - `home.file.".config/git/allowed_signers"` → your signing public key. Format:
