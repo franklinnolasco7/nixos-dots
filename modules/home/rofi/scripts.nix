@@ -169,9 +169,35 @@ let
       io.stderr:write("hypr-keybinds.lua: cannot read " .. config_path .. "\n")
       os.exit(1)
     end
+    local chunk = f:read("*a")
     f:close()
 
-    dofile(config_path)
+    -- Lua < 5.3 can't parse `\u{XXXX}` escapes; Hyprland configs target 5.3+.
+    -- Expand them to UTF-8 bytes so extraction works on any Lua (5.1+).
+    local unpack = table.unpack or unpack
+    chunk = chunk:gsub("\\u{(%x+)}", function(hex)
+      local cp = tonumber(hex, 16)
+      local b = {}
+      if cp < 0x80 then
+        b[1] = cp
+      elseif cp < 0x800 then
+        b[1] = 0xC0 + math.floor(cp / 0x40)
+        b[2] = 0x80 + cp % 0x40
+      elseif cp < 0x10000 then
+        b[1] = 0xE0 + math.floor(cp / 0x1000)
+        b[2] = 0x80 + math.floor(cp / 0x40) % 0x40
+        b[3] = 0x80 + cp % 0x40
+      else
+        b[1] = 0xF0 + math.floor(cp / 0x40000)
+        b[2] = 0x80 + math.floor(cp / 0x1000) % 0x40
+        b[3] = 0x80 + math.floor(cp / 0x40) % 0x40
+        b[4] = 0x80 + cp % 0x40
+      end
+      return string.char(unpack(b))
+    end)
+
+    local loaded = assert(load(chunk, config_path))
+    loaded()
   '';
 in
 {
@@ -221,7 +247,8 @@ in
         modifier=''${modifier//Control/Ctrl}
         modifier=''${modifier//ALT/Alt}
         modifier=$(echo "$modifier" | sed 's/^ *//; s/ *$//; s/  */ /g')
-        modifier=''${modifier// / + }
+        modifier=''${modifier// /}
+        modifier=''${modifier//+/ + }
         echo "$modifier"
       }
 
