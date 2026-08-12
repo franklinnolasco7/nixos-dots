@@ -19,7 +19,7 @@
 
     # Editors
     ./micro
-    ./opencode.nix
+    ./opencode
 
     # Development
     ./git.nix
