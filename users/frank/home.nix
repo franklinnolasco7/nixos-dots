@@ -31,7 +31,6 @@
   home.sessionPath = [
     "$HOME/.cargo/bin"
     "$HOME/.npm-global/bin"
-    "$HOME/.opencode/bin"
   ];
 
   home.sessionVariables = {
