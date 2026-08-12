@@ -9,7 +9,7 @@
 
   users.users.${user} = {
     isNormalUser = true;
-    initialPassword = "changeme";
+    initialPassword = "123";
     shell = pkgs.zsh;
 
     extraGroups = [
