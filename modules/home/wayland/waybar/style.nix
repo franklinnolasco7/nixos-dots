@@ -1,15 +1,18 @@
+let
+  colors = import ../../styling/palette.nix;
+in
 ''
-  @define-color bg #080808;
-  @define-color surface #121212;
-  @define-color border #1a1a1a;
-  @define-color fg #a6a6a6;
-  @define-color fg_muted #444444;
+  @define-color bg ${colors.base};
+  @define-color surface ${colors.surfaceAlt};
+  @define-color border ${colors.surface};
+  @define-color fg ${colors.fg};
+  @define-color fg_muted ${colors.textDim};
 
-  @define-color accent_blue #b4b4b4;
-  @define-color accent_red #5a5a5a;
-  @define-color urgent #f0f0f0;
-  @define-color accent_amber #a8a8a8;
-  @define-color accent_green #c8c8c8;
+  @define-color accent_blue ${colors.selected};
+  @define-color accent_red ${colors.accentRed};
+  @define-color urgent ${colors.urgent};
+  @define-color accent_amber ${colors.accentAmber};
+  @define-color accent_green ${colors.active};
 
   * {
     font-family: "Inter", "JetBrainsMono Nerd Font", sans-serif;

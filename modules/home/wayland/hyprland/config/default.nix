@@ -1,15 +1,15 @@
 {
   imports = [
-    ./binds.nix
-    ./rules.nix
-    ./devices.nix
-    ./style.nix
     ./autostart.nix
-    ./monitors.nix
-    ./gestures.nix
+    ./binds.nix
+    ./devices.nix
     ./env.nix
-    ./layouts.nix
+    ./gestures.nix
     ./input.nix
+    ./layouts.nix
     ./misc.nix
+    ./monitors.nix
+    ./rules.nix
+    ./style.nix
   ];
 }

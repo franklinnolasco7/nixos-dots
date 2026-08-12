@@ -1,15 +1,18 @@
+let
+  colors = import ../../styling/palette.nix;
+in
 ''
-  @define-color background     #080808;
-  @define-color background-alt #121212;
-  @define-color foreground     #a6a6a6;
-  @define-color selected       #b4b4b4;
-  @define-color active         #c8c8c8;
-  @define-color urgent         #f0f0f0;
+  @define-color background     ${colors.base};
+  @define-color background-alt ${colors.surfaceAlt};
+  @define-color foreground     ${colors.fg};
+  @define-color selected       ${colors.selected};
+  @define-color active         ${colors.active};
+  @define-color urgent         ${colors.urgent};
 
-  @define-color text-dim       #444444;
-  @define-color surface        #1a1a1a;
+  @define-color text-dim       ${colors.textDim};
+  @define-color surface        ${colors.surface};
   @define-color hover          alpha(@surface, 0.8);
-  @define-color overlay        #202020;
+  @define-color overlay        ${colors.overlay};
 
   * {
     all: unset;
