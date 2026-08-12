@@ -3,7 +3,7 @@
     # Desktop
     ./hyprland.nix
     ./hyprctl.nix
-    ./waybar.nix
+    ./waybar
     ./rofi.nix
     ./swaync.nix
     ./wallpapers.nix
