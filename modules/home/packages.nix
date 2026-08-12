@@ -42,7 +42,6 @@
 
     # Terminal & Script Tools
     tree
-    btop
     fastfetch
     htop
     jq
