@@ -35,6 +35,7 @@
     # Editors
     neovim
     vscodium
+    antigravity-ide
 
     # AI Tools
     opencode
