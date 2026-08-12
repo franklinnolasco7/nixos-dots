@@ -1,5 +1,28 @@
 # Troubleshooting
 
+## Home Manager: "Existing file ... would be clobbered"
+
+Converting an app from raw `xdg.configFile` (e.g. a whole-dir
+`xdg.configFile."<app>"`) to a native module leaves a stale symlink at
+`~/.config/<app>` pointing at the previous generation's store path. On the next
+switch, home-manager refuses to overwrite it once:
+
+```text
+Existing file '/home/<user>/.config/<app>/config' would be clobbered
+Failed to start Home Manager environment for <user>.
+```
+
+Fix — remove the stale symlink (user-owned, no sudo), then rebuild:
+
+```bash
+rm ~/.config/<app>
+./install/rebuild.sh
+```
+
+The next generation owns the path, so it only happens on the conversion
+switch. To make home-manager overwrite instead, add `force = true` to the file
+option (e.g. `xdg.configFile."<app>/config".force = true`).
+
 ## Rollback
 
 Backups are NixOS generations (ext4 root, no snapshots).

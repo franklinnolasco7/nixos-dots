@@ -12,7 +12,7 @@ nixos-dots/
 │   ├── nixos/     # reusable system modules (boot, gc, networking, audio, ...)
 │   └── home/      # reusable home modules (hyprland, zsh, git, ...)
 ├── users/frank/   # home-manager entry point (session paths, imports)
-├── home/          # raw app configs + scripts deployed by home modules
+├── home/          # raw app configs for apps without a native module
 ├── pkgs/          # custom derivations (graphite-gtk-theme), exported via overlays/
 ├── themes/        # wallpapers
 ├── install/       # ops: install, rebuild, update, format, init-secrets
@@ -33,8 +33,19 @@ users/frank/home.nix  (user entry point)
     ▼
 modules/home/  (reusable home modules)
     ▼
-home/.config/ + home/.local/bin/  (raw configs + scripts)
+home/.config/  (raw configs for apps without native modules)
 ```
+
+## Declarative vs raw configs
+
+Where a good home-manager module exists, configs are declared natively in
+`modules/home/` — `programs.*.settings`, style options, and
+`writeShellScriptBin` deploy straight from the store. That keeps an app's whole
+config in Nix: typed, mergeable, no raw files to drift.
+
+Raw files under `home/` remain only where there's no good native module and are
+deployed with `xdg.configFile`. Apps move to native modules as their
+home-manager module matures, and `home/` shrinks accordingly.
 
 ## Flake Inputs
 
