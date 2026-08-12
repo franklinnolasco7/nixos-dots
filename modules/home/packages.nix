@@ -42,7 +42,6 @@
 
     # Terminal & Script Tools
     tree
-    htop
     jq
     gawk
     curl
