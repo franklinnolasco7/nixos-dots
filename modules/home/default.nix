@@ -32,6 +32,6 @@
     ./qt.nix
     ./cursor.nix
     ./xdg.nix
-    ./scripts.nix
+    ./scripts
   ];
 }
