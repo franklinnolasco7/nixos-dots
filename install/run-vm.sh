@@ -24,10 +24,14 @@ fi
 VARS="$(mktemp /tmp/OVMF_VARS.XXXXXX)"
 cp "$OVMF_DIR/FV/OVMF_VARS.fd" "$VARS"
 
+if [[ -z $ISO && ! -e $DISK ]]; then
+  echo "Error: no ISO given and disk '$DISK' does not exist." >&2
+  echo "  Pass a NixOS minimal ISO to run the installer (fresh install)." >&2
+  echo "  Or point at a disk image that already has an installed system to boot it." >&2
+  exit 1
+fi
+
 if [[ ! -e $DISK ]]; then
-  if [[ -z $ISO ]]; then
-    echo "Warning: no ISO given and disk '$DISK' does not exist — nothing to boot." >&2
-  fi
   echo "==> Creating 40G disk image: $DISK"
   qemu-img create -f qcow2 "$DISK" 40G
 fi
