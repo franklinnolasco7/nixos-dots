@@ -10,7 +10,7 @@
 
     # Terminal
     ./zsh.nix
-    ./starship.nix
+    ./starship
     ./kitty.nix
     ./btop.nix
     ./cava
