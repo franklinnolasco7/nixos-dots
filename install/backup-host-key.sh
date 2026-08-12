@@ -78,7 +78,9 @@ usable_dev_of() { # $1 = disk name -> echo largest mountable dev (or nothing)
     ' | sort -k2 -h -r | head -1 | cut -d' ' -f1
 }
 
-declare -a names sizes models
+names=()
+sizes=()
+models=()
 while read -r name rm size model; do
   [[ $rm == "1" ]] || continue
   model="$(printf '%b' "$model")"
