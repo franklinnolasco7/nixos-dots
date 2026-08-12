@@ -9,7 +9,7 @@
     ./wallpapers.nix
 
     # Terminal
-    ./zsh.nix
+    ./zsh
     ./starship
     ./kitty.nix
     ./btop.nix
