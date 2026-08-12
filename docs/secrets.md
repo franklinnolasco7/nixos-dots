@@ -2,10 +2,10 @@
 
 sops-nix + age with two identities:
 
-- **Host SSH key** (`/etc/ssh/ssh_host_ed25519_key`) — decrypts at activation via `sops-nix` (`modules/nixos/sops.nix`).
+- **Host SSH key** (`/etc/ssh/ssh_host_ed25519_key`) — decrypts at activation via `sops-nix` (`modules/nixos/tools/sops.nix`).
 - **User age key** (`~/.config/sops/age/keys.txt`) — lets you edit secrets without `sudo`, and is registered as a **second activation identity** (`sops.age.keyFile`), so sops keeps decrypting if the host key is ever lost.
 
-Config: `.sops.yaml`, module: `modules/nixos/sops.nix`, encrypted data: `secrets/secrets.yaml` (encrypted to every registered recipient).
+Config: `.sops.yaml`, module: `modules/nixos/tools/sops.nix`, encrypted data: `secrets/secrets.yaml` (encrypted to every registered recipient).
 
 ## Is it safe to commit secrets.yaml?
 
@@ -62,7 +62,7 @@ rm -f /tmp/secrets.json
 nix shell nixpkgs#sops -c sops secrets/secrets.yaml   # decrypts with ~/.config/sops/age/keys.txt, re-encrypts on save
 ```
 
-New secret: add a key in the file, wire it up in `modules/nixos/sops.nix`, rebuild.
+New secret: add a key in the file, wire it up in `modules/nixos/tools/sops.nix`, rebuild.
 
 ## Re-encrypt (new key / host)
 

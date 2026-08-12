@@ -50,8 +50,8 @@
 
 ## Dotfiles
 
-// DONE: Deploy `home/.config`
-// DONE: Port `home/.local/bin` scripts into `modules/home/scripts.nix`
+// DONE: Deploy configs via `modules/home/`
+// DONE: Port `home/.local/bin` scripts into `modules/home/scripts/`
 // DONE: Deploy `.zshrc` through Home Manager
 // DONE: Ensure shell scripts are executable
 // DONE: Verify executable permissions survive a fresh installation
@@ -79,15 +79,16 @@
 // DONE: Keep SwayNC configuration
 // DONE: Keep Cava configuration
 // TODO: Keep Neovim Lua configuration
-// DONE: Keep Hyprctl scripts/configuration
+// DONE: Remove the unused Hyprctl module
 
 ## Migration: dotfiles → Home Manager
 
-// DONE: Add cava module (xdg.configFile, source home/.config/cava)
-// DONE: Add htop module (xdg.configFile, source home/.config/htop)
-// DONE: Add micro module (xdg.configFile, source home/.config/micro)
+// DONE: Add cava module (xdg.configFile)
+// DONE: Add htop module (xdg.configFile)
+// DONE: Add micro module (xdg.configFile)
 // DONE: Add gtk-3.0 to repo via hm gtk module
 // DONE: Add fontconfig to repo via hm fonts.fontconfig
+// DONE: Modularize scripts into per-script modules (`scripts/<name>.nix`)
 
 ## Themes
 
@@ -98,12 +99,12 @@
 
 ## Development Environment
 
-// DONE: Finish `shell.nix`
+// DONE: Finish the dev shell (`devShells` in flake.nix)
 // DONE: Add `nixfmt`
 // DONE: Add `stylua`
 // DONE: Add `shfmt`
 // DONE: Add `taplo`
-// DONE: Test `nix-shell`
+// DONE: Test `nix develop`
 
 ## Formatting
 
@@ -114,7 +115,7 @@
 // DONE: Format all Lua files
 // DONE: Format all shell scripts
 // DONE: Format all TOML files
-// DONE: Consider migrating `shell.nix` to `devShells`
+// DONE: Migrate the dev shell to `devShells`
 
 ## Installation
 
