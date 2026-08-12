@@ -17,6 +17,18 @@ change should land in one place.
 nix develop
 ```
 
+## Project board
+
+Track and find work on the [project board](https://github.com/users/franklinnolasco7/projects/2/views/1).
+
+Columns: `Backlog` → `Ready` → `In progress` → `In review` → `Done`
+
+Cards move automatically ([project-automation.yml](.github/workflows/project-automation.yml)):
+
+- issue opened/reopened → **Ready**
+- PR opened → **In progress**, ready for review → **In review**
+- merged → **Done**; closed without merge → **Ready**
+
 ## Format
 
 ```bash
