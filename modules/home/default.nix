@@ -4,7 +4,7 @@
     ./hyprland.nix
     ./hyprctl.nix
     ./waybar
-    ./rofi.nix
+    ./rofi
     ./swaync.nix
     ./wallpapers.nix
 
