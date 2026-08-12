@@ -11,7 +11,7 @@
     # Terminal
     ./zsh
     ./starship
-    ./kitty.nix
+    ./kitty
     ./btop.nix
     ./cava
     ./fastfetch
