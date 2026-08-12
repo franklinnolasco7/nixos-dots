@@ -43,7 +43,6 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 | [Troubleshooting](docs/troubleshooting.md) | Common issues and fixes |
 | [Secrets](docs/secrets.md) | Secrets management |
 | [Per-host: Aspire 7](docs/aspire7.md) | Hardware-specific config for the Aspire 7 |
-| [Theme: Dimspectra](themes/dimspectra.md) | The visual theme powering this setup |
 
 <br>
 
