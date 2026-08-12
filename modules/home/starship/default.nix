@@ -1,0 +1,71 @@
+{ ... }:
+
+{
+  programs.starship = {
+    enable = true;
+
+    settings = {
+      "$schema" = "https://starship.rs/config-schema.json";
+
+      add_newline = false;
+      command_timeout = 300;
+      scan_timeout = 100;
+
+      line_break = {
+        disabled = true;
+      };
+
+      cmd_duration = {
+        min_time = 500;
+        format = "[$duration](bold #a6a6a6) ";
+      };
+
+      character = {
+        success_symbol = "[❯](bold #c8c8c8)";
+        error_symbol = "[❯](bold #5a5a5a)";
+      };
+
+      directory = {
+        style = "bold #e0e0e0";
+      };
+
+      git_branch = {
+        style = "bold #d0d0d0";
+      };
+
+      git_status = {
+        stashed = "[](bold #a8a8a8) ";
+        style = "bold #5a5a5a";
+      };
+
+      git_commit = {
+        tag_symbol = " ";
+        style = "#c0c0c0";
+      };
+
+      aws = {
+        symbol = " ";
+        format = "[$symbol($profile)(\\[$region\\])]($style) ";
+        style = "#b0b0b0";
+      };
+
+      docker_context = {
+        symbol = " ";
+        format = "[$symbol$context]($style) ";
+        style = "#d0d0d0";
+      };
+
+      container = {
+        disabled = true;
+      };
+
+      terraform = {
+        disabled = true;
+      };
+
+      package = {
+        disabled = true;
+      };
+    };
+  };
+}
