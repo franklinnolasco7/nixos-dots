@@ -2,20 +2,21 @@
 
 let
   mk = config.lib.formats.rasi.mkLiteral;
+  colors = import ../../styling/palette.nix;
 in
 {
   programs.rofi.theme = {
     "*" = {
       # palette
-      background = mk "#080808";
-      "background-alt" = mk "#121212";
-      foreground = mk "#a6a6a6";
-      selected = mk "#b4b4b4";
-      active = mk "#c8c8c8";
-      urgent = mk "#f0f0f0";
-      surface = mk "#1a1a1a";
-      overlay = mk "#202020";
-      "text-dim" = mk "#444444";
+      background = mk colors.base;
+      "background-alt" = mk colors.surfaceAlt;
+      foreground = mk colors.fg;
+      selected = mk colors.selected;
+      active = mk colors.active;
+      urgent = mk colors.urgent;
+      surface = mk colors.surface;
+      overlay = mk colors.overlay;
+      "text-dim" = mk colors.textDim;
 
       # global properties
       "border-colour" = mk "var(selected)";
@@ -290,13 +291,13 @@ in
     * {
         font: "Inter 12";
 
-        background:     #080808;
-        background-alt: #121212;
-        surface:        #1a1a1a;
-        foreground:     #a6a6a6;
-        selected:       #b4b4b4;
-        border:         #b4b4b4;
-        placeholder:    #444444;
+        background:     ${colors.base};
+        background-alt: ${colors.surfaceAlt};
+        surface:        ${colors.surface};
+        foreground:     ${colors.fg};
+        selected:       ${colors.selected};
+        border:         ${colors.selected};
+        placeholder:    ${colors.textDim};
     }
 
     window {

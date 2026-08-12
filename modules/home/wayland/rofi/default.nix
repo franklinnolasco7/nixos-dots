@@ -2,8 +2,11 @@
 
 {
   imports = [
+    ./cliphist-rofi-img.nix
+    ./hypr-keybinds.nix
+    ./rofi-web-search.nix
     ./style.nix
-    ./scripts.nix
+    ./wallpaper.nix
   ];
 
   home.file."${config.xdg.configHome}/rofi/config.rasi".force = true;
