@@ -38,9 +38,6 @@
     vscodium
     antigravity-ide
 
-    # AI Tools
-    opencode
-
     # Terminal & Script Tools
     tree
     jq
