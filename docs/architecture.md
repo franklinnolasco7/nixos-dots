@@ -39,5 +39,5 @@ home/.config/ + home/.local/bin/  (raw configs + scripts)
 ## Flake Inputs
 
 - `chaotic` — nyxpkgs-unstable: bleeding-edge pkgs + binary cache. Pins own nixpkgs (cache hits); no `chaotic.*` options enabled yet. Second trust root.
-- `hyprland` + `hyprland-plugins` — flake inputs, not nixpkgs. Pins own nixpkgs (reproducible builds + `hyprland.cachix.org`). Plugins follow `hyprland` → ABI-matched. Portals: `xdg-desktop-portal-gtk` extra, `hyprland` + `gtk` default.
+- `hyprland` — flake input, not nixpkgs. Pins own nixpkgs (reproducible builds + `hyprland.cachix.org`). Portals: `xdg-desktop-portal-gtk` extra, `hyprland` + `gtk` default.
 - `home-manager`, `sops-nix`, `disko` — follow nixpkgs.

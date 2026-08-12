@@ -5,10 +5,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     hyprland.url = "github:hyprwm/Hyprland";
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
     # NOTE: Intentionally not following nixpkgs — Hyprland pins its own nixpkgs
     # for reproducible builds and binary-cache hits.
 
@@ -35,7 +31,6 @@
       self,
       nixpkgs,
       hyprland,
-      hyprland-plugins,
       disko,
       home-manager,
       sops-nix,
