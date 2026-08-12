@@ -464,6 +464,26 @@
         "type": "github"
       }
     },
+    "mcp-servers-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786474603,
+        "narHash": "sha256-zhrMI8rJOjfLVftkiGz7PgVdSNeL7u54DuO5pfgPZXw=",
+        "owner": "natsukium",
+        "repo": "mcp-servers-nix",
+        "rev": "56a528d985dd154a90493b8360380a92dc83823d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "natsukium",
+        "repo": "mcp-servers-nix",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1786247143,
@@ -540,6 +560,7 @@
         "disko": "disko",
         "home-manager": "home-manager_2",
         "hyprland": "hyprland",
+        "mcp-servers-nix": "mcp-servers-nix",
         "nixpkgs": "nixpkgs_3",
         "sops-nix": "sops-nix"
       }
