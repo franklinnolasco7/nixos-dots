@@ -6,11 +6,6 @@
     package = pkgs.hyprland;
 
     extraConfig = builtins.readFile ../../home/.config/hypr/hyprland.lua;
-
-    plugins = [
-      # Example plugin:
-      # inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.hyprbars
-    ];
   };
 
   programs.hyprlock = {
