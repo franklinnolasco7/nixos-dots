@@ -58,10 +58,21 @@
       # user: the declarative username — home-manager config is imported from
       #   users/<user>/ and the name is passed to NixOS modules via specialArgs
       #   (modules/nixos/system/users.nix, modules/nixos/tools/sops.nix).
+      # useDiskoMounts: derive fileSystems/swapDevices from the host's disko
+      #   layout at build time instead of hardware-configuration.nix.
+      #
+      # ⚠ TEMPORARY: only the vm host uses disko-derived mounts. aspire7 was
+      # gated off (and its UUID hardware-configuration.nix restored) so
+      # `nixos-rebuild switch --flake .#aspire7` is safe on the live laptop
+      # while iterating; the live disk has no disk-main-* partlabels.
+      # REVERT before the real install: re-enable useDiskoMounts for aspire7
+      # and let nixos-anywhere regenerate the UUID-free hardware config.
+      # (tracked in TODO.md)
       mkSystem =
         {
           hostDir,
           user,
+          useDiskoMounts ? false,
         }:
         nixpkgs.lib.nixosSystem {
           inherit system;
@@ -74,8 +85,12 @@
             hostDir
             # fileSystems/swapDevices come from the disko layout — the
             # regenerated hardware-configuration.nix stays UUID-free.
+          ]
+          ++ nixpkgs.lib.optionals useDiskoMounts [
             (hostDir + "/disko.nix")
             disko.nixosModules.disko
+          ]
+          ++ [
             hyprland.nixosModules.default
 
             {
@@ -111,11 +126,15 @@
         aspire7 = mkSystem {
           hostDir = ./hosts/aspire7;
           user = "frank";
+          # ⚠ TEMPORARY: disko mounts gated off — live laptop uses its UUID
+          # hardware-configuration.nix until the real install (see TODO.md).
+          useDiskoMounts = false;
         };
 
         vm = mkSystem {
           hostDir = ./hosts/vm;
           user = "frank";
+          useDiskoMounts = true;
         };
       };
 
