@@ -29,6 +29,30 @@ let
 
   cavemanSkill = name: "${cavemanSrc}/skills/${name}";
 
+  # Permission-notify plugin: notify on `permission.asked` unless the active
+  # window is kitty (opencode runs inside kitty, so the prompt is already
+  # visible). Inlined, not checked in — config lives in Nix modules.
+  permissionNotify = pkgs.writeText "opencode-permission-notify.ts" ''
+    export const PermissionNotify = async ({ $ }) => {
+      return {
+        event: async ({ event }) => {
+          if (event.type !== "permission.asked") return
+
+          let active
+          try {
+            active = JSON.parse(await $`hyprctl activewindow -j`.text())
+          } catch {
+            return
+          }
+
+          if (active?.class === "kitty") return
+
+          await $`notify-send -a opencode -i terminal "opencode" "opencode is waiting for permission: ''${event.permission}"`
+        },
+      }
+    }
+  '';
+
   rtkSkills = {
     code-simplifier = rtkSkill "code-simplifier";
     design-patterns = rtkSkill "design-patterns";
@@ -89,7 +113,7 @@ in
       # which is provided by pkgs.rtk (see modules/home/packages.nix).
       plugin = [
         "${pkgs.rtk.src}/hooks/opencode/rtk.ts"
-        ./permission-notify.ts
+        permissionNotify
       ];
     };
 
