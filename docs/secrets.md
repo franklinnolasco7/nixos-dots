@@ -1,9 +1,9 @@
 # Secrets
 
-sops-nix + age with two identities:
+sops-nix + age with two keys:
 
-- **Host SSH key** (`/etc/ssh/ssh_host_ed25519_key`) — decrypts at activation via `sops-nix` (`modules/nixos/tools/sops.nix`).
-- **User age key** (`~/.config/sops/age/keys.txt`) — lets you edit secrets without `sudo`, and is registered as a **second activation identity** (`sops.age.keyFile`), so sops keeps decrypting if the host key is ever lost.
+- **Host SSH key** (`/etc/ssh/ssh_host_ed25519_key`) — the only decryption identity used at activation via `sops-nix` (`modules/nixos/tools/sops.nix`).
+- **User age key** (`~/.config/sops/age/keys.txt`) — lets you edit secrets without `sudo` (interactive `sops` / `sops updatekeys`). Not registered as an activation identity: sops-nix decrypts with the host key only.
 
 Config: `.sops.yaml`, module: `modules/nixos/tools/sops.nix`, encrypted data: `secrets/secrets.yaml` (encrypted to every registered recipient).
 
@@ -11,15 +11,15 @@ Config: `.sops.yaml`, module: `modules/nixos/tools/sops.nix`, encrypted data: `s
 
 Yes. `secrets/secrets.yaml` is encrypted (sops/age) to the recipients registered in `.sops.yaml` — anyone without one of those keys sees only an opaque blob. Secrets live in git safely.
 
-Keep these private and backed up — either one decrypts everything:
+Keep these private and backed up — either one can decrypt the encrypted data:
 
-- `/etc/ssh/ssh_host_ed25519_key` (and `.pub`)
-- `~/.config/sops/age/keys.txt`
+- `/etc/ssh/ssh_host_ed25519_key` (and `.pub`) — the activation identity
+- `~/.config/sops/age/keys.txt` — interactive editing / `updatekeys`
 
-A reinstall regenerates the host key, making old secrets unreadable — back them
-up first with `sudo bash install/backup-host-key.sh` (no arg = detect USB and
-prompt, or pass a destination dir) and restore either identity after
-reinstalling.
+A reinstall regenerates the host key, making old secrets unreadable at
+activation — back them up first with `sudo bash install/backup-host-key.sh` (no
+arg = detect USB and prompt, or pass a destination dir) and restore the host key
+after reinstalling; the age key only enables interactive edits.
 
 > [!NOTE]
 > Builds work before secrets exist — the sops module is gated behind `pathExists` on the secrets file.
@@ -86,4 +86,9 @@ If the new host must read the secrets before an existing host can re-encrypt, fi
 
 ## Reinstalls / recovery
 
-Restore either `/etc/ssh/ssh_host_ed25519_key{,.pub}` **or** `~/.config/sops/age/keys.txt` from the backup created with `install/backup-host-key.sh` — otherwise previously committed secrets cannot be decrypted. Restoring the host key into the new system before `nixos-install` is handled automatically by the installer (`HOST_KEY_SRC`).
+Restore the host key `/etc/ssh/ssh_host_ed25519_key{,.pub}` from the backup
+created with `install/backup-host-key.sh` so activation can decrypt — otherwise
+previously committed secrets cannot be decrypted by sops-nix. Restoring the host
+key into the new system before `nixos-install` is handled automatically by the
+installer (`HOST_KEY_SRC`). Restoring `~/.config/sops/age/keys.txt` is optional
+and only enables interactive `sops` editing, not activation.
