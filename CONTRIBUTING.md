@@ -47,12 +47,26 @@ See [maintenance.md](docs/maintenance.md) for the full workflow.
 
 ## Commits
 
-Follow the [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
-specification, one line:
+Write the subject in the Conventional Commits format, one line:
 
 ```text
 <type>[optional scope]: <description>
 ```
+
+Commits don't need to be one change per commit. If a fix touches a few
+related things, config, docs, a script, it's fine to bundle them in a
+single commit. When the subject can't cover everything, list the parts in
+the body:
+
+```text
+fix: purge eval-time impurity from flake
+
+- sops: drop pathExists-gated age keyFile; host key is the only decryption identity
+- opencode: filesystem MCP root from config.home.homeDirectory
+- docs/secrets.md, install.sh: host key = activation, age key = interactive edits
+```
+
+Common types:
 
 ```text
 feat:        new module/feature
