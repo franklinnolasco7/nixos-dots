@@ -4,7 +4,7 @@
   programs.kitty = {
     enable = true;
 
-    shellIntegration.mode = null;
+    shellIntegration.mode = "enabled";
 
     settings = {
       font_family = "JetBrainsMono Nerd Font";
