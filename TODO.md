@@ -231,6 +231,21 @@
 // TODO: Commit initial stable configuration
 // TODO: Create first release/tag
 
+## Minimal Profile (`-min`)
+
+// DONE: Add typed `myProfile` option (enum, default full) on NixOS + home module systems
+// DONE: Thread profile via specialArgs for `imports` gating (config in imports = infinite recursion)
+// DONE: Add `aspire7-min` and `vm-min` flake configurations
+// DONE: Gate desktop NixOS modules (ly, nvidia, portal, gaming, virtualization) full-only
+// DONE: Gate home desktop categories (wayland, xdg, scripts, kitty, opencode, toolchain, GUI pkgs, theming)
+// DONE: Starship/fastfetch ASCII fallbacks for the console TTY
+// DONE: `system.nixos.label` distinguishes boot entries (e.g. nixos-vm-minimal)
+// DONE: install.sh `--minimal` flag + rebuild.sh `<host>-min` resolution
+// DONE: VM rehearsal of `vm-min` (26.05 minimal ISO): boots to console TTY, no
+//      hyprland/ly/kitty/gvfs/portal units, no nerd font, ASCII fastfetch,
+//      boot label `nixos-vm-minimal` — PASSED
+// TODO: Rehearse `aspire7-min` on the physical laptop before relying on it
+
 ## TO DO PRIO (things to do while im testing)
 
 // DONE: Fix waybar cpu governor and swappiness on rofi options not working (need sudo)
