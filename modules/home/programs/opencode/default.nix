@@ -87,7 +87,10 @@ in
       # rtk's opencode plugin (hooks/opencode/rtk.ts) rewrites bash commands
       # through `rtk` to cut bash output tokens. Requires `rtk` in PATH,
       # which is provided by pkgs.rtk (see modules/home/packages.nix).
-      plugin = [ "${pkgs.rtk.src}/hooks/opencode/rtk.ts" ];
+      plugin = [
+        "${pkgs.rtk.src}/hooks/opencode/rtk.ts"
+        ./permission-notify.ts
+      ];
     };
 
     skills = rtkSkills // cavemanSkills;
