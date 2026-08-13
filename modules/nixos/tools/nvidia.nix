@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -8,6 +8,7 @@
     powerManagement.enable = true;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    # CachyOS-parity driver (matches the CachyOS kernel build) — see nyx.chaotic.cx.
+    package = pkgs.nvidia_cachyos;
   };
 }

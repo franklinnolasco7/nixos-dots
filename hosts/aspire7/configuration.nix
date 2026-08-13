@@ -18,6 +18,13 @@
   ];
 
   # ---------------------------------------------------------------------------
+  # Kernel (host-specific; Chaotic-Nyx CachyOS build — see nyx.chaotic.cx)
+  # ---------------------------------------------------------------------------
+
+  # CachyOS kernel with kconfig parity to upstream; uses the nyx binary cache.
+  boot.kernelPackages = pkgs.linuxPackages_cachyos;
+
+  # ---------------------------------------------------------------------------
   # Nix
   # ---------------------------------------------------------------------------
 
