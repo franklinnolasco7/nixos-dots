@@ -1,5 +1,13 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
+let
+  minimal = config.myProfile == "minimal";
+in
 {
   programs.fastfetch = {
     enable = true;
@@ -7,17 +15,28 @@
     settings = {
       "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json";
 
-      logo = {
-        type = "kitty";
-        source = "${./logo.jpg}";
-        width = 32;
-        height = 16;
-        preserveAspectRatio = true;
-        padding = {
-          top = 2;
-          right = 2;
-        };
-      };
+      logo =
+        if minimal then
+          # ASCII logo — no kitty image protocol on a console TTY.
+          {
+            type = "small";
+            padding = {
+              top = 2;
+              right = 2;
+            };
+          }
+        else
+          {
+            type = "kitty";
+            source = "${./logo.jpg}";
+            width = 32;
+            height = 16;
+            preserveAspectRatio = true;
+            padding = {
+              top = 2;
+              right = 2;
+            };
+          };
 
       display = {
         separator = "  ";
@@ -69,10 +88,15 @@
           type = "terminal";
           key = "term";
         }
+      ]
+      ++ lib.optionals (!minimal) [
+        # No window manager on a console TTY.
         {
           type = "wm";
           key = "wm";
         }
+      ]
+      ++ [
         {
           type = "cpu";
           key = "cpu";

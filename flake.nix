@@ -58,6 +58,12 @@
       # user: the declarative username — home-manager config is imported from
       #   users/<user>/ and the name is passed to NixOS modules via specialArgs
       #   (modules/nixos/system/users.nix, modules/nixos/tools/sops.nix).
+      # profile: "full" (desktop) or "minimal" (console TTY). Injected as the
+      #   typed `myProfile` option on both the NixOS and home module systems
+      #   (modules/nixos/options.nix, modules/home/options.nix). The raw value
+      #   is ALSO passed via specialArgs so `imports` lists can branch on it
+      #   (referencing `config` in `imports` is an infinite recursion); all
+      #   body gates read the typed config.myProfile.
       # useDiskoMounts: derive fileSystems/swapDevices from the host's disko
       #   layout at build time instead of hardware-configuration.nix.
       #
@@ -72,17 +78,38 @@
         {
           hostDir,
           user,
+          profile ? "full",
           useDiskoMounts ? false,
         }:
         nixpkgs.lib.nixosSystem {
           inherit system;
 
           specialArgs = {
-            inherit inputs user;
+            inherit inputs user profile;
           };
 
           modules = [
             hostDir
+            # Parens required: a formals pattern as a bare list element is
+            # ambiguous to the Nix parser (attrset vs function) and fails.
+            (
+              {
+                config,
+                ...
+              }:
+              {
+                config.myProfile = profile;
+              }
+            )
+            (
+              {
+                config,
+                ...
+              }:
+              {
+                config.home-manager.users.${user}.myProfile = profile;
+              }
+            )
             # fileSystems/swapDevices come from the disko layout — the
             # regenerated hardware-configuration.nix stays UUID-free.
           ]
@@ -107,7 +134,7 @@
               home-manager.useUserPackages = true;
 
               home-manager.extraSpecialArgs = {
-                inherit inputs user;
+                inherit inputs user profile;
               };
 
               home-manager.users.${user} = import ./users/${user}/default.nix;
@@ -131,9 +158,24 @@
           useDiskoMounts = false;
         };
 
+        # Console-TTY variant: no display server, Wayland stack, or GUI apps.
+        aspire7-min = mkSystem {
+          hostDir = ./hosts/aspire7;
+          user = "frank";
+          profile = "minimal";
+          useDiskoMounts = false;
+        };
+
         vm = mkSystem {
           hostDir = ./hosts/vm;
           user = "frank";
+          useDiskoMounts = true;
+        };
+
+        vm-min = mkSystem {
+          hostDir = ./hosts/vm;
+          user = "frank";
+          profile = "minimal";
           useDiskoMounts = true;
         };
       };

@@ -1,5 +1,8 @@
-{ ... }:
+{ config, lib, ... }:
 
+let
+  minimal = config.myProfile == "minimal";
+in
 {
   programs.starship = {
     enable = true;
@@ -21,8 +24,9 @@
       };
 
       character = {
-        success_symbol = "[❯](bold #c8c8c8)";
-        error_symbol = "[❯](bold #5a5a5a)";
+        # Minimal: ASCII-only — the console TTY font has no nerd glyphs.
+        success_symbol = if minimal then "[>](bold #c8c8c8)" else "[❯](bold #c8c8c8)";
+        error_symbol = if minimal then "[!](bold #5a5a5a)" else "[❯](bold #5a5a5a)";
       };
 
       directory = {
@@ -34,7 +38,7 @@
       };
 
       git_status = {
-        stashed = "[](bold #a8a8a8) ";
+        stashed = if minimal then "" else "[](bold #a8a8a8) ";
         style = "bold #5a5a5a";
       };
 
@@ -66,6 +70,12 @@
       package = {
         disabled = true;
       };
+    }
+    // lib.optionalAttrs minimal {
+      # Nerd-glyph modules have nothing meaningful to show on a console TTY.
+      aws.disabled = true;
+      docker_context.disabled = true;
+      git_commit.disabled = true;
     };
   };
 }
