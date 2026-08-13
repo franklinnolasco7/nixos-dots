@@ -29,13 +29,19 @@ let
 
   cavemanSkill = name: "${cavemanSrc}/skills/${name}";
 
-  # Permission-notify plugin: notify on `permission.asked` unless the active
-  # window is kitty (opencode runs inside kitty, so the prompt is already
-  # visible). Inlined, not checked in — config lives in Nix modules.
+  # Notify plugin: notify when opencode asks for permission — unless the
+  # active window is kitty (opencode runs inside kitty, so the prompt is
+  # already visible) — and when a task finishes (session.idle), regardless of
+  # the focused window. Inlined, not checked in — config lives in Nix modules.
   permissionNotify = pkgs.writeText "opencode-permission-notify.ts" ''
     export const PermissionNotify = async ({ $ }) => {
       return {
         event: async ({ event }) => {
+          if (event.type === "session.idle") {
+            await $`notify-send -a opencode -i terminal "opencode" "opencode finished the task"`
+            return
+          }
+
           if (event.type !== "permission.asked") return
 
           let active
