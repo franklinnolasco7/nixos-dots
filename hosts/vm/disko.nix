@@ -13,7 +13,12 @@
 # Shares the GPT layout from modules/disko/gpt-layout.nix with the physical
 # Aspire 7 so the installer flow is rehearsed 1:1, minus the NVMe by-id path.
 #
-# Used only by diskoConfigurations.vm.
+# Imported in two places:
+#
+#   - nixosConfigurations.vm (via flake.nix mkSystem) — disko's NixOS module
+#     turns the layout into fileSystems/swapDevices at build time, so
+#     hardware-configuration.nix can stay UUID-free.
+#   - diskoConfigurations.vm — manual disko runs.
 
 { lib, ... }:
 

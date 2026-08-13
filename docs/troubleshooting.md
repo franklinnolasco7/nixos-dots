@@ -45,6 +45,6 @@ git clone <repo-url> /tmp/nixos-dots && cd /tmp/nixos-dots
 nixos-rebuild switch --flake .#<host>
 ```
 
-Disk dead → reinstall: `./install/install.sh <host>` (wipes). Per-host: [Aspire 7](aspire7.md).
+Disk dead → reinstall: `./install/install.sh <host>` (wipes, via nixos-anywhere). Per-host: [Aspire 7](aspire7.md).
 
 Daily ops: [maintenance.md](maintenance.md).

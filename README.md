@@ -9,8 +9,9 @@
 [![Flakes](https://img.shields.io/badge/Flakes-enabled-2b2b2b?style=flat-square&logo=nixos&logoColor=white)](https://nixos.wiki/wiki/Flakes)
 [![Home Manager](https://img.shields.io/badge/Home%20Manager-configured-2b2b2b?style=flat-square)](https://github.com/nix-community/home-manager)
 [![Disko](https://img.shields.io/badge/Disko-declarative%20disks-2b2b2b?style=flat-square)](https://github.com/nix-community/disko)
+[![nixos-anywhere](https://img.shields.io/badge/nixos--anywhere-installs-2b2b2b?style=flat-square)](https://github.com/nix-community/nixos-anywhere)
 
-Declarative NixOS system configuration, managed with Flakes, Home Manager & Disko.
+Declarative NixOS system configuration, managed with Flakes, Home Manager & Disko, installed via nixos-anywhere.
 
 </div>
 
@@ -38,7 +39,7 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 
 | Guide | Description |
 |---|---|
-| [Installation](docs/installation.md) | Fresh install, from ISO to first boot |
+| [Installation](docs/installation.md) | Fresh install via nixos-anywhere, ISO to first boot |
 | [Maintenance](docs/maintenance.md) | Updating, rebuilding, and garbage collection |
 | [Architecture](docs/architecture.md) | How the flake and modules are organized |
 | [Troubleshooting](docs/troubleshooting.md) | Common issues and fixes |

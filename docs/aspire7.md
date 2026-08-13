@@ -18,7 +18,7 @@ Host config: `hosts/aspire7/`.
 
 ```bash
 sudo bash install/backup-host-key.sh   # detects USB drives and prompts (sops identities)
-sudo HOST_KEY_SRC=<backup-dir> ./install/aspire7.sh # Disko wipe + nixos-install
+sudo HOST_KEY_SRC=<backup-dir> ./install/aspire7.sh # nixos-anywhere wipe + install
 sudo reboot
 ```
 
@@ -28,7 +28,10 @@ sudo reboot
 `<mount>/ssh-host-key-backup`, and prints the path — pass it as `HOST_KEY_SRC`.
 
 The installer aborts unless that backup exists and asks you to type `yes`
-before wiping the disk.
+before wiping the disk. It then runs nixos-anywhere from the flake (phases
+`disko,install`), regenerating a **UUID-free** `hardware-configuration.nix`
+(filesystems come from `disko.nix` at build time) and restoring the SSH host
+key into the new system via `--extra-files`.
 
 `./install/aspire7.sh` is a thin wrapper around the generic
 `./install/install.sh aspire7`.

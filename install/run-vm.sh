@@ -9,6 +9,8 @@
 #
 # Disk defaults to /tmp/nixos-vm.qcow2 (40G sparse, created if missing).
 # The installed system is expected on /dev/vda (see hosts/vm/disko.nix).
+# Port 2222 on the host forwards to the VM's SSH (22), so the installer can
+# reach it with: ./install/install.sh vm --target nixos@localhost --ssh-port 2222
 set -euo pipefail
 
 ISO="${1:-}"
@@ -40,7 +42,7 @@ qemu_args=(
   -accel kvm -machine q35 -cpu host
   -smp 4 -m 6G
   -drive file="$DISK",if=virtio
-  -netdev user,id=n0 -device virtio-net-pci,netdev=n0
+  -netdev user,id=n0,hostfwd=tcp::2222-:22 -device virtio-net-pci,netdev=n0
   -drive if=pflash,format=raw,readonly=on,file="$OVMF_DIR/FV/OVMF_CODE.fd"
   -drive if=pflash,format=raw,file="$VARS"
 )

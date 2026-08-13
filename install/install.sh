@@ -1,22 +1,63 @@
 #!/usr/bin/env bash
-# Automated installation for any host in the flake.
+# Automated installation for any host in the flake, via nixos-anywhere.
 #
 # Usage:
-#   sudo ./install/install.sh <hostname>
-#   sudo HOST_KEY_SRC=/path/to/backup ./install/install.sh <hostname>
+#   sudo ./install/install.sh <hostname>                       # self-install from the ISO
+#   ./install/install.sh <hostname> --target <host[:port]> [--ssh-port N] [extra nixos-anywhere args...]
 #
 # <hostname> needs hosts/<hostname>/default.nix and hosts/<hostname>/disko.nix.
 # HOST_KEY_SRC defaults to /root/ssh-host-key-backup (see backup-host-key.sh).
 #
+# The target defaults to the ISO this script runs on (nixos@localhost), and a
+# root check only applies to that default self-install case. For a remote
+# machine or the rehearsal VM, pass --target nixos@<host> (and --ssh-port, e.g.
+# 2222 for run-vm.sh) — no root needed. Every other argument is forwarded to
+# nixos-anywhere unchanged.
+#
+# nixos-anywhere runs the `disko,install` phases: it wipes and repartitions the
+# target disk (from hosts/<hostname>/disko.nix), regenerates the UUID-free
+# hardware-configuration.nix, restores the SSH host key via --extra-files, and
+# installs the system — but does not reboot, so /mnt stays mounted.
+#
 # Safety gates before anything destructive:
 #   1. Aborts unless the host key backup exists (see backup-host-key.sh).
 #   2. Aborts if the backup host key cannot decrypt secrets/secrets.yaml (sops).
+#      Set SKIP_SOPS_CHECK=1 to bypass (e.g. throwaway-key VM rehearsals).
 #   3. Requires typing 'yes' to confirm the disk wipe.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
 HOST="${1:-aspire7}"
+shift || true
+
+TARGET_HOST="nixos@localhost"
+SSH_PORT=""
+TARGET_GIVEN=0
+PASS_ARGS=()
+while (($# > 0)); do
+  case "$1" in
+    --target | --target-host)
+      TARGET_GIVEN=1
+      TARGET_HOST="$2"
+      shift 2
+      ;;
+    --ssh-port)
+      SSH_PORT="$2"
+      shift 2
+      ;;
+    *)
+      PASS_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+# --target accepts host:port shorthand.
+if [[ -z $SSH_PORT && $TARGET_HOST == *:* ]]; then
+  SSH_PORT="${TARGET_HOST##*:}"
+  TARGET_HOST="${TARGET_HOST%:*}"
+fi
 
 if [[ ! -f "hosts/$HOST/default.nix" ]]; then
   echo "Error: host config 'hosts/$HOST/default.nix' not found." >&2
@@ -30,10 +71,17 @@ if [[ ! -f "hosts/$HOST/disko.nix" ]]; then
   exit 1
 fi
 
-if [[ $EUID -ne 0 ]]; then
-  echo "Error: This script must be run as root (or with sudo)." >&2
-  exit 1
-fi
+target_host_part="${TARGET_HOST#*@}"
+case "$target_host_part" in
+  localhost | 127.0.0.1 | ::1)
+    if [[ $EUID -ne 0 ]] && [[ $TARGET_GIVEN != 1 ]]; then
+      echo "Error: self-install to $target_host_part must be run as root (or with sudo)." >&2
+      echo "  Root is only required for the default self-install (no --target)." >&2
+      echo "  For remote/VM targets use --target <host> (no root needed)." >&2
+      exit 1
+    fi
+    ;;
+esac
 
 HOST_KEY_SRC="${HOST_KEY_SRC:-/root/ssh-host-key-backup}"
 
@@ -45,10 +93,12 @@ if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
   exit 1
 fi
 
-echo "==> [0/6] Verifying sops decryption from the backup host key..."
-if [[ -f secrets/secrets.yaml ]]; then
-  tmp=$(mktemp)
-  trap 'rm -f "$tmp"' EXIT
+tmp=$(mktemp)
+extra=$(mktemp -d)
+trap 'rm -f "$tmp"; rm -rf "$extra"' EXIT
+
+if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
+  echo "==> [1/4] Verifying sops decryption from the backup host key..."
   if nix --experimental-features "nix-command flakes" shell nixpkgs#ssh-to-age \
     -c ssh-to-age -private-key -i "$HOST_KEY_SRC/ssh_host_ed25519_key" >"$tmp" \
     && chmod 600 "$tmp" \
@@ -61,8 +111,10 @@ if [[ -f secrets/secrets.yaml ]]; then
     echo "  install/init-secrets.sh to register this host first." >&2
     exit 1
   fi
+elif [[ -f secrets/secrets.yaml ]]; then
+  echo "==> [1/4] Skipping sops decryption check (SKIP_SOPS_CHECK=1)."
 else
-  echo "  no secrets/secrets.yaml in this repo — skipping"
+  echo "==> [1/4] no secrets/secrets.yaml in this repo — skipping"
 fi
 
 disko_dev="$(sed -n 's/.*device = \(lib\.mkDefault \)\?"\([^"]*\)".*/\2/p' "hosts/$HOST/disko.nix" | head -1)"
@@ -82,38 +134,49 @@ if [[ $answer != "yes" ]]; then
 fi
 echo
 
-echo "==> [1/6] Partitioning and mounting disk with Disko (pinned via flake)..."
-nix --experimental-features "nix-command flakes" run .#disko -- \
-  --mode destroy,format,mount "hosts/$HOST/disko.nix"
+# Stage the sops decryption identity (host key) and root's safe.directory into
+# the tree nixos-anywhere copies to the root (/) of the new system.
+install -d -m 0755 "$extra/etc/ssh"
+install -m 0600 "$HOST_KEY_SRC/ssh_host_ed25519_key" "$extra/etc/ssh/ssh_host_ed25519_key"
+install -m 0644 "$HOST_KEY_SRC/ssh_host_ed25519_key.pub" "$extra/etc/ssh/ssh_host_ed25519_key.pub"
+install -d -m 0700 "$extra/root"
+printf '[safe]\n\tdirectory = *\n' >"$extra/root/.gitconfig"
+chmod 0600 "$extra/root/.gitconfig"
 
-echo "==> [2/6] Regenerating hardware-configuration.nix for the new partitions..."
-nixos-generate-config --root /mnt
-cp /mnt/etc/nixos/hardware-configuration.nix "hosts/$HOST/hardware-configuration.nix"
-echo "  wrote hosts/$HOST/hardware-configuration.nix (new filesystem UUIDs)"
+echo "==> [2/4] Running nixos-anywhere (phases: disko,install) — target: $TARGET_HOST"
+nixos_anywhere_args=(
+  --flake ".#$HOST"
+  --target-host "$TARGET_HOST"
+  --extra-files "$extra"
+  --generate-hardware-config nixos-generate-config "./hosts/$HOST/hardware-configuration.nix"
+  --phases disko,install
+)
+if [[ -n $SSH_PORT ]]; then
+  nixos_anywhere_args+=(--ssh-port "$SSH_PORT")
+fi
+nixos_anywhere_args+=("${PASS_ARGS[@]}")
 
-echo "==> [3/6] Restoring SSH host key for sops decryption..."
-install -d -m 0700 /mnt/etc/ssh
-install -m 0600 "$HOST_KEY_SRC/ssh_host_ed25519_key" /mnt/etc/ssh/ssh_host_ed25519_key
-install -m 0644 "$HOST_KEY_SRC/ssh_host_ed25519_key.pub" /mnt/etc/ssh/ssh_host_ed25519_key.pub
-echo "  restored /etc/ssh/ssh_host_ed25519_key{,.pub} into the new system"
+nix --experimental-features "nix-command flakes" run .#nixos-anywhere -- "${nixos_anywhere_args[@]}"
 
-echo "==> [4/6] Installing NixOS system flake (.#$HOST)..."
-nixos-install --flake ".#$HOST"
-
-echo "==> [5/6] Setting safe.directory for root on the new system..."
-if command -v git >/dev/null 2>&1; then
+echo "==> [3/4] Setting safe.directory for root on the new system..."
+if [[ -d /mnt/root ]]; then
   install -d -m 0700 /mnt/root
-  git config --file /mnt/root/.gitconfig --add safe.directory '*'
+  printf '[safe]\n\tdirectory = *\n' >/mnt/root/.gitconfig
+  chmod 0600 /mnt/root/.gitconfig
   echo "  wrote /mnt/root/.gitconfig (safe.directory = *) — no sudo rebuild friction"
 else
-  echo "  git not found — set safe.directory manually after reboot:"
-  echo "    sudo git config --global --add safe.directory '*'"
+  echo "  target's /mnt is not local (remote install) — root safe.directory was"
+  echo "  already written into the new root via --extra-files."
 fi
 
-echo "==> [6/6] Installation complete! Reboot into NixOS with: reboot"
+echo "==> [4/4] Installation complete!"
 echo
-echo "After reboot:"
-echo "  1. Commit the regenerated hardware config:"
+echo "Self-install: reboot into NixOS with: reboot"
+echo "Remote install: the target is already installed — reboot it."
+echo
+echo "After boot:"
+echo "  1. Commit the regenerated hardware config (UUID-free — fileSystems come"
+echo "     from disko.nix, so there is nothing to churn):"
 echo "       cd /path/to/nixos-dots && git add hosts/$HOST/hardware-configuration.nix && git commit"
 echo "  2. Change your user's password (initialPassword is '123'):"
 echo "       passwd <your-user>"
