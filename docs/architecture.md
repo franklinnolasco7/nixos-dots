@@ -32,7 +32,7 @@ nixos-dots/
 │   └── wallpapers/ # wallpapers, read from the repo clone by the `wallpaper` script (modules/home/wayland/rofi/wallpaper.nix)
 ├── install/       # ops: install.sh, rebuild.sh, update.sh, format.sh, init-secrets.sh, backup-host-key.sh, run-vm.sh, aspire7.sh
 ├── docs/          # one page per topic
-└── secrets/       # sops-encrypted, gated behind pathExists
+└── secrets/       # sops-encrypted (committed; enabled via modules/nixos/tools/sops.nix)
 ```
 
 ## Configuration Flow

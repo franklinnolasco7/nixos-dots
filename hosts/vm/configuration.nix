@@ -1,4 +1,7 @@
-{ ... }:
+{
+  config,
+  ...
+}:
 
 {
   imports = [
@@ -11,6 +14,10 @@
   # ---------------------------------------------------------------------------
 
   networking.hostName = "nixos-vm";
+
+  # Distinguish boot entries in systemd-boot between the desktop and the
+  # console-TTY profile (e.g. nixos-vm vs nixos-vm-minimal).
+  system.nixos.label = "${config.networking.hostName}-${config.myProfile}";
 
   # Throwaway VM: no sops, so the user password is a fixed placeholder.
   # (aspire7's password is the sops-managed hash — see modules/nixos/tools/sops.nix.)
