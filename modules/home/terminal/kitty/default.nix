@@ -63,6 +63,7 @@
       cursor_shape = "block";
       cursor_blink_interval = "0.8";
       shell_integration = "enabled";
+      notify_on_cmd_finish = "unfocused 5.0";
     };
 
     keybindings = {
