@@ -42,7 +42,7 @@ Post-install (SSH key, secrets, commit regenerated hardware config):
 ## Checklist (fresh install)
 
 ```bash
-ls ~/wallpapers                          # wallpapers deployed
+wallpaper --dry-run | head                  # wallpaper picker finds themes/wallpapers
 ls ~/.icons                              # cursor theme
 fc-list | grep -iE "jetbrains|noto"      # fonts
 ls ~/.config/hypr ~/.config/waybar       # app configs

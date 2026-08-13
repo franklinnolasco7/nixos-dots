@@ -12,6 +12,10 @@
 
   networking.hostName = "nixos-vm";
 
+  # Throwaway VM: no sops, so the user password is a fixed placeholder.
+  # (aspire7's password is the sops-managed hash — see modules/nixos/tools/sops.nix.)
+  users.users.frank.initialPassword = "123";
+
   # ---------------------------------------------------------------------------
   # System packages
   # ---------------------------------------------------------------------------

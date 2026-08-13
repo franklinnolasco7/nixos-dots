@@ -99,11 +99,11 @@ trap 'rm -f "$tmp"; rm -rf "$extra"' EXIT
 
 if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
   echo "==> [1/4] Verifying sops decryption from the backup host key..."
-  if nix --experimental-features "nix-command flakes" shell nixpkgs#ssh-to-age \
-    -c ssh-to-age -private-key -i "$HOST_KEY_SRC/ssh_host_ed25519_key" >"$tmp" \
+  if nix --experimental-features "nix-command flakes" run .#ssh-to-age -- \
+    -private-key -i "$HOST_KEY_SRC/ssh_host_ed25519_key" >"$tmp" \
     && chmod 600 "$tmp" \
-    && SOPS_AGE_KEY_FILE="$tmp" nix --experimental-features "nix-command flakes" shell \
-      nixpkgs#sops -c sops -d "$(realpath secrets/secrets.yaml)" >/dev/null; then
+    && SOPS_AGE_KEY_FILE="$tmp" nix --experimental-features "nix-command flakes" run \
+      .#sops -- -d "$(realpath secrets/secrets.yaml)" >/dev/null; then
     echo "  decryption ok"
   else
     echo "Error: backup host key cannot decrypt secrets/secrets.yaml." >&2
@@ -178,8 +178,9 @@ echo "After boot:"
 echo "  1. Commit the regenerated hardware config (UUID-free — fileSystems come"
 echo "     from disko.nix, so there is nothing to churn):"
 echo "       cd /path/to/nixos-dots && git add hosts/$HOST/hardware-configuration.nix && git commit"
-echo "  2. Change your user's password (initialPassword is '123'):"
-echo "       passwd <your-user>"
+echo "  2. The user's password is declarative: it's the sops-managed hash"
+echo "     (secrets.yaml key user-password-hash). Change it there and rebuild;"
+echo "     on throwaway hosts without sops (vm) it's the fixed initialPassword."
 echo "  3. Restore the user age key if wanted (interactive sops edits only;"
 echo "     activation already uses the restored host key):"
 echo "       install -m 0600 $HOST_KEY_SRC/user-age-key.txt ~/.config/sops/age/keys.txt"

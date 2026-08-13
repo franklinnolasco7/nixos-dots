@@ -54,56 +54,6 @@
       ];
     }
 
-    # NVIDIA
-    {
-      _args = [
-        "LIBVA_DRIVER_NAME"
-        "nvidia"
-      ];
-    }
-    {
-      _args = [
-        "__GLX_VENDOR_LIBRARY_NAME"
-        "nvidia"
-      ];
-    }
-    {
-      _args = [
-        "GBM_BACKEND"
-        "nvidia-drm"
-      ];
-    }
-    {
-      _args = [
-        "__NV_PRIME_RENDER_OFFLOAD"
-        "1"
-      ];
-    }
-    {
-      _args = [
-        "__VK_LAYER_NV_optimus"
-        "NVIDIA_only"
-      ];
-    }
-    {
-      _args = [
-        "NVD_BACKEND"
-        "direct"
-      ];
-    }
-    {
-      _args = [
-        "AQ_DRM_DEVICES"
-        "/dev/dri/card1:/dev/dri/card0"
-      ];
-    }
-    {
-      _args = [
-        "__GL_VRR_ALLOWED"
-        "0"
-      ];
-    }
-
     # Wayland
     {
       _args = [

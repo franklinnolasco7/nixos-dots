@@ -66,9 +66,13 @@ nixos-anywhere unchanged.
 cd nixos-dots
 
 git add hosts/<hostname>/hardware-configuration.nix && git commit   # UUID-free — nothing to churn
-passwd frank                                                         # was "123"
 ./install/init-secrets.sh                                            # register new host in .sops.yaml
 ```
+
+The user's password is declarative (no `passwd`): it's the sops-managed hash
+`user-password-hash` in `secrets/secrets.yaml` (see [secrets.md](secrets.md)).
+Change it by updating the hash there and rebuilding. Throwaway hosts without
+sops (the rehearsal `vm`) use a fixed `initialPassword`.
 
 Secrets afterward: [secrets.md](secrets.md).
 

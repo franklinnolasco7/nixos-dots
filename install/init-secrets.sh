@@ -34,10 +34,10 @@ if [[ ! -f $HOST_KEY_PUB ]]; then
 fi
 
 ssh-to-age() {
-  nix shell nixpkgs#ssh-to-age -c ssh-to-age "$@"
+  nix run .#ssh-to-age -- "$@"
 }
 sops() {
-  nix shell nixpkgs#sops -c sops "$@"
+  nix run .#sops -- "$@"
 }
 
 echo "[1/4] deriving age recipient from host key ..."

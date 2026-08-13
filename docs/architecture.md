@@ -21,7 +21,7 @@ nixos-dots/
 │   │   ├── terminal/  # shell + TUI (zsh, starship, kitty, btop, htop, fastfetch, cava)
 │   │   ├── programs/  # standalone apps (micro, opencode)
 │   │   ├── development/ # dev tooling (git, development packages)
-│   │   ├── styling/   # appearance (gtk, qt, cursor, fonts, wallpapers)
+│   │   ├── styling/   # appearance (gtk, qt, cursor, fonts)
 │   │   ├── xdg/       # desktop integration (mimetypes)
 │   │   └── scripts/   # helper binaries (airplane-mode, vpn-toggle, battery-notify, ...)
 │   └── disko/     # shared GPT partition layout (gpt-layout.nix)
@@ -29,7 +29,7 @@ nixos-dots/
 ├── pkgs/          # custom derivations (graphite-gtk-theme)
 ├── overlays/      # exports pkgs/* into the nixpkgs set
 ├── themes/
-│   └── wallpapers/ # wallpapers, deployed to ~/wallpapers via modules/home/styling/wallpapers.nix
+│   └── wallpapers/ # wallpapers, read from the repo clone by the `wallpaper` script (modules/home/wayland/rofi/wallpaper.nix)
 ├── install/       # ops: install.sh, rebuild.sh, update.sh, format.sh, init-secrets.sh, backup-host-key.sh, run-vm.sh, aspire7.sh
 ├── docs/          # one page per topic
 └── secrets/       # sops-encrypted, gated behind pathExists
