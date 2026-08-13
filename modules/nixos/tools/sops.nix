@@ -1,16 +1,14 @@
 {
-  lib,
   user,
   ...
 }:
 
 let
   secretsFile = ../../../secrets/secrets.yaml;
-  hasSecrets = builtins.pathExists secretsFile;
   homeDir = "/home/${user}";
 in
 {
-  config = lib.mkIf hasSecrets {
+  config = {
     sops.defaultSopsFile = secretsFile;
 
     sops.age.sshKeyPaths = [

@@ -21,9 +21,6 @@ activation — back them up first with `sudo bash install/backup-host-key.sh` (n
 arg = detect USB and prompt, or pass a destination dir) and restore the host key
 after reinstalling; the age key only enables interactive edits.
 
-> [!NOTE]
-> Builds work before secrets exist — the sops module is gated behind `pathExists` on the secrets file.
-
 ## Bootstrap (first host)
 
 Requires `nix` and an interactive `sudo` (step 4 prompts for the password). Idempotent:
