@@ -185,7 +185,7 @@ in
 
         # --- Screenshots ---
         (mkBindPlain "Print" ''
-          hl.dsp.exec_cmd("hyprshot -m output -m eDP-1 -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")
+          hl.dsp.exec_cmd("hyprshot -m output -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")
         '' [ ])
         (mkBind mainMod "SHIFT + S" ''
           hl.dsp.exec_cmd("hyprshot -m region -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")

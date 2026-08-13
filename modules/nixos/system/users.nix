@@ -9,7 +9,6 @@
 
   users.users.${user} = {
     isNormalUser = true;
-    initialPassword = "123";
     shell = pkgs.zsh;
 
     extraGroups = [

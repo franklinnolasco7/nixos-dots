@@ -1,5 +1,7 @@
 {
+  config,
   pkgs,
+  user,
   ...
 }:
 
@@ -46,6 +48,10 @@
 
   programs.dconf.enable = true;
 
+  # User password is declarative: the sops-managed hash (user-password-hash),
+  # applied on every activation. Change it by editing secrets.yaml + rebuild.
+  users.users.${user}.hashedPasswordFile = config.sops.secrets.user-password-hash.path;
+
   xdg.portal = {
     enable = true;
 
@@ -66,8 +72,6 @@
   # ---------------------------------------------------------------------------
   # Programs
   # ---------------------------------------------------------------------------
-
-  programs.firefox.enable = true;
 
   programs.hyprland = {
     enable = true;
@@ -96,5 +100,11 @@
 
   environment.systemPackages = with pkgs; [
     gsettings-desktop-schemas
+  ];
+
+  # Host-specific home-manager bits (NVIDIA hyprland env, laptop monitor,
+  # mouse device) — see home.nix.
+  home-manager.users.${user}.imports = [
+    ./home.nix
   ];
 }

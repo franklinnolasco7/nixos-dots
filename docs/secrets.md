@@ -64,6 +64,12 @@ nix shell nixpkgs#sops -c sops secrets/secrets.yaml   # decrypts with ~/.config/
 
 New secret: add a key in the file, wire it up in `modules/nixos/tools/sops.nix`, rebuild.
 
+The user's login password hash lives here as `user-password-hash` (applied by
+`users.users.<name>.hashedPasswordFile` on hosts with sops). To change the
+password, put a new `mkpasswd -m sha-512-crypt` / `openssl passwd -6` hash under
+that key and rebuild — `passwd` on the machine is overwritten by the next
+activation.
+
 ## Re-encrypt (new key / host)
 
 ```bash

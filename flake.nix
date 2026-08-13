@@ -153,6 +153,17 @@
           type = "app";
           program = "${nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere";
         };
+
+        # Pinned tooling for install.sh (avoids resolving from the channel).
+        sops = {
+          type = "app";
+          program = "${nixpkgs.legacyPackages.${system}.sops}/bin/sops";
+        };
+
+        ssh-to-age = {
+          type = "app";
+          program = "${nixpkgs.legacyPackages.${system}.ssh-to-age}/bin/ssh-to-age";
+        };
       };
 
       devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
