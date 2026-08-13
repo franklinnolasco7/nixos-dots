@@ -1,6 +1,6 @@
 # Architecture
 
-`nixos-dots` flows: **flake → hosts → NixOS modules → user → Home Manager modules**, all reproducible via one flake. The flake also exposes disko configurations built from the same host dirs.
+`nixos-dots` flows: **flake → hosts → NixOS modules → user → Home Manager modules**, all reproducible via one flake. The flake also exposes disko configurations built from the same host dirs, and pins `nixos-anywhere` (`apps.nixos-anywhere`) to run the installer.
 
 ## Layout
 
@@ -51,10 +51,18 @@ modules/home/  (default.nix pulls wayland/terminal/programs/development/styling/
 home-manager  (programs.*.settings, xdg.configFile, home.file — all native)
 ```
 
-Disk layout is built in parallel: `hosts/<name>/disko.nix` pins the target
-`device` and imports the shared layout from `modules/disko/gpt-layout.nix`,
-feeding `diskoConfigurations.<name>`. Disko files are plain Nix (not modules),
-so they are never imported into the NixOS module list.
+Disk layout lives in `hosts/<name>/disko.nix`: it pins the target `device` and
+imports the shared layout from `modules/disko/gpt-layout.nix`. The same file
+feeds two consumers:
+
+- `diskoConfigurations.<name>` — manual disko runs (`nix run .#disko -- ...`).
+- the NixOS module list (via `mkSystem`) — `disko.nixosModules.disko` turns the
+  layout into `fileSystems`/`swapDevices` at build time, so the regenerated
+  `hardware-configuration.nix` is UUID-free.
+
+During installation, `nixos-anywhere` (phases `disko,install`) runs the
+system's disko script, regenerates `hardware-configuration.nix`
+(`--no-filesystems`), and installs the built toplevel.
 
 ## Declarative configs only
 
@@ -80,4 +88,4 @@ drift from Nix.
 - `chaotic` — nyxpkgs-unstable: bleeding-edge pkgs + binary cache. Pins own nixpkgs (cache hits); wired in via `chaotic.nixosModules.default`, no `chaotic.*` options enabled yet. Second trust root.
 - `hyprland` — flake input, not nixpkgs. Pins own nixpkgs (reproducible builds + `hyprland.cachix.org`). Contributes both `nixosModules.default` and `homeManagerModules.default` (the latter imported in `users/frank/default.nix`).
 - `mcp-servers-nix` — follows nixpkgs.
-- `home-manager`, `sops-nix`, `disko` — follow nixpkgs.
+- `home-manager`, `sops-nix`, `disko`, `nixos-anywhere` — follow nixpkgs.

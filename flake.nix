@@ -13,6 +13,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-anywhere = {
+      url = "github:nix-community/nixos-anywhere";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -37,6 +42,7 @@
       nixpkgs,
       hyprland,
       disko,
+      nixos-anywhere,
       home-manager,
       sops-nix,
       chaotic,
@@ -66,6 +72,10 @@
 
           modules = [
             hostDir
+            # fileSystems/swapDevices come from the disko layout — the
+            # regenerated hardware-configuration.nix stays UUID-free.
+            (hostDir + "/disko.nix")
+            disko.nixosModules.disko
             hyprland.nixosModules.default
 
             {
@@ -114,9 +124,16 @@
         vm = mkDisko ./hosts/vm;
       };
 
-      apps.${system}.disko = {
-        type = "app";
-        program = "${disko.packages.${system}.disko}/bin/disko";
+      apps.${system} = {
+        disko = {
+          type = "app";
+          program = "${disko.packages.${system}.disko}/bin/disko";
+        };
+
+        nixos-anywhere = {
+          type = "app";
+          program = "${nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere";
+        };
       };
 
       devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {

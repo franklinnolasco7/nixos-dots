@@ -89,6 +89,6 @@ If the new host must read the secrets before an existing host can re-encrypt, fi
 Restore the host key `/etc/ssh/ssh_host_ed25519_key{,.pub}` from the backup
 created with `install/backup-host-key.sh` so activation can decrypt — otherwise
 previously committed secrets cannot be decrypted by sops-nix. Restoring the host
-key into the new system before `nixos-install` is handled automatically by the
-installer (`HOST_KEY_SRC`). Restoring `~/.config/sops/age/keys.txt` is optional
-and only enables interactive `sops` editing, not activation.
+key into the new system is handled automatically by the installer (`HOST_KEY_SRC`
+→ nixos-anywhere `--extra-files`). Restoring `~/.config/sops/age/keys.txt` is
+optional and only enables interactive `sops` editing, not activation.

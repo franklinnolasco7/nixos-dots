@@ -4,9 +4,11 @@
 # `device` (the `device = lib.mkDefault "..."` line in the host file is also
 # parsed by install/install.sh to print the destructive warning).
 #
-# NOTE: This is a plain Nix function, not a NixOS module — disko's CLI reads
-# `.disko.devices` straight from the imported file, so the NixOS module system
-# (`imports`) must not be used here.
+# NOTE: The host's disko.nix is imported twice — as a plain Nix function by
+# disko's CLI (which reads `.disko.devices` straight from the file, so the
+# NixOS module system `imports` must not be used here) and as a NixOS module
+# via flake.nix mkSystem, where disko.nixosModules.disko derives
+# fileSystems/swapDevices from the same layout at build time.
 #
 # Partition layout:
 #
