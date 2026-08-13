@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 
 let
   # Caveman (https://github.com/juliusbrussee/caveman) is not packaged in
@@ -114,7 +119,7 @@ in
     context7.enable = true;
     filesystem = {
       enable = true;
-      args = [ "/home/frank" ];
+      args = [ config.home.homeDirectory ];
     };
     git.enable = true;
     fetch.enable = true;
