@@ -1,29 +1,24 @@
 <div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/6eee2472-fa4c-46e2-bf92-b211ef430649">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/b190d8ad-8f1a-47d2-baaa-0823b182a328">
+  <img width="850" alt="nixos-dots banner" src="https://github.com/user-attachments/assets/6eee2472-fa4c-46e2-bf92-b211ef430649">
+</picture>
 
-**Declarative NixOS system configuration, managed with Flakes, Home Manager & Disko.**
+[![NixOS](https://img.shields.io/badge/NixOS-unstable-2b2b2b?style=flat-square&logo=nixos&logoColor=white)](https://nixos.org)
+[![Flakes](https://img.shields.io/badge/Flakes-enabled-2b2b2b?style=flat-square&logo=nixos&logoColor=white)](https://nixos.wiki/wiki/Flakes)
+[![Home Manager](https://img.shields.io/badge/Home%20Manager-configured-2b2b2b?style=flat-square)](https://github.com/nix-community/home-manager)
+[![Disko](https://img.shields.io/badge/Disko-declarative%20disks-2b2b2b?style=flat-square)](https://github.com/nix-community/disko)
 
-[![NixOS](https://img.shields.io/badge/NixOS-unstable-5277C3?style=for-the-badge&logo=nixos&logoColor=white)](https://nixos.org)
-[![Flakes](https://img.shields.io/badge/Flakes-enabled-blue?style=for-the-badge&logo=nixos&logoColor=white)](https://nixos.wiki/wiki/Flakes)
-[![Home Manager](https://img.shields.io/badge/Home%20Manager-configured-7EBAE4?style=for-the-badge)](https://github.com/nix-community/home-manager)
-[![Disko](https://img.shields.io/badge/Disko-declarative%20disks-orange?style=for-the-badge)](https://github.com/nix-community/disko)
+Declarative NixOS system configuration, managed with Flakes, Home Manager & Disko.
 
 </div>
 
-<br>
-
-<p align="center">
-  <img width="100%" alt="Desktop preview" src="https://github.com/user-attachments/assets/f437ce70-0fe4-4c90-a070-251a1f2e85c2" />
-</p>
-
-<br>
-
-## Overview
+# Overview
 
 This repository holds my complete NixOS setup: system configuration, Home Manager dotfiles, and disk layouts, built entirely from Nix flakes for reproducible, declarative deployment across hosts.
 
-<br>
-
-## Philosophy
+# Philosophy
 
 - **Reproducible.** Every machine should be rebuildable from this repo alone, no manual steps, no "it works on my laptop."
 - **Easy to set up.** A fresh install should go from ISO to a fully configured desktop in as few commands as possible.
@@ -31,9 +26,15 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 - **Declarative over imperative.** Describe the end state, let Nix figure out how to get there.
 - **Secure by default.** Secrets stay out of the store, and the system should fail safe, not silently.
 
-<br>
+# Preview
 
-## Docs
+<div align="center">
+
+<img width="850" alt="Desktop preview" src="https://github.com/user-attachments/assets/f437ce70-0fe4-4c90-a070-251a1f2e85c2" />
+
+</div>
+
+# Docs
 
 | Guide | Description |
 |---|---|
@@ -45,16 +46,14 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 | [Forking](docs/forking.md) | Rename user, git identity, secrets bootstrap |
 | [Per-host: Aspire 7](docs/aspire7.md) | Hardware-specific config for the Aspire 7 |
 
-<br>
-
-## Contributing
+# Contributing
 
 - [Contributing Guide](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [License](LICENSE)
 
-<br>
+---
 
-<p align="center">
-  <sub>This repo changes frequently as the setup evolves. Expect things to shift.</sub>
-</p>
+<div align="center">
+<sub>This repo changes frequently as the setup evolves. Expect things to shift.</sub>
+</div>
