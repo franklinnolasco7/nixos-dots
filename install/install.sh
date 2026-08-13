@@ -8,6 +8,10 @@
 # <hostname> needs hosts/<hostname>/default.nix and hosts/<hostname>/disko.nix.
 # HOST_KEY_SRC defaults to /root/ssh-host-key-backup (see backup-host-key.sh).
 #
+# --minimal installs the console-TTY variant of the host (flake config
+# .#<hostname>-min, profile = "minimal"): no display server, Wayland stack, or
+# GUI apps. Defaults to the full desktop profile.
+#
 # The target defaults to the ISO this script runs on (nixos@localhost), and a
 # root check only applies to that default self-install case. For a remote
 # machine or the rehearsal VM, pass --target nixos@<host> (and --ssh-port, e.g.
@@ -31,6 +35,7 @@ cd "$(dirname "$0")/.."
 HOST="${1:-aspire7}"
 shift || true
 
+MINIMAL=0
 TARGET_HOST="nixos@localhost"
 SSH_PORT=""
 TARGET_GIVEN=0
@@ -46,12 +51,24 @@ while (($# > 0)); do
       SSH_PORT="$2"
       shift 2
       ;;
+    --minimal)
+      MINIMAL=1
+      shift
+      ;;
     *)
       PASS_ARGS+=("$1")
       shift
       ;;
   esac
 done
+
+# The -min suffix is a profile variant of an existing host — never a real
+# hostname (see docs/architecture.md). The flake config is .#<host>-min; the
+# host dir (disko, hardware config) stays the base <host>.
+CFG="$HOST"
+if [[ $MINIMAL == 1 ]]; then
+  CFG="$HOST-min"
+fi
 
 # --target accepts host:port shorthand.
 if [[ -z $SSH_PORT && $TARGET_HOST == *:* ]]; then
@@ -145,7 +162,7 @@ chmod 0600 "$extra/root/.gitconfig"
 
 echo "==> [2/4] Running nixos-anywhere (phases: disko,install) — target: $TARGET_HOST"
 nixos_anywhere_args=(
-  --flake ".#$HOST"
+  --flake ".#$CFG"
   --target-host "$TARGET_HOST"
   --extra-files "$extra"
   --generate-hardware-config nixos-generate-config "./hosts/$HOST/hardware-configuration.nix"
@@ -171,6 +188,7 @@ fi
 
 echo "==> [4/4] Installation complete!"
 echo
+echo "Installed profile: $CFG ($([ $MINIMAL == 1 ] && echo 'minimal — console TTY, no display server' || echo 'full — desktop'))."
 echo "Self-install: reboot into NixOS with: reboot"
 echo "Remote install: the target is already installed — reboot it."
 echo

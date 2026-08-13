@@ -8,6 +8,7 @@
 ./install/rebuild.sh test       # this boot only, reboot reverts
 ./install/rebuild.sh <host>     # switch another host
 ./install/rebuild.sh <host> boot
+./install/rebuild.sh <host>-min # switch the console-TTY profile variant
 ```
 
 `rebuild.sh` runs `nixos-rebuild` via `sudo`, and the nix flake fetcher (libgit2)

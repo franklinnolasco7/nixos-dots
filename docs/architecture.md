@@ -17,13 +17,13 @@ nixos-dots/
 │   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, ...)
 │   │   └── tools/    # feature modules (nvidia, gaming, virtualization, sops)
 │   ├── home/      # reusable home modules, grouped into categories
-│   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync)
-│   │   ├── terminal/  # shell + TUI (zsh, starship, kitty, btop, htop, fastfetch, cava)
-│   │   ├── programs/  # standalone apps (micro, opencode)
-│   │   ├── development/ # dev tooling (git, development packages)
+│   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync) — full profile only
+│   │   ├── terminal/  # shell.nix (zsh, starship, btop, htop, fastfetch, cava) + emulator.nix (kitty, full only)
+│   │   ├── programs/  # standalone apps (micro; opencode, full only)
+│   │   ├── development/ # dev tooling (git; toolchain, full only)
 │   │   ├── styling/   # appearance (gtk, qt, cursor, fonts)
-│   │   ├── xdg/       # desktop integration (mimetypes)
-│   │   └── scripts/   # helper binaries (airplane-mode, vpn-toggle, battery-notify, ...)
+│   │   ├── xdg/       # desktop integration (mimetypes) — full profile only
+│   │   └── scripts/   # helper binaries (airplane-mode, vpn-toggle, battery-notify, ...) — full profile only
 │   └── disko/     # shared GPT partition layout (gpt-layout.nix)
 ├── users/frank/   # per-user home-manager entry point (default.nix)
 ├── pkgs/          # custom derivations (graphite-gtk-theme)
@@ -82,6 +82,42 @@ drift from Nix.
 - `vm` — QEMU/KVM rehearsal host. Reuses the same GPT layout on `/dev/vda` to
   rehearse the installer 1:1, but skips host-specific modules (nvidia,
   acer-battery, sops).
+
+## Profiles
+
+Every host has two flake configurations: the **full** desktop profile
+(`.#<host>`, the default) and the **minimal** console-TTY profile
+(`.#<host>-min`).
+
+| Config        | profile   | Contents |
+| ------------- | --------- | -------- |
+| `aspire7`     | full      | Wayland stack, GUI apps, gaming, virtualization, NVIDIA |
+| `aspire7-min` | minimal   | console TTY: zsh, starship (ASCII), btop, htop, fastfetch (ASCII), cava, micro, git, core CLI tools |
+| `vm`          | full      | Wayland stack (no nvidia/sops) |
+| `vm-min`      | minimal   | same as aspire7-min |
+
+The profile is injected by `flake.nix` `mkSystem` as the **typed** `myProfile`
+option on both module systems (`modules/nixos/options.nix` and
+`modules/home/options.nix`) — `enum [ "full" "minimal" ]`, default `full`. A
+typo in a flake profile fails eval on the enum, never silently. Body gates read
+`config.myProfile`. Because the module system forbids referencing `config` in
+`imports` (infinite recursion), `imports` lists branch on the raw `profile`
+value threaded through `specialArgs` / `home-manager.extraSpecialArgs` — the
+two mechanisms never mix.
+
+The minimal profile gates out, on the NixOS side: display manager
+(`services.displayManager.ly`), NVIDIA driver + PRIME, firefox, portal,
+dconf/gvfs, and the `gaming`/`virtualization` tool modules. On the home side:
+the `wayland`, `xdg`, and `scripts` categories, kitty, opencode, the dev
+toolchain, GUI packages (firefox, thunar, vscodium, ...), and GTK/Qt/cursor
+theming. Starship and fastfetch fall back to ASCII (no nerd glyphs, no kitty
+image logo). `system.nixos.label` is `"<hostname>-<profile>"`, so systemd-boot
+shows `nixos-laptop` vs `nixos-laptop-minimal`.
+
+> [!IMPORTANT]
+> The `-min` suffix is **reserved** for profile variants of an existing host —
+> it is never a real hostname. `hosts/<name>-min/` must not be created;
+> `install/rebuild.sh` maps `<host>-min` → `.#<host>-min`.
 
 ## Flake Inputs
 

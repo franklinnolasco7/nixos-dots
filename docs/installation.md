@@ -33,6 +33,17 @@ HOST_KEY_SRC=<usb-backup-dir> ./install/install.sh <hostname> --target nixos@<ip
 sudo reboot   # after a self-install; for a remote target, reboot it directly
 ```
 
+Add `--minimal` to install the console-TTY variant (flake config
+`.#<hostname>-min`, profile = "minimal"): **no display server, Wayland stack,
+or GUI apps** — good for a low-storage install or a headless setup:
+
+```bash
+sudo HOST_KEY_SRC=<usb-backup-dir> ./install/install.sh <hostname> --minimal
+```
+
+The `-min` suffix is reserved for profile variants of an existing host — it is
+never a real hostname, and `hosts/<hostname>-min/` must not be created.
+
 `HOST_KEY_SRC` defaults to `/root/ssh-host-key-backup`. The installer
 **refuses to start without a verified key backup**, verifies that the backup
 host key can decrypt `secrets/secrets.yaml` (so the wipe can't lock you out of
@@ -115,8 +126,10 @@ The Proton profile stays out of the flake — `wg0.conf` is personal.
 4. Wire into `flake.nix` — one line per config:
    ```nix
    nixosConfigurations.<hostname> = mkSystem { hostDir = ./hosts/<hostname>; user = "frank"; };
+   nixosConfigurations.<hostname>-min = mkSystem { hostDir = ./hosts/<hostname>; user = "frank"; profile = "minimal"; };
    diskoConfigurations.<hostname> = mkDisko ./hosts/<hostname>;
    ```
+   Add the `<hostname>-min` line only if you want the console-TTY variant.
 5. The declared user needs a `users/<user>/` home-manager config (`import ./users/${user}/default.nix` fails if missing)
 6. Install (backup keys first): `sudo ./install/install.sh <hostname>`
 

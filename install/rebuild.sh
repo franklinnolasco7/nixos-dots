@@ -6,6 +6,7 @@
 #   install/rebuild.sh boot                  # action on default host
 #   install/rebuild.sh <host>                # switch on <host>
 #   install/rebuild.sh <host> <action>       # action on <host>
+#   install/rebuild.sh <host>-min            # switch the console-TTY profile variant
 #   install/rebuild.sh ... -- <flags>
 set -euo pipefail
 
@@ -15,8 +16,12 @@ HOST="aspire7"
 ACTION="switch"
 
 # Arg detection: a hosts/<name>/ dir means <host>; an action word means ACTION.
+#
+# A host arg may be a hosts/<name>/ dir OR <name>-min — the "-min" suffix is
+# RESERVED for profile variants of an existing host; it is never a real
+# hostname. Don't create hosts/<name>-min/.
 if [[ $# -gt 0 ]]; then
-  if [[ -f "hosts/$1/default.nix" ]]; then
+  if [[ -f "hosts/$1/default.nix" ]] || [[ $1 == *-min && -f "hosts/${1%-min}/default.nix" ]]; then
     HOST="$1"
     shift
   fi

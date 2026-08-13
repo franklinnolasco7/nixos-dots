@@ -4,13 +4,16 @@
   inputs,
   pkgs,
   user,
+  profile,
   ...
 }:
 
 {
   imports = [
-    inputs.hyprland.homeManagerModules.default
     ../../modules/home
+  ]
+  ++ lib.optionals (profile == "full") [
+    inputs.hyprland.homeManagerModules.default
   ];
 
   home.username = user;
