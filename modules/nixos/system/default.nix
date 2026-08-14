@@ -7,6 +7,7 @@
     ./gc.nix
     ./hardware.nix
     ./networking.nix
+    ./printing.nix
     ./tuning.nix
     ./users.nix
   ];

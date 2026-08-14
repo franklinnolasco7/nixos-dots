@@ -14,7 +14,7 @@ nixos-dots/
 │   └── vm/        #   QEMU/KVM rehearsal VM: same GPT layout, targets /dev/vda
 ├── modules/
 │   ├── nixos/     # reusable system modules, grouped into categories
-│   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, ...)
+│   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, printing, ...)
 │   │   └── tools/    # feature modules (nvidia, gaming, virtualization, sops)
 │   ├── home/      # reusable home modules, grouped into categories
 │   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync) — full profile only
