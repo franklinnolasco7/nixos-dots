@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   boot.kernelModules = [ "tcp_bbr3" ];
