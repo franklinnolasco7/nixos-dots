@@ -85,6 +85,15 @@
     rulesProvider = pkgs.ananicy-rules-cachyos;
   };
 
+  # systemd only enables the cpu controller in the root cgroup subtree_control
+  # on demand (when the first user session starts, seconds after boot). ananicy
+  # probes cgroups once at startup and caches "no cgroups", so its cpu-quota
+  # rules (cpu80/85/90) would silently never apply. Enable the controller
+  # explicitly before the daemon starts.
+  systemd.services.ananicy-cpp.serviceConfig.ExecStartPre = [
+    "${pkgs.bash}/bin/bash -c 'echo +cpu > /sys/fs/cgroup/cgroup.subtree_control || true'"
+  ];
+
   # Protontricks drives Steam's own Proton prefixes; no system wine needed.
   environment.systemPackages = with pkgs; [
     protontricks
