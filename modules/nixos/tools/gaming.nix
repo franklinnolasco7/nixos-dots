@@ -77,6 +77,14 @@
     '';
   };
 
+  # Auto-nice daemon with CachyOS's gaming-tuned rules; pairs with the
+  # scx_rustland scheduler (modules/nixos/system/tuning.nix).
+  services.ananicy = {
+    enable = true;
+    package = pkgs.ananicy-cpp;
+    rulesProvider = pkgs.ananicy-rules-cachyos;
+  };
+
   # Protontricks drives Steam's own Proton prefixes; no system wine needed.
   environment.systemPackages = with pkgs; [
     protontricks
