@@ -161,6 +161,7 @@ printf '[safe]\n\tdirectory = *\n' >"$extra/root/.gitconfig"
 chmod 0600 "$extra/root/.gitconfig"
 
 echo "==> [2/4] Running nixos-anywhere (phases: disko,install) — target: $TARGET_HOST"
+# shellcheck disable=SC2054 # --phases is one comma-separated option, not an array
 nixos_anywhere_args=(
   --flake ".#$CFG"
   --target-host "$TARGET_HOST"

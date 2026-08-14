@@ -6,6 +6,21 @@ on:
   pull_request:
 
 jobs:
+  pr-lint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      # PR titles must be Conventional Commits (CONTRIBUTING.md); a bad title
+      # would otherwise reach main unchecked via squash merge.
+      - uses: amannn/action-semantic-pull-request@v5
+        with:
+          types: |
+            feat
+            fix
+            docs
+            chore
+            refactor
+
   check:
     runs-on: ubuntu-latest
     steps:
@@ -14,7 +29,14 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
         with:
           use-flakehub: false
+      # A stale flake.lock silently breaks reproducibility (core philosophy),
+      # so flag it before it reaches main.
+      - uses: DeterminateSystems/flake-checker-action@main
       - name: Flake check
         run: nix flake check
       - name: Format check
         run: nix develop -c ./install/format.sh check
+      # install/*.sh touch disk/partitions; shfmt only formats, shellcheck
+      # lints. -S warning: ignore style/info noise, fail on real problems.
+      - name: ShellCheck
+        run: nix develop -c shellcheck -S warning install/*.sh
