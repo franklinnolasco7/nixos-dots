@@ -12,6 +12,27 @@
     wireplumber.enable = true;
   };
 
+  # Notification sounds (swaync/pw-play) go through the BT headset (default
+  # sink). WirePlumber suspends idle nodes after 3s; waking the suspended A2DP
+  # transport on the first stream drops/truncates the first notification sound.
+  # Keep bluez sinks running so the first play after a quiet stretch is clean.
+  services.pipewire.wireplumber.extraConfig = {
+    "50-bluetooth-keepalive" = {
+      "monitor.bluez.rules" = [
+        {
+          matches = [
+            { "node.name" = "~bluez_output.*"; }
+          ];
+          actions = {
+            "update-props" = {
+              "session.suspend-timeout-seconds" = 0;
+            };
+          };
+        }
+      ];
+    };
+  };
+
   # CachyOS audio power management (see wiki.cachyos.org): disable
   # snd-hda-intel power saving on AC to prevent audio cracks, restore on battery.
   services.udev.extraRules = ''
