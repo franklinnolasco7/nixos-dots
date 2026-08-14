@@ -29,31 +29,87 @@ let
 
   cavemanSkill = name: "${cavemanSrc}/skills/${name}";
 
-  # Notify plugin: notify when opencode asks for permission — unless the
-  # active window is kitty (opencode runs inside kitty, so the prompt is
-  # already visible) — and when a task finishes (session.idle), regardless of
-  # the focused window. Inlined, not checked in — config lives in Nix modules.
-  permissionNotify = pkgs.writeText "opencode-permission-notify.ts" ''
-    export const PermissionNotify = async ({ $ }) => {
+  # Notify plugin: notify when opencode asks a question (the question tool) or
+  # for permission — unless the active window is kitty (opencode runs inside
+  # kitty, so the prompt is already visible) — and when a task finishes
+  # (session.idle), regardless of the focused window. Inlined, not checked in
+  # — config lives in Nix modules.
+  notifyPlugin = pkgs.writeText "opencode-notify.ts" ''
+    export const NotifyPlugin = async ({ $ }) => {
+      const kittyFocused = async () => {
+        try {
+          const active = JSON.parse(await $`hyprctl activewindow -j`.text())
+          return active?.class === "kitty"
+        } catch {
+          return true
+        }
+      }
+
       return {
+        "tool.execute.before": async (input, output) => {
+          if (input.tool !== "question" || await kittyFocused()) return
+
+          const summary = output.args.questions?.[0]?.question
+            ?? "opencode is waiting for an answer"
+          await $`notify-send -a opencode -i terminal "opencode" "Question: ''${summary}"`
+        },
         event: async ({ event }) => {
           if (event.type === "session.idle") {
             await $`notify-send -a opencode -i terminal "opencode" "opencode finished the task"`
             return
           }
 
-          if (event.type !== "permission.asked") return
-
-          let active
-          try {
-            active = JSON.parse(await $`hyprctl activewindow -j`.text())
-          } catch {
-            return
-          }
-
-          if (active?.class === "kitty") return
+          if (event.type !== "permission.asked" || await kittyFocused()) return
 
           await $`notify-send -a opencode -i terminal "opencode" "opencode is waiting for permission: ''${event.permission}"`
+        },
+      }
+    }
+  '';
+
+  # Sensitive paths opencode must never read. Guard plugin: blocks the read,
+  # grep, glob, list, and mcp filesystem tools on these paths via
+  # tool.execute.before. Inlined, not checked in — config lives in Nix modules.
+  sensitivePaths = [
+    "${config.home.homeDirectory}/.config/opencode/context7-key"
+    "${config.home.homeDirectory}/.config/opencode/github-token"
+    "${config.home.homeDirectory}/.config/github/projects-token"
+    "/run/secrets"
+  ];
+
+  sensitiveFilesPlugin = pkgs.writeText "opencode-sensitive-files.ts" ''
+    export const SensitiveFilesPlugin = async () => {
+      const fs = await import("node:fs")
+      const path = await import("node:path")
+      const os = await import("node:os")
+      const home = os.homedir()
+
+      const sensitive = ${builtins.toJSON sensitivePaths}
+        .map((p) => { try { return fs.realpathSync(p) } catch { return p } })
+        .map((p) => (p.endsWith("/") ? p : p + "/"))
+
+      const isSensitive = (p) => {
+        if (typeof p !== "string" || !p) return false
+        const abs = path.resolve(p.startsWith("~") ? home + p.slice(1) : p)
+        let real
+        try { real = fs.realpathSync(abs) } catch { real = abs }
+        const norm = real.endsWith("/") ? real : real + "/"
+        return sensitive.some((s) => norm.startsWith(s))
+      }
+
+      return {
+        "tool.execute.before": async (input, output) => {
+          const tool = input.tool
+          const args = output.args ?? {}
+          const paths = []
+          if (tool === "read" && args.filePath) paths.push(args.filePath)
+          if ((tool === "grep" || tool === "glob" || tool === "list") && args.path) paths.push(args.path)
+          if (tool.startsWith("mcp__filesystem__")) {
+            if (args.path) paths.push(args.path)
+            if (Array.isArray(args.paths)) paths.push(...args.paths)
+          }
+          const hit = paths.find(isSensitive)
+          if (hit) throw new Error("Blocked: refusing to read sensitive path: " + hit)
         },
       }
     }
@@ -119,7 +175,8 @@ in
       # which is provided by pkgs.rtk (see modules/home/packages.nix).
       plugin = [
         "${pkgs.rtk.src}/hooks/opencode/rtk.ts"
-        permissionNotify
+        notifyPlugin
+        sensitiveFilesPlugin
       ];
     };
 
