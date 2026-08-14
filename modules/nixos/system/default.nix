@@ -4,6 +4,7 @@
     ./bluetooth.nix
     ./boot.nix
     ./common.nix
+    ./firewall.nix
     ./gc.nix
     ./hardware.nix
     ./networking.nix
