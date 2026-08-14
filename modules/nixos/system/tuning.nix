@@ -5,6 +5,20 @@
     "vm.swappiness" = 180;
   };
 
+  # CachyOS-aligned performance stack (see nyx.chaotic.cx); requires kernel ≥ 6.12.
+  services.scx = {
+    enable = true;
+    scheduler = "scx_rustland";
+  };
+
+  services.ananicy = {
+    enable = true;
+    package = pkgs.ananicy-cpp;
+    rulesProvider = pkgs.ananicy-rules-cachyos_git;
+  };
+
+  services.fstrim.enable = true;
+
   # Allow wheel group to write CPU governor sysfs files
   services.udev.extraRules = ''
     SUBSYSTEM=="cpu", ACTION=="add", \
