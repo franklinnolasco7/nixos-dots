@@ -4,6 +4,13 @@
   boot.kernel.sysctl = {
     "vm.swappiness" = 180;
     "vm.page-cluster" = 0;
+    # Keep more page cache (dentries/inodes) resident instead of recycling it.
+    "vm.vfs_cache_pressure" = 50;
+    # Cap writeback burst size (CachyOS values): a smaller background limit
+    # smooths NVMe write spikes under load instead of one big stall on flush.
+    "vm.dirty_background_bytes" = 67108864;
+    "vm.dirty_bytes" = 268435456;
+    "vm.dirty_writeback_centisecs" = 1500;
     "kernel.nmi_watchdog" = 0;
     "net.core.netdev_max_backlog" = 65536;
   };
