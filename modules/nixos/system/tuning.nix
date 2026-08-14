@@ -32,6 +32,11 @@
     rulesProvider = pkgs.ananicy-rules-cachyos_git;
   };
 
+  # ananicy-cpp probes cgroups during early boot, before systemd has delegated
+  # the cpu controller; Delegate=yes makes systemd expose it to the unit's
+  # subtree at start (upstream issue #86).
+  systemd.services.ananicy-cpp.serviceConfig.Delegate = true;
+
   services.fstrim.enable = true;
 
   # Allow wheel group to write CPU governor sysfs files
