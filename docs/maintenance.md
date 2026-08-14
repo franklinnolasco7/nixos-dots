@@ -40,6 +40,11 @@ existing multi-user system.
 
 Nix, Lua, shell, TOML. Needs `nix develop`.
 
+## Tweaks
+
+Every performance/reliability tweak, why it exists, and how to verify:
+[tweaks.md](tweaks.md).
+
 ## Before Rebuilding
 
 ```bash
