@@ -14,7 +14,7 @@ nixos-dots/
 │   └── vm/        #   QEMU/KVM rehearsal VM: same GPT layout, targets /dev/vda
 ├── modules/
 │   ├── nixos/     # reusable system modules, grouped into categories
-│   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, printing, ...)
+│   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, printing, smartd, ...)
 │   │   └── tools/    # feature modules (nvidia, gaming, virtualization, sops)
 │   ├── home/      # reusable home modules, grouped into categories
 │   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync) — full profile only
@@ -78,7 +78,9 @@ drift from Nix.
 
 - `aspire7` — the physical machine. Host-specific pieces live in
   `hosts/aspire7/`: NVIDIA PRIME bus IDs, display manager, `acer-battery`; the
-  OS disk is pinned by-id in `disko.nix`.
+  OS disk is pinned by-id in `disko.nix`. NVMe health (wear, pending sectors,
+  temp) is watched by smartd (`modules/nixos/system/smartd.nix`); alerts go to
+  wall, not mail — no MTA is configured.
 - `vm` — QEMU/KVM rehearsal host. Reuses the same GPT layout on `/dev/vda` to
   rehearse the installer 1:1, but skips host-specific modules (nvidia,
   acer-battery, sops).

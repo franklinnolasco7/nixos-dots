@@ -9,6 +9,7 @@
     ./hardware.nix
     ./networking.nix
     ./printing.nix
+    ./smartd.nix
     ./tuning.nix
     ./users.nix
   ];
