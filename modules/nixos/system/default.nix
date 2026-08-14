@@ -6,6 +6,7 @@
     ./common.nix
     ./firewall.nix
     ./gc.nix
+    ./hardening.nix
     ./hardware.nix
     ./networking.nix
     ./printing.nix
