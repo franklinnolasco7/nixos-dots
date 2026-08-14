@@ -31,12 +31,6 @@
     }
     {
       _args = [
-        "QT_SCALE_FACTOR"
-        "1"
-      ];
-    }
-    {
-      _args = [
         "QT_QPA_PLATFORM"
         "wayland;xcb"
       ];
@@ -65,20 +59,6 @@
       _args = [
         "ELECTRON_OZONE_PLATFORM_HINT"
         "auto"
-      ];
-    }
-
-    # GTK
-    {
-      _args = [
-        "GDK_SCALE"
-        "1"
-      ];
-    }
-    {
-      _args = [
-        "GDK_DPI_SCALE"
-        "1"
       ];
     }
   ];
