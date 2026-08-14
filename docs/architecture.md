@@ -110,8 +110,9 @@ value threaded through `specialArgs` / `home-manager.extraSpecialArgs` — the
 two mechanisms never mix.
 
 The minimal profile gates out, on the NixOS side: display manager
-(`services.displayManager.ly`), NVIDIA driver + PRIME, firefox, portal,
-dconf/gvfs, and the `gaming`/`virtualization` tool modules. On the home side:
+(`services.displayManager.ly`), gnome-keyring, NVIDIA driver + PRIME, firefox,
+portal, dconf/gvfs, and the `gaming`/`virtualization` tool modules. On the
+home side:
 the `wayland`, `xdg`, and `scripts` categories, kitty, opencode, the dev
 toolchain, GUI packages (firefox, thunar, vscodium, ...), and GTK/Qt/cursor
 theming. Starship and fastfetch fall back to ASCII (no nerd glyphs, no kitty
