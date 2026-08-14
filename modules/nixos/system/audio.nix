@@ -6,6 +6,11 @@
   # No codec/ALSA/hardware-specific settings: physical audio device
   # verification happens on the real Aspire 7.
 
+  # RTKit hands out realtime scheduling priority to PipeWire/WirePlumber
+  # threads. services.pipewire does not enable it automatically; without it
+  # the audio threads run at normal priority and glitch under load.
+  security.rtkit.enable = true;
+
   services.pipewire = {
     enable = true;
     pulse.enable = true; # wpctl binds + pavucontrol/waybar pulseaudio modules
