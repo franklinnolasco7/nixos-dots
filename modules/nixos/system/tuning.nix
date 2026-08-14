@@ -1,9 +1,24 @@
 { config, pkgs, ... }:
 
 {
+  boot.kernelModules = [ "tcp_bbr3" ];
+
   boot.kernel.sysctl = {
     "vm.swappiness" = 180;
+    # CachyOS-aligned (see wiki.cachyos.org, nyx.chaotic.cx)
+    "net.ipv4.tcp_congestion_control" = "bbr3";
+    "vm.page-cluster" = 0;
+    "kernel.nmi_watchdog" = 0;
+    "net.core.netdev_max_backlog" = 65536;
   };
+
+  systemd.settings.Manager = {
+    DefaultTimeoutStartSec = "15s";
+    DefaultTimeoutStopSec = "10s";
+    DefaultLimitNOFILE = 1048576;
+  };
+
+  services.journald.extraConfig = "SystemMaxUse=50M";
 
   # CachyOS-aligned performance stack (see nyx.chaotic.cx); requires kernel ≥ 6.12.
   services.scx = {
