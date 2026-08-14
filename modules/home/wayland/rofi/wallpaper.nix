@@ -64,7 +64,7 @@
         local img rel name
         while IFS= read -r img; do
           rel="''${img#"$WALLPAPER_DIR/"}"
-          name="''${rel%.*}"
+          name="$(basename "''${rel%.*}")"
           WALLPAPERS["$name"]="$img"
           ensure_thumbnail "$img" "$name"
         done < <(wallpapers)

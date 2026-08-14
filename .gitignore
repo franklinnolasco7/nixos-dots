@@ -32,6 +32,9 @@ secrets/*
 install/.tmp/
 install/tmp/
 
+# Temporary wallpapers (not committed, kept local)
+themes/wallpapers/*/
+
 # Other
 .Trash-*
 lost+found/

@@ -29,11 +29,17 @@ nixos-dots/
 ├── pkgs/          # custom derivations (graphite-gtk-theme)
 ├── overlays/      # exports pkgs/* into the nixpkgs set
 ├── themes/
-│   └── wallpapers/ # wallpapers, read from the repo clone by the `wallpaper` script (modules/home/wayland/rofi/wallpaper.nix)
+│   └── wallpapers/ # committed pool; subfolders = gitignored local temp sets
 ├── install/       # ops: install.sh, rebuild.sh, update.sh, format.sh, init-secrets.sh, backup-host-key.sh, run-vm.sh, aspire7.sh
 ├── docs/          # one page per topic
 └── secrets/       # sops-encrypted (committed; enabled via modules/nixos/tools/sops.nix)
 ```
+
+## Wallpapers
+
+`themes/wallpapers/` holds the committed pool. Subfolders are gitignored
+(`themes/wallpapers/*/`), so add any personal folder — never committed. The
+`wallpaper` picker scans all subfolders, listing images by file name only.
 
 ## Configuration Flow
 
