@@ -53,6 +53,8 @@ with the `disko,install` phases:
 
 1. Wipes and repartitions the disk from `hosts/<hostname>/disko.nix`, mounting
    the new layout at `/mnt`. No reboot phase — `/mnt` stays mounted.
+   LUKS hosts (the shared layout) prompt for the disk passphrase here: twice to
+   format, once to mount. The same passphrase is asked again at boot.
 2. Regenerates `hosts/<hostname>/hardware-configuration.nix` **without
    filesystems** (`--no-filesystems`): `fileSystems`/`swapDevices` come from
    `disko.nix` at build time, so the committed file is **UUID-free** and never
@@ -78,6 +80,15 @@ cd nixos-dots
 
 git add hosts/<hostname>/hardware-configuration.nix && git commit   # UUID-free — nothing to churn
 ./install/init-secrets.sh                                            # register new host in .sops.yaml
+```
+
+On LUKS hosts, back up the LUKS header off-machine while the disk is healthy.
+It is the only way to unlock the root disk if the header (or the disk) is ever
+lost or corrupted:
+
+```bash
+sudo cryptsetup luksHeaderBackup /dev/disk/by-partlabel/disk-main-root \
+  --header-backup-file <off-machine-path>/luks-header.bin
 ```
 
 The user's password is declarative (no `passwd`): it's the sops-managed hash
@@ -155,6 +166,10 @@ SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/ssh-host-key-backup \
 # back on the host — boot the installed VM (no ISO):
 ./install/run-vm.sh
 ```
+
+The VM uses the same LUKS layout as the physical host, so the disko phase
+prompts for the disk passphrase during the rehearsal too — and booting the VM
+asks for it again, which doubles as the unlock check.
 
 > [!NOTE]
 > The VM must boot with UEFI/OVMF (`ls /sys/firmware/efi` non-empty) —

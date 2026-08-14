@@ -14,8 +14,13 @@
 #
 #   GPT
 #   ├── 1 GiB  EFI System Partition  -> /boot
-#   ├── 8 GiB  swap
-#   └── rest    ext4                  -> /
+#   └── rest    LUKS (luks-root) -> ext4 -> /
+#
+# Root is LUKS2-encrypted; disko's initrdUnlock (default) generates the
+# boot.initrd.luks.devices.luks-root entry at build time, so no explicit boot
+# module is needed. The passphrase is typed during install (disko) and again at
+# boot. Swap comes from zramSwap (modules/nixos/system/boot.nix), not a disk
+# partition.
 
 { device }:
 
@@ -44,21 +49,22 @@
           };
         };
 
-        swap = {
-          size = "8G";
-
-          content = {
-            type = "swap";
-          };
-        };
-
         root = {
           size = "100%";
 
           content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/";
+            type = "luks";
+            name = "luks-root";
+
+            # dm-crypt passes discards through so the weekly fstrim.timer
+            # reaches the NVMe; leaks which sectors are free to an attacker.
+            settings.allowDiscards = true;
+
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/";
+            };
           };
         };
       };

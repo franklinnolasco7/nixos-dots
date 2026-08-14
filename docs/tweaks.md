@@ -40,7 +40,8 @@ something misbehaves. Source: CachyOS kernel + settings
 
 ## zram — `modules/nixos/system/boot.nix`
 
-`zramSwap` with `zstd` (swap on compressed RAM).
+`zramSwap` with `zstd` (swap on compressed RAM). This is the only swap — the
+disk swap partition was dropped when root went LUKS (see `modules/disko/gpt-layout.nix`).
 
 ## Audio — `modules/nixos/system/audio.nix`
 
