@@ -167,6 +167,13 @@ SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/ssh-host-key-backup \
 ./install/run-vm.sh
 ```
 
+> [!WARNING]
+> The `vm` config derives its mounts from the disko layout (`disk-main-*`
+> partlabels). Never `nixos-rebuild switch --flake .#vm` on a real host — it
+> rewrites fstab to those partlabels, which don't exist there, leaving `/boot`
+> unmounted. The switch must run inside the VM; on a real host use a dry
+> `install/rebuild.sh vm build` only.
+
 The VM uses the same LUKS layout as the physical host, so the disko phase
 prompts for the disk passphrase during the rehearsal too — and booting the VM
 asks for it again, which doubles as the unlock check.
