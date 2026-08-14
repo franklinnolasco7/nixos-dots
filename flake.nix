@@ -214,6 +214,7 @@
           stylua
           shfmt
           taplo
+          shellcheck
         ];
       };
     };

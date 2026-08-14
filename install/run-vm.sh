@@ -38,6 +38,7 @@ if [[ ! -e $DISK ]]; then
   qemu-img create -f qcow2 "$DISK" 40G
 fi
 
+# shellcheck disable=SC2054 # QEMU options keep commas inside a single argument
 qemu_args=(
   -accel kvm -machine q35 -cpu host
   -smp 4 -m 6G
@@ -48,6 +49,7 @@ qemu_args=(
 )
 
 if [[ -n $ISO ]]; then
+  # shellcheck disable=SC2054 # comma is part of the single -drive option
   qemu_args+=(-boot d -drive file="$ISO",media=cdrom,readonly=on)
 else
   qemu_args+=(-boot c)
