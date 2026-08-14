@@ -28,8 +28,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-
     mcp-servers-nix = {
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -45,7 +43,6 @@
       nixos-anywhere,
       home-manager,
       sops-nix,
-      chaotic,
       ...
     }:
     let
@@ -124,7 +121,6 @@
               nixpkgs.overlays = [ (import ./overlays) ];
             }
 
-            chaotic.nixosModules.default
             sops-nix.nixosModules.sops
 
             home-manager.nixosModules.home-manager

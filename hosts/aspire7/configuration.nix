@@ -18,11 +18,11 @@
   ];
 
   # ---------------------------------------------------------------------------
-  # Kernel (host-specific; Chaotic-Nyx CachyOS build — see nyx.chaotic.cx)
+  # Kernel (host-specific)
   # ---------------------------------------------------------------------------
 
-  # CachyOS kernel with kconfig parity to upstream; uses the nyx binary cache.
-  boot.kernelPackages = pkgs.linuxPackages_cachyos;
+  # Zen: interactive desktop / gaming tuning (sched-ext, ntsync, FQ-CoDel).
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
 
   # ---------------------------------------------------------------------------
   # Nix

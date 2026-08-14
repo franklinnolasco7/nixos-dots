@@ -28,6 +28,7 @@
         libnotify
         chromium
         firefox
+        vesktop
         xdg-utils
         wl-clipboard
         wl-clip-persist

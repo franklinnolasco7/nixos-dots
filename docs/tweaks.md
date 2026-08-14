@@ -1,21 +1,20 @@
 # Tweaks
 
 Every performance/reliability tweak in one place, for future reference when
-something misbehaves. Source: CachyOS kernel + settings
-([wiki.cachyos.org](https://wiki.cachyos.org/), [nyx.chaotic.cx](https://www.nyx.chaotic.cx/)).
+something misbehaves. Kernel is `linux_zen`; some ideas trace back to CachyOS
+settings ([wiki.cachyos.org](https://wiki.cachyos.org/)).
 
 ## Kernel
 
 | What | Where | Effect |
 |---|---|---|
-| `linuxPackages_cachyos` (7.1.8) | `hosts/aspire7/configuration.nix` | EEVDF/BORE scheduler, sched-ext, BBR3, ntsync built in; cached on nyx |
+| `linuxKernel.packages.linux_zen` | `hosts/aspire7/configuration.nix` | interactive desktop/gaming tuning: preempt, FQ-CoDel, sched-ext, ntsync |
 
 ## sysctl — `modules/nixos/system/tuning.nix`
 
 | Key | Value | Why |
 |---|---|---|
 | `vm.swappiness` | 180 | zram companion: swap early, compress instead of evicting page cache |
-| `net.ipv4.tcp_congestion_control` | `bbr3` | BBRv3 (module `tcp_bbr3` in `boot.kernelModules`) |
 | `vm.page-cluster` | 0 | no swap readahead with zram |
 | `kernel.nmi_watchdog` | 0 | drops per-core NMI overhead; loses NMI lockup detection |
 | `net.core.netdev_max_backlog` | 65536 | network receive backlog headroom |
@@ -32,7 +31,6 @@ something misbehaves. Source: CachyOS kernel + settings
 | Service | Detail |
 |---|---|
 | `services.scx` | `scx_rustland` scheduler (requires kernel ≥ 6.12) |
-| `services.ananicy` | `ananicy-cpp` with CachyOS rules (`ananicy-rules-cachyos_git`); unit is `ananicy-cpp.service` |
 | `services.fstrim` | weekly NVMe TRIM |
 
 - udev rule grants `wheel` write access to `scaling_governor` (sysfs).
@@ -51,8 +49,7 @@ battery. Saved value kept in `/run/udev/snd-hda-intel-powersave`.
 
 ## NVIDIA — `modules/nixos/tools/nvidia.nix`
 
-- `nvidia_cachyos` driver (CachyOS parity build), `modesetting` +
-  `powerManagement` enabled.
+- `nvidiaPackages.stable` driver, `modesetting` + `powerManagement` enabled.
 - `-ffile-prefix-map` override remaps the kernel `-dev` tree so the module
   output stays self-contained (see comment in file for the `allowedReferences`
   failure it fixes).
@@ -60,10 +57,9 @@ battery. Saved value kept in `/run/udev/snd-hda-intel-powersave`.
 ## Verify after a rebuild
 
 ```bash
-sysctl net.ipv4.tcp_congestion_control   # bbr3
 cat /proc/sys/vm/page-cluster             # 0
 cat /sys/module/snd_hda_intel/parameters/power_save  # 0 on AC, 10 on battery
-systemctl status scx_rustland ananicy-cpp fstrim.timer
+systemctl status scx_rustland fstrim.timer
 ```
 
 ## Deliberately not applied

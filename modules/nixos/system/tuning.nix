@@ -1,12 +1,8 @@
 { pkgs, ... }:
 
 {
-  boot.kernelModules = [ "tcp_bbr3" ];
-
   boot.kernel.sysctl = {
     "vm.swappiness" = 180;
-    # CachyOS-aligned (see wiki.cachyos.org, nyx.chaotic.cx)
-    "net.ipv4.tcp_congestion_control" = "bbr3";
     "vm.page-cluster" = 0;
     "kernel.nmi_watchdog" = 0;
     "net.core.netdev_max_backlog" = 65536;
@@ -20,22 +16,12 @@
 
   services.journald.extraConfig = "SystemMaxUse=50M";
 
-  # CachyOS-aligned performance stack (see nyx.chaotic.cx); requires kernel ≥ 6.12.
+  # sched-ext userspace scheduler (scx_rustland); requires kernel ≥ 6.12
+  # (sched_ext is upstream; zen has it enabled).
   services.scx = {
     enable = true;
     scheduler = "scx_rustland";
   };
-
-  services.ananicy = {
-    enable = true;
-    package = pkgs.ananicy-cpp;
-    rulesProvider = pkgs.ananicy-rules-cachyos_git;
-  };
-
-  # ananicy-cpp probes cgroups during early boot, before systemd has delegated
-  # the cpu controller; Delegate=yes makes systemd expose it to the unit's
-  # subtree at start (upstream issue #86).
-  systemd.services.ananicy-cpp.serviceConfig.Delegate = true;
 
   services.fstrim.enable = true;
 

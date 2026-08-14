@@ -8,7 +8,6 @@
     powerManagement.enable = true;
     open = false;
     nvidiaSettings = true;
-    # CachyOS-parity driver (matches the CachyOS kernel build) — see nyx.chaotic.cx.
     package =
       let
         # The nvidia kernel modules embed paths pointing into the kernel -dev
@@ -24,7 +23,7 @@
             ];
           });
       in
-      pkgs.nvidia_cachyos.overrideAttrs (o: {
+      config.boot.kernelPackages.nvidiaPackages.stable.overrideAttrs (o: {
         passthru = o.passthru // {
           mod = filePrefixMap o.passthru.mod;
         };
