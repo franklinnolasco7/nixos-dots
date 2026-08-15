@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 let
   graphite-kde-theme = pkgs.fetchFromGitHub {

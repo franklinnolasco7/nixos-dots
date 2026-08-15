@@ -55,47 +55,14 @@
   system.nixos.label = "${config.networking.hostName}-${config.myProfile}";
 
   # ---------------------------------------------------------------------------
-  # Desktop / Services
+  # Services
   # ---------------------------------------------------------------------------
 
   services.openssh.enable = true;
 
-  services.displayManager.ly.enable = lib.mkIf (config.myProfile == "full") true;
-  services.gvfs.enable = lib.mkIf (config.myProfile == "full") true;
-
   # User password is declarative: the sops-managed hash (user-password-hash),
   # applied on every activation. Change it by editing secrets.yaml + rebuild.
   users.users.${user}.hashedPasswordFile = config.sops.secrets.user-password-hash.path;
-
-  programs.dconf.enable = lib.mkIf (config.myProfile == "full") true;
-
-  xdg.portal = lib.mkIf (config.myProfile == "full") {
-    enable = true;
-
-    extraPortals = [
-      pkgs.xdg-desktop-portal-gtk
-    ];
-
-    config = {
-      common = {
-        default = [
-          "hyprland"
-          "gtk"
-        ];
-      };
-    };
-  };
-
-  # ---------------------------------------------------------------------------
-  # Programs
-  # ---------------------------------------------------------------------------
-
-  programs.hyprland = lib.mkIf (config.myProfile == "full") {
-    enable = true;
-    xwayland.enable = true;
-    package = pkgs.hyprland;
-    portalPackage = pkgs.xdg-desktop-portal-hyprland;
-  };
 
   # ---------------------------------------------------------------------------
   # NVIDIA PRIME (host-specific bus IDs)

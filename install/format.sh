@@ -27,8 +27,8 @@ for ext in nix lua sh toml; do
   esac
 
   if ! command -v "$cmd" >/dev/null 2>&1; then
-    echo "[skip] $cmd not installed (run: nix develop)"
-    continue
+    echo "[error] $cmd not on PATH (add it to home packages)" >&2
+    exit 1
   fi
 
   echo "[$cmd] $mode"

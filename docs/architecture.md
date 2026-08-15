@@ -15,7 +15,7 @@ nixos-dots/
 ├── modules/
 │   ├── nixos/     # reusable system modules, grouped into categories
 │   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, printing, smartd, hardening, ...)
-│   │   └── tools/    # feature modules (nvidia, gaming, virtualization, sops)
+│   │   └── tools/    # feature modules (desktop, gaming, virtualization, nvidia, sops)
 │   ├── home/      # reusable home modules, grouped into categories
 │   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync) — full profile only
 │   │   ├── terminal/  # shell.nix (zsh, starship, btop, htop, fastfetch, cava) + emulator.nix (kitty, full only)
@@ -83,7 +83,7 @@ drift from Nix.
 ## Hosts
 
 - `aspire7` — the physical machine. Host-specific pieces live in
-  `hosts/aspire7/`: NVIDIA PRIME bus IDs, display manager, `acer-battery`; the
+  `hosts/aspire7/`: NVIDIA PRIME bus IDs, `acer-battery`; the
   OS disk is pinned by-id in `disko.nix`. NVMe health (wear, pending sectors,
   temp) is watched by smartd (`modules/nixos/system/smartd.nix`); alerts go to
   wall, not mail — no MTA is configured. SSH is key-only with root login
@@ -115,9 +115,10 @@ typo in a flake profile fails eval on the enum, never silently. Body gates read
 value threaded through `specialArgs` / `home-manager.extraSpecialArgs` — the
 two mechanisms never mix.
 
-The minimal profile gates out, on the NixOS side: display manager
-(`services.displayManager.ly`), gnome-keyring, NVIDIA driver + PRIME, firefox,
-portal, dconf/gvfs, and the `gaming`/`virtualization` tool modules. On the
+The minimal profile gates out, on the NixOS side: the shared desktop module
+(`modules/nixos/tools/desktop.nix`: ly, Hyprland, portal, gvfs, dconf),
+gnome-keyring, NVIDIA driver + PRIME, firefox, and the
+`gaming`/`virtualization` tool modules. On the
 home side:
 the `wayland`, `xdg`, and `scripts` categories, kitty, opencode, the dev
 toolchain, GUI packages (firefox, thunar, vscodium, ...), and GTK/Qt/cursor
@@ -132,7 +133,6 @@ shows `nixos-laptop` vs `nixos-laptop-minimal`.
 
 ## Flake Inputs
 
-- `chaotic` — nyxpkgs-unstable: bleeding-edge pkgs + binary cache. Pins own nixpkgs (cache hits); wired in via `chaotic.nixosModules.default`, no `chaotic.*` options enabled yet. Second trust root.
 - `hyprland` — flake input, not nixpkgs. Pins own nixpkgs (reproducible builds + `hyprland.cachix.org`). Contributes both `nixosModules.default` and `homeManagerModules.default` (the latter imported in `users/frank/default.nix`).
 - `mcp-servers-nix` — follows nixpkgs.
 - `home-manager`, `sops-nix`, `disko`, `nixos-anywhere` — follow nixpkgs.

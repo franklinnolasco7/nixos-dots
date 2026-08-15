@@ -1,7 +1,5 @@
 {
   config,
-  lib,
-  pkgs,
   ...
 }:
 
@@ -27,40 +25,12 @@
   users.users.frank.initialHashedPassword = "$6$sjcDVBzcwzGX70tZ$zASI/c5uJh2C3Xz6bVaX4bIxbkbeQ/pMD3ng6QwZa.I3gO7.edAGb4fNW08mHWx/pd3ViUldMNLBirrN6W/xC.";
 
   # ---------------------------------------------------------------------------
-  # Desktop / Services (full profile only — the minimal variant stays on the
-  # console TTY, mirroring hosts/aspire7/configuration.nix)
+  # Display manager — ly itself is enabled by the shared desktop module
+  # (modules/nixos/tools/desktop.nix); the VM only forces its session.
   # ---------------------------------------------------------------------------
 
-  services.displayManager.ly.enable = lib.mkIf (config.myProfile == "full") true;
-  services.displayManager.ly.settings = lib.mkIf (config.myProfile == "full") {
+  services.displayManager.ly.settings = {
     default_session = "Hyprland";
-  };
-  services.gvfs.enable = lib.mkIf (config.myProfile == "full") true;
-
-  programs.dconf.enable = lib.mkIf (config.myProfile == "full") true;
-
-  xdg.portal = lib.mkIf (config.myProfile == "full") {
-    enable = true;
-
-    extraPortals = [
-      pkgs.xdg-desktop-portal-gtk
-    ];
-
-    config = {
-      common = {
-        default = [
-          "hyprland"
-          "gtk"
-        ];
-      };
-    };
-  };
-
-  programs.hyprland = lib.mkIf (config.myProfile == "full") {
-    enable = true;
-    xwayland.enable = true;
-    package = pkgs.hyprland;
-    portalPackage = pkgs.xdg-desktop-portal-hyprland;
   };
 
   # ---------------------------------------------------------------------------

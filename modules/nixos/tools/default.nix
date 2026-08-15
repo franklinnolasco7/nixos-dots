@@ -10,6 +10,7 @@
   # skips them; see docs/architecture.md "Hosts").
   imports = lib.optionals (profile == "full") [
     # GUI/desktop feature modules — not part of the console-TTY minimal profile.
+    ./desktop.nix
     ./gaming.nix
     ./virtualization.nix
   ];

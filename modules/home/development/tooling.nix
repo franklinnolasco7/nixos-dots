@@ -20,5 +20,11 @@
     gcc
     gnumake
     pkg-config
+
+    # This repo's formatters (install/format.sh looks them up on PATH)
+    nixfmt
+    stylua
+    shfmt
+    taplo
   ];
 }
