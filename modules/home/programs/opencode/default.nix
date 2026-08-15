@@ -1,6 +1,7 @@
 {
   pkgs,
   config,
+  lib,
   inputs,
   ...
 }:
@@ -168,63 +169,84 @@ in
     inputs.mcp-servers-nix.homeManagerModules.default
   ];
 
-  programs.mcp.enable = true;
+  # GitHub MCP server needs a PAT, which is provisioned by sops only on hosts
+  # that import modules/nixos/tools/sops.nix (aspire7). Hosts set this flag
+  # from their host-specific home.nix; the VM leaves it off and skips the
+  # server instead of emitting one with an empty token.
+  options.programs.opencode.enableGithubMcpServer = lib.mkEnableOption "the GitHub MCP server";
 
-  programs.opencode = {
-    enable = true;
+  config = {
+    programs.mcp.enable = true;
 
-    enableMcpIntegration = true;
+    programs.opencode = {
+      enable = true;
 
-    settings = {
-      permission = {
-        external_directory = "ask";
+      enableMcpIntegration = true;
+
+      settings = {
+        permission = {
+          external_directory = "ask";
+        };
+
+        # rtk's opencode plugin (hooks/opencode/rtk.ts) rewrites bash commands
+        # through `rtk` to cut bash output tokens. Requires `rtk` in PATH,
+        # which is provided by pkgs.rtk (see modules/home/packages.nix).
+        plugin = [
+          "${rtkSrc}/hooks/opencode/rtk.ts"
+          notifyPlugin
+          sensitiveFilesPlugin
+        ];
       };
 
-      # rtk's opencode plugin (hooks/opencode/rtk.ts) rewrites bash commands
-      # through `rtk` to cut bash output tokens. Requires `rtk` in PATH,
-      # which is provided by pkgs.rtk (see modules/home/packages.nix).
-      plugin = [
-        "${rtkSrc}/hooks/opencode/rtk.ts"
-        notifyPlugin
-        sensitiveFilesPlugin
-      ];
+      skills = rtkSkills // cavemanSkills;
     };
 
-    skills = rtkSkills // cavemanSkills;
-  };
+    # opencode-mcp (https://github.com/AlaeddineMessadi/opencode-mcp)
+    #
+    # Lets any MCP client delegate coding work to OpenCode sessions via its
+    # headless server API (80 tools, 10 resources, 6 prompts, multi-project).
+    #
+    # NOTE: it is meant to give OpenCode's power to OTHER MCP clients (Claude,
+    # Cursor, VS Code, ...). Wiring it up inside OpenCode itself is recursive
+    # (OpenCode would talk to an OpenCode server), so it is left disabled here.
+    #
+    # If you ever want to expose an OpenCode server to another client, run it
+    # standalone instead:
+    #   npx -y opencode-mcp
+    # or add it as a custom server for that client:
+    #   mcp-servers.settings.servers.opencode = {
+    #     command = "${pkgs.nodejs}/bin/npx";
+    #     args = [ "-y" "opencode-mcp" ];
+    #   };
+    #
+    # Useful env vars: OPENCODE_BASE_URL (default http://127.0.0.1:4096),
+    # OPENCODE_SERVER_PASSWORD, OPENCODE_AUTO_SERVE, OPENCODE_DEFAULT_MODEL.
 
-  # opencode-mcp (https://github.com/AlaeddineMessadi/opencode-mcp)
-  #
-  # Lets any MCP client delegate coding work to OpenCode sessions via its
-  # headless server API (80 tools, 10 resources, 6 prompts, multi-project).
-  #
-  # NOTE: it is meant to give OpenCode's power to OTHER MCP clients (Claude,
-  # Cursor, VS Code, ...). Wiring it up inside OpenCode itself is recursive
-  # (OpenCode would talk to an OpenCode server), so it is left disabled here.
-  #
-  # If you ever want to expose an OpenCode server to another client, run it
-  # standalone instead:
-  #   npx -y opencode-mcp
-  # or add it as a custom server for that client:
-  #   mcp-servers.settings.servers.opencode = {
-  #     command = "${pkgs.nodejs}/bin/npx";
-  #     args = [ "-y" "opencode-mcp" ];
-  #   };
-  #
-  # Useful env vars: OPENCODE_BASE_URL (default http://127.0.0.1:4096),
-  # OPENCODE_SERVER_PASSWORD, OPENCODE_AUTO_SERVE, OPENCODE_DEFAULT_MODEL.
+    mcp-servers.programs = {
+      nixos.enable = true;
+      context7.enable = true;
+      filesystem = {
+        enable = true;
+        args = [ config.home.homeDirectory ];
+      };
+      git.enable = true;
+      fetch.enable = true;
+      sequential-thinking.enable = true;
+      serena.enable = true;
+      playwright.enable = true;
 
-  mcp-servers.programs = {
-    nixos.enable = true;
-    context7.enable = true;
-    filesystem = {
-      enable = true;
-      args = [ config.home.homeDirectory ];
+      # Official github-mcp-server over stdio. The PAT is read at launch from the
+      # sops-provisioned token file (passwordCommand), so the secret never lands
+      # in the nix store or the generated opencode.json.
+      github = lib.mkIf config.programs.opencode.enableGithubMcpServer {
+        enable = true;
+        passwordCommand = {
+          GITHUB_PERSONAL_ACCESS_TOKEN = [
+            "${pkgs.coreutils}/bin/cat"
+            "${config.home.homeDirectory}/.config/opencode/github-token"
+          ];
+        };
+      };
     };
-    git.enable = true;
-    fetch.enable = true;
-    sequential-thinking.enable = true;
-    serena.enable = true;
-    playwright.enable = true;
   };
 }

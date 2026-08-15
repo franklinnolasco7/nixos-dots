@@ -8,6 +8,10 @@
     backlightDevice = "amdgpu_bl1";
   };
 
+  # aspire7 is the only host with the sops github-token, so the GitHub MCP
+  # server is enabled here and nowhere else.
+  programs.opencode.enableGithubMcpServer = true;
+
   # Host-specific hyprland settings for the physical laptop. Shared modules
   # (modules/home/wayland/hyprland) stay hardware-agnostic; NVIDIA PRIME env,
   # the laptop monitor and the mouse live here. Imported via

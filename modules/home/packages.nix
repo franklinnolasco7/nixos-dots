@@ -17,6 +17,7 @@
       gh
       rtk
       wireguard-tools
+      rsync
     ])
     # Desktop & extra utilities — full profile only.
     ++ lib.optionals (config.myProfile == "full") (
@@ -60,6 +61,9 @@
         # Audio
         pavucontrol
         pulseaudio
+
+        # LAN file sharing
+        localsend
       ]
     );
 }
