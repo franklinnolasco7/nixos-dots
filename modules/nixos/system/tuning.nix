@@ -15,6 +15,13 @@
     "net.core.netdev_max_backlog" = 65536;
   };
 
+  # Watchdog timers are unused (nmi_watchdog disabled above); blacklist so they
+  # never grab the hardware timer. sp5100_tco is the AMD one (Ryzen), iTCO the Intel.
+  boot.blacklistedKernelModules = [
+    "iTCO_wdt"
+    "sp5100_tco"
+  ];
+
   systemd.settings.Manager = {
     DefaultTimeoutStartSec = "15s";
     DefaultTimeoutStopSec = "10s";

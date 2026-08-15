@@ -19,6 +19,9 @@ settings ([wiki.cachyos.org](https://wiki.cachyos.org/)).
 | `kernel.nmi_watchdog` | 0 | drops per-core NMI overhead; loses NMI lockup detection |
 | `net.core.netdev_max_backlog` | 65536 | network receive backlog headroom |
 
+- `boot.blacklistedKernelModules = ["iTCO_wdt" "sp5100_tco"]` — watchdog timers
+  unused (`nmi_watchdog=0`), so never load them.
+
 ## systemd / journald — `modules/nixos/system/tuning.nix`
 
 - `systemd.settings.Manager`: `DefaultTimeoutStartSec=15s`,
@@ -49,7 +52,12 @@ battery. Saved value kept in `/run/udev/snd-hda-intel-powersave`.
 
 ## NVIDIA — `modules/nixos/tools/nvidia.nix`
 
-- `nvidiaPackages.stable` driver, `modesetting` + `powerManagement` enabled.
+- `nvidiaPackages.latest` driver, `modesetting` + `powerManagement` enabled.
+- `powerManagement.finegrained` adds `NVreg_DynamicPowerManagement=0x02` +
+  runtime-PM bind/unbind udev rules (mobile dGPU powers down when idle; needs
+  offload mode).
+- `boot.extraModprobeConfig`: `NVreg_InitializeSystemMemoryAllocations=0`
+  (skip clearing GPU allocations) + `NVreg_EnableS0ixPowerManagement=1`.
 - `-ffile-prefix-map` override remaps the kernel `-dev` tree so the module
   output stays self-contained (see comment in file for the `allowedReferences`
   failure it fixes).

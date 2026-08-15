@@ -11,6 +11,9 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
+    # Runtime PM on driver bind/unbind (NVreg_DynamicPowerManagement=0x02):
+    # lets the mobile dGPU power down when idle. Requires offload mode.
+    powerManagement.finegrained = true;
     open = false;
     nvidiaSettings = true;
     package =
@@ -57,4 +60,10 @@
         };
       });
   };
+
+  # CachyOS defaults for the dGPU: InitializeSystemMemoryAllocations=0 skips
+  # clearing GPU allocations (small VRAM/encode win), EnableS0ixPowerManagement
+  # lets the idle mobile GPU suspend to S0ix. Keys don't collide with the ones
+  # nixpkgs generates for the nvidia module (PreserveVideoMemoryAllocations...).
+  boot.extraModprobeConfig = "options nvidia NVreg_InitializeSystemMemoryAllocations=0 NVreg_EnableS0ixPowerManagement=1";
 }
