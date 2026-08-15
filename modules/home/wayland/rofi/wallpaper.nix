@@ -14,6 +14,7 @@
 
       THUMBNAIL_DIR="$HOME/.cache/rofi-wallpaper"
       THUMBNAIL_SIZE="320x180"
+      INDEX_FILE="$THUMBNAIL_DIR/index"
       ROFI_THEME="$HOME/.config/rofi/theme-wallpaper.rasi"
       HISTORY_FILE="$THUMBNAIL_DIR/history"
       HISTORY_LIMIT="''${ROFI_WALLPAPER_HISTORY_LIMIT:-200}"
@@ -30,11 +31,11 @@
 
       warn() { printf 'wallpaper: %s\n' "$*" >&2; }
 
-      wallpapers() {
+      find_images() {
         find "$WALLPAPER_DIR" -type f \( \
           -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \
           -o -iname '*.webp' -o -iname '*.gif' -o -iname '*.bmp' \
-          -o -iname '*.tiff' \) | sort
+          -o -iname '*.tiff' \) "$@"
       }
 
       thumbnail_path() {
@@ -42,10 +43,17 @@
       }
 
       ensure_daemon() {
-        pgrep -x awww-daemon >/dev/null || {
+        awww query >/dev/null 2>&1 || {
           awww-daemon &
           sleep 1
         }
+      }
+
+      add_wallpaper() {
+        local img=$1 rel name
+        rel="''${img#"$WALLPAPER_DIR/"}"
+        name="$(basename "''${rel%.*}")"
+        WALLPAPERS["$name"]="$img"
       }
 
       ensure_thumbnail() {
@@ -60,15 +68,47 @@
           || warn "thumbnail failed for $name"
       }
 
-      index_wallpapers() {
-        local img rel name
-        while IFS= read -r img; do
-          rel="''${img#"$WALLPAPER_DIR/"}"
-          name="$(basename "''${rel%.*}")"
-          WALLPAPERS["$name"]="$img"
-          ensure_thumbnail "$img" "$name"
-        done < <(wallpapers)
+      ensure_thumbnails() {
+        local name img
+        for name in "''${!WALLPAPERS[@]}"; do
+          img="''${WALLPAPERS[$name]}"
+          [[ -f $(thumbnail_path "$name") ]] || printf '%s\0%s\0' "$name" "$img"
+        done | xargs -0 -r -n2 -P 3 bash -c 'ensure_thumbnail "$2" "$1"' _
       }
+
+      load_index() {
+        local name rel
+        while IFS=$'\t' read -r name rel; do
+          [[ -n $name && -f "$WALLPAPER_DIR/$rel" ]] || continue
+          WALLPAPERS["$name"]="$WALLPAPER_DIR/$rel"
+        done <"$INDEX_FILE"
+      }
+
+      write_index() {
+        local name tmp
+        tmp="$(mktemp)"
+        for name in "''${!WALLPAPERS[@]}"; do
+          printf '%s\t%s\n' "$name" "''${WALLPAPERS[$name]#"$WALLPAPER_DIR/"}"
+        done | sort >"$tmp"
+        mv -f "$tmp" "$INDEX_FILE"
+      }
+
+      scan_wallpapers() {
+        local img
+        local -a extra=()
+        if [[ -f $INDEX_FILE ]]; then
+          load_index
+          extra=(-newer "$INDEX_FILE")
+        fi
+        while IFS= read -r img; do
+          add_wallpaper "$img"
+        done < <(find_images "''${extra[@]}")
+        ensure_thumbnails
+        write_index
+      }
+
+      export -f ensure_thumbnail thumbnail_path warn
+      export THUMBNAIL_DIR THUMBNAIL_SIZE
 
       read_history() {
         mapfile -t history <"$HISTORY_FILE" 2>/dev/null || history=()
@@ -109,14 +149,14 @@
 
       if [[ $DRY_RUN -eq 1 ]]; then
         read_history
-        index_wallpapers
+        scan_wallpapers
         build_menu
         exit 0
       fi
 
       ensure_daemon
       read_history
-      index_wallpapers
+      scan_wallpapers
 
       selection=$(build_menu | rofi \
         -theme "$ROFI_THEME" \
