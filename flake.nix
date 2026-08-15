@@ -28,6 +28,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # CachyOS kernel + nvidia drivers (linuxPackages_cachyos, nvidia_cachyos),
+    # served from the nyx binary cache (see nyx.chaotic.cx).
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+
     nvidia-patch = {
       url = "github:icewind1991/nvidia-patch-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -48,6 +52,7 @@
       nixos-anywhere,
       home-manager,
       sops-nix,
+      chaotic,
       ...
     }:
     let
@@ -127,6 +132,8 @@
             }
 
             sops-nix.nixosModules.sops
+
+            chaotic.nixosModules.default
 
             home-manager.nixosModules.home-manager
 

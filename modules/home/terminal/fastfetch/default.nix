@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -14,6 +13,13 @@ in
 
     settings = {
       "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json";
+
+      # Terminal version detection walks /proc + queries the kitty socket and
+      # costs ~90ms every run. Displaying "kitty" without its version is the
+      # price for a near-instant fetch.
+      general = {
+        detectVersion = false;
+      };
 
       logo =
         if minimal then
@@ -28,7 +34,7 @@ in
         else
           {
             type = "kitty";
-            source = "${./logo.jpg}";
+            source = "${./logo.webp}";
             width = 32;
             height = 16;
             preserveAspectRatio = true;
@@ -70,6 +76,12 @@ in
         {
           type = "kernel";
           key = "kernel";
+        }
+        # "host" module reports the DMI product name; shown here as the device.
+        {
+          type = "host";
+          key = "device";
+          format = "{name}";
         }
         {
           type = "uptime";

@@ -35,9 +35,10 @@
             ];
           });
 
-        # `latest` (not `stable`): keylase's patch list only covers drivers up
-        # to the current branch, and `stable` has lagged behind it.
-        targetPkg = config.boot.kernelPackages.nvidiaPackages.latest;
+        # CachyOS-parity driver (matches the CachyOS kernel build) — see
+        # nyx.chaotic.cx. The keylase patch list may lag a driver version; the
+        # hasAttr guards below skip the patch instead of breaking the build.
+        targetPkg = pkgs.nvidia_cachyos;
 
         # Unlock the NVENC session limit + FBC (keylase patches) on the consumer
         # GPU for OBS NVENC. Guard skips a patch while a driver version isn't in

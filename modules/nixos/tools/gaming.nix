@@ -8,9 +8,10 @@
   programs.steam.enable = true;
   programs.steam.gamescopeSession.enable = true;
 
-  # Proton-GE ships a steamcompattool output; it shows up as "GE-Proton" under
-  # Steam → Settings → Compatibility (wiki.nixos.org/wiki/Steam "Proton").
-  programs.steam.extraCompatPackages = [ pkgs.proton-ge-bin ];
+  # Proton-CachyOS (GE-Proton fork with CachyOS patches) ships a steamcompattool
+  # output; it shows up under Steam → Settings → Compatibility
+  # (wiki.nixos.org/wiki/Steam "Proton").
+  programs.steam.extraCompatPackages = [ pkgs.proton-cachyos ];
 
   # MangoHud must live inside Steam's FHS env so games can dlopen its overlay;
   # toggling happens via MANGOHUD=1 (set session-wide in modules/home/programs/gaming.nix).
@@ -25,7 +26,7 @@
     capSysNice = true;
   };
 
-  # The zen kernel builds NTSYNC (CONFIG_NTSYNC=y) but nixpkgs ships no udev
+  # The cachyos kernel builds NTSYNC (CONFIG_NTSYNC=y) but nixpkgs ships no udev
   # rule for it, leaving /dev/ntsync root-only; Proton then silently falls back
   # to esync. Grant uaccess so user-run games can open it.
   services.udev.extraRules = ''
@@ -82,7 +83,7 @@
   services.ananicy = {
     enable = true;
     package = pkgs.ananicy-cpp;
-    rulesProvider = pkgs.ananicy-rules-cachyos;
+    rulesProvider = pkgs.ananicy-rules-cachyos_git;
   };
 
   # systemd only enables the cpu controller in the root cgroup subtree_control

@@ -1,8 +1,12 @@
 { pkgs, ... }:
 
 {
+  boot.kernelModules = [ "tcp_bbr3" ];
+
   boot.kernel.sysctl = {
     "vm.swappiness" = 180;
+    # CachyOS-aligned (see wiki.cachyos.org, nyx.chaotic.cx)
+    "net.ipv4.tcp_congestion_control" = "bbr3";
     "vm.page-cluster" = 0;
     # Keep more page cache (dentries/inodes) resident instead of recycling it.
     "vm.vfs_cache_pressure" = 50;
@@ -31,7 +35,7 @@
   services.journald.extraConfig = "SystemMaxUse=50M";
 
   # sched-ext userspace scheduler (scx_rustland); requires kernel ≥ 6.12
-  # (sched_ext is upstream; zen has it enabled).
+  # (sched_ext is upstream; the cachyos kernel has it enabled).
   services.scx = {
     enable = true;
     scheduler = "scx_rustland";

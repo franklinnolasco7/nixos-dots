@@ -14,7 +14,6 @@
 
       THUMBNAIL_DIR="$HOME/.cache/rofi-wallpaper"
       THUMBNAIL_SIZE="320x180"
-      INDEX_FILE="$THUMBNAIL_DIR/index"
       ROFI_THEME="$HOME/.config/rofi/theme-wallpaper.rasi"
       HISTORY_FILE="$THUMBNAIL_DIR/history"
       HISTORY_LIMIT="''${ROFI_WALLPAPER_HISTORY_LIMIT:-200}"
@@ -76,35 +75,15 @@
         done | xargs -0 -r -n2 -P 3 bash -c 'ensure_thumbnail "$2" "$1"' _
       }
 
-      load_index() {
-        local name rel
-        while IFS=$'\t' read -r name rel; do
-          [[ -n $name && -f "$WALLPAPER_DIR/$rel" ]] || continue
-          WALLPAPERS["$name"]="$WALLPAPER_DIR/$rel"
-        done <"$INDEX_FILE"
-      }
-
-      write_index() {
-        local name tmp
-        tmp="$(mktemp)"
-        for name in "''${!WALLPAPERS[@]}"; do
-          printf '%s\t%s\n' "$name" "''${WALLPAPERS[$name]#"$WALLPAPER_DIR/"}"
-        done | sort >"$tmp"
-        mv -f "$tmp" "$INDEX_FILE"
-      }
-
+      # Full scan every launch. A "newer than index" filter silently dropped
+      # any image whose mtime predated the last index write (e.g. images copied
+      # in with old timestamps) — thumbnails are the real cache gate.
       scan_wallpapers() {
         local img
-        local -a extra=()
-        if [[ -f $INDEX_FILE ]]; then
-          load_index
-          extra=(-newer "$INDEX_FILE")
-        fi
         while IFS= read -r img; do
           add_wallpaper "$img"
-        done < <(find_images "''${extra[@]}")
+        done < <(find_images)
         ensure_thumbnails
-        write_index
       }
 
       export -f ensure_thumbnail thumbnail_path warn
@@ -159,6 +138,7 @@
       scan_wallpapers
 
       selection=$(build_menu | rofi \
+        -sync \
         -theme "$ROFI_THEME" \
         -dmenu \
         -p "󰸉 " \

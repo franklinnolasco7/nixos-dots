@@ -1,20 +1,21 @@
 # Tweaks
 
 Every performance/reliability tweak in one place, for future reference when
-something misbehaves. Kernel is `linux_zen`; some ideas trace back to CachyOS
-settings ([wiki.cachyos.org](https://wiki.cachyos.org/)).
+something misbehaves. Source: CachyOS kernel + settings
+([wiki.cachyos.org](https://wiki.cachyos.org/), [nyx.chaotic.cx](https://www.nyx.chaotic.cx/)).
 
 ## Kernel
 
 | What | Where | Effect |
 |---|---|---|
-| `linuxKernel.packages.linux_zen` | `hosts/aspire7/configuration.nix` | interactive desktop/gaming tuning: preempt, FQ-CoDel, sched-ext, ntsync |
+| `linuxPackages_cachyos` | `hosts/aspire7/configuration.nix` | EEVDF/BORE scheduler, sched-ext, BBR3, ntsync built in; cached on nyx |
 
 ## sysctl — `modules/nixos/system/tuning.nix`
 
 | Key | Value | Why |
 |---|---|---|
 | `vm.swappiness` | 180 | zram companion: swap early, compress instead of evicting page cache |
+| `net.ipv4.tcp_congestion_control` | `bbr3` | BBRv3 (module `tcp_bbr3` in `boot.kernelModules`) |
 | `vm.page-cluster` | 0 | no swap readahead with zram |
 | `kernel.nmi_watchdog` | 0 | drops per-core NMI overhead; loses NMI lockup detection |
 | `net.core.netdev_max_backlog` | 65536 | network receive backlog headroom |
@@ -52,7 +53,8 @@ battery. Saved value kept in `/run/udev/snd-hda-intel-powersave`.
 
 ## NVIDIA — `modules/nixos/tools/nvidia.nix`
 
-- `nvidiaPackages.latest` driver, `modesetting` + `powerManagement` enabled.
+- `nvidia_cachyos` driver (CachyOS parity build), `modesetting` +
+  `powerManagement` enabled.
 - `powerManagement.finegrained` adds `NVreg_DynamicPowerManagement=0x02` +
   runtime-PM bind/unbind udev rules (mobile dGPU powers down when idle; needs
   offload mode).
@@ -65,6 +67,7 @@ battery. Saved value kept in `/run/udev/snd-hda-intel-powersave`.
 ## Verify after a rebuild
 
 ```bash
+sysctl net.ipv4.tcp_congestion_control   # bbr3
 cat /proc/sys/vm/page-cluster             # 0
 cat /sys/module/snd_hda_intel/parameters/power_save  # 0 on AC, 10 on battery
 systemctl status scx_rustland fstrim.timer
@@ -76,4 +79,3 @@ systemctl status scx_rustland fstrim.timer
 - `chaotic.hdr` — AMD-only.
 - CPU microarch override — no nyx cache for it → costly local kernel build.
 - `linuxPackages_cachyos-hardened` / `-bmq` — no sched-ext.
-- ntsync — module absent from the installed kernel tree.

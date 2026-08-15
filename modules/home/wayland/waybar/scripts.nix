@@ -160,13 +160,31 @@
   '';
 
   power-profile = pkgs.writeShellScriptBin "power-profile" ''
+    profiles=(performance balanced power-saver)
+
+    # Cycle one step forward: guaranteed to work, no rofi (the dmenu path
+    # silently drops the selection on XWayland).
+    if [[ ''${1:-} == "cycle" ]]; then
+      current=$(powerprofilesctl get)
+
+      next="''${profiles[0]}"
+      for i in "''${!profiles[@]}"; do
+        if [[ "''${profiles[$i]}" == "$current" ]]; then
+          next="''${profiles[((i + 1) % "''${#profiles[@]}")]}"
+          break
+        fi
+      done
+
+      powerprofilesctl set "$next"
+      notify-send -i "battery-symbolic" "Power Profile" "Set to $next" -t 2000
+      exit 0
+    fi
+
     if [[ $1 == "menu" ]]; then
       current=$(powerprofilesctl get)
 
-      options=("performance" "balanced" "power-saver")
-
       menu=""
-      for profile in "''${options[@]}"; do
+      for profile in "''${profiles[@]}"; do
         if [[ $profile == "$current" ]]; then
           menu="''${menu}● $profile"$'\n'
         else
