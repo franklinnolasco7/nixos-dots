@@ -16,11 +16,12 @@
     font = "Inter 12";
 
     extraConfig = {
-      modi = "drun,run,window";
+      modi = "drun,run,ssh,window";
       show-icons = true;
       icon-theme = "Papirus-Dark";
       display-drun = "󰀻";
       display-run = "";
+      display-ssh = "";
       display-window = "";
       kb-mode-next = "Shift+Right,Control+Tab";
       kb-mode-previous = "Shift+Left,Control+ISO_Left_Tab";

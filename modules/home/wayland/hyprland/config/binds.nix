@@ -99,6 +99,7 @@ in
         (mkExec mainMod "E" ''"${fileManager}"'' [ ])
         (mkExec mainMod "D" ''"rofi -show drun"'' [ ])
         (mkExec mainMod "R" ''"rofi -show run -run-command 'kitty -e fish -c \"{cmd}; read\"'"'' [ ])
+        (mkExec mainMod "S" ''"rofi -show ssh"'' [ ])
         (mkExec mainMod "SHIFT + D" ''"rofi -show window"'' [ ])
         (mkExec mainMod "W" ''"${web_search}"'' [ ])
         (mkExec mainMod "N" ''"swaync-client -t -sw"'' [ ])
