@@ -7,7 +7,7 @@
     enable = true;
     settings = {
       core = {
-        editor = "vim";
+        editor = "micro";
       };
       gpg = {
         format = "ssh";

@@ -15,6 +15,7 @@
 #      this host key; a fresh install regenerates it, making secrets unreadable.
 #   2. ~/.config/sops/age/keys.txt            — user age key (user-frank), a
 #      second decryption identity registered in .sops.yaml.
+#   3. ~/.ssh/id_ed25519{,.pub}               — user's SSH client / git-signing key.
 #
 # The destination must survive the wipe (USB stick, separate disk, etc.).
 set -euo pipefail
@@ -49,6 +50,14 @@ backup_to() {
     echo "  user age key  -> $dest/user-age-key.txt"
   else
     echo "  (no $user_age_key — skipping user age key)"
+  fi
+
+  if [[ -f "$user_home/.ssh/id_ed25519" ]]; then
+    install -m 0600 "$user_home/.ssh/id_ed25519" "$dest/id_ed25519"
+    install -m 0644 "$user_home/.ssh/id_ed25519.pub" "$dest/id_ed25519.pub"
+    echo "  user ssh key  -> $dest/id_ed25519{,.pub}"
+  else
+    echo "  (no $user_home/.ssh/id_ed25519 — skipping user ssh key)"
   fi
 
   echo

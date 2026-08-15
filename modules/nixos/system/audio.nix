@@ -43,7 +43,7 @@
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="sound", KERNEL=="card*", DRIVERS=="snd_hda_intel", TEST!="/run/udev/snd-hda-intel-powersave", \
         RUN+="${pkgs.bash}/bin/bash -c 'touch /run/udev/snd-hda-intel-powersave; \
-            [[ $$(cat /sys/class/power_supply/BAT0/status 2>/dev/null) != \"Discharging\" ]] && \
+            [[ $$(cat /sys/class/power_supply/BAT1/status 2>/dev/null) != \"Discharging\" ]] && \
             echo $$(cat /sys/module/snd_hda_intel/parameters/power_save) > /run/udev/snd-hda-intel-powersave && \
             echo 0 > /sys/module/snd_hda_intel/parameters/power_save'"
 
