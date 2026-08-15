@@ -97,11 +97,11 @@
       fi
     done
 
-    selected=$(printf '%s' "''${menu%$'\n'}" | rofi -dmenu -p "CPU Governor")
+    selected=$(printf '%s' "''${menu%$'\n'}" | rofi -dmenu -sync -p "CPU Governor")
 
     [[ -z $selected ]] && exit 0
 
-    governor="''${selected#* }"
+    governor=$(echo "$selected" | sed 's/^[●  ]*//')
 
     echo "$governor" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >/dev/null
 
@@ -160,47 +160,36 @@
   '';
 
   power-profile = pkgs.writeShellScriptBin "power-profile" ''
-    profiles=(performance balanced power-saver)
-
-    # Cycle one step forward: guaranteed to work, no rofi (the dmenu path
-    # silently drops the selection on XWayland).
-    if [[ ''${1:-} == "cycle" ]]; then
-      current=$(powerprofilesctl get)
-
-      next="''${profiles[0]}"
-      for i in "''${!profiles[@]}"; do
-        if [[ "''${profiles[$i]}" == "$current" ]]; then
-          next="''${profiles[((i + 1) % "''${#profiles[@]}")]}"
-          break
-        fi
-      done
-
-      powerprofilesctl set "$next"
-      notify-send -i "battery-symbolic" "Power Profile" "Set to $next" -t 2000
+    if [[ ''${1:-} != "menu" ]]; then
       exit 0
     fi
 
-    if [[ $1 == "menu" ]]; then
-      current=$(powerprofilesctl get)
+    current=$(powerprofilesctl get)
 
-      menu=""
-      for profile in "''${profiles[@]}"; do
-        if [[ $profile == "$current" ]]; then
-          menu="''${menu}● $profile"$'\n'
-        else
-          menu="''${menu}  $profile"$'\n'
-        fi
-      done
+    profiles=(performance balanced power-saver)
 
-      menu="''${menu%$'\n'}"
-
-      selected=$(echo -e "$menu" | rofi -dmenu -p "Power Profile")
-
-      if [[ -n $selected ]]; then
-        profile=$(echo "$selected" | sed 's/^[●  ]*//')
-        powerprofilesctl set "$profile"
-        notify-send -i "battery-symbolic" "Power Profile" "Set to $profile" -t 2000
+    menu=""
+    for profile in "''${profiles[@]}"; do
+      if [[ $profile == "$current" ]]; then
+        menu+="● $profile"$'\n'
+      else
+        menu+="  $profile"$'\n'
       fi
+    done
+
+    # -sync forces rofi to drain stdin before showing the dialog; without it
+    # the async reader can drop input on some setups.
+    selected=$(printf '%s' "''${menu%$'\n'}" | rofi -dmenu -sync -p "Power Profile")
+
+    [[ -z $selected ]] && exit 0
+
+    profile=$(echo "$selected" | sed 's/^[●  ]*//')
+
+    if powerprofilesctl set "$profile"; then
+      notify-send -i "battery-symbolic" "Power Profile" "Set to $profile" -t 2000
+    else
+      notify-send -u critical -i "dialog-error-symbolic" "Power Profile" \
+        "Failed to set $profile" -t 4000
     fi
   '';
 
