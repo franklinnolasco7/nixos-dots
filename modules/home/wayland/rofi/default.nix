@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./cliphist-rofi-img.nix
     ./hypr-keybinds.nix
     ./rofi-web-search.nix
     ./style.nix

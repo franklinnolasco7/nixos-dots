@@ -93,6 +93,16 @@ drift from Nix.
   rehearse the installer 1:1, but skips host-specific modules (nvidia,
   acer-battery, sops).
 
+### Host hardware defaults
+
+Shared modules must not hardcode laptop device paths. Hardware paths are
+exposed as typed `myHost.*` options in `modules/nixos/options.nix` and
+`modules/home/options.nix` (`batteryPath`, `backlightDevice`), default `""`
+meaning the feature is skipped. `hosts/<name>/` sets the values for the real
+machine (`hosts/aspire7/configuration.nix`, `hosts/aspire7/home.nix`); a fork
+or the VM that leaves them unset degrades cleanly instead of inheriting the
+wrong battery or backlight.
+
 ## Profiles
 
 Every host has two flake configurations: the **full** desktop profile

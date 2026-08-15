@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
-  scripts = import ./scripts.nix { inherit pkgs; };
+  scripts = import ./scripts.nix { inherit pkgs lib; };
   style = import ./style.nix;
 in
 {

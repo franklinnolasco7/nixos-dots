@@ -19,24 +19,20 @@ let
     end
 
     local function ws_arg(w)
-      if type(w) == "number" then
-        return tostring(w)
-      end
-      return w or ""
+      return type(w) == "number" and tostring(w) or (w or "")
     end
 
+    -- Lines are cached on first use so repeated macro binds don't re-read the file.
+    local config_lines
     local function comment_before(line)
-      local f = io.open(config_path, "r")
-      if not f then
-        return ""
+      if not config_lines then
+        config_lines = {}
+        for l in io.lines(config_path) do
+          config_lines[#config_lines + 1] = l
+        end
       end
-      local lines = {}
-      for l in f:lines() do
-        lines[#lines + 1] = l
-      end
-      f:close()
-      for i = math.min(line - 1, #lines), 1, -1 do
-        local c = lines[i]:match("^%s*%-%-%s*(.*)%s*$") or ""
+      for i = math.min(line - 1, #config_lines), 1, -1 do
+        local c = config_lines[i]:match("^%s*%-%-%s*(.*)%s*$") or ""
         c = c:gsub("^[-=]+%s*", ""):gsub("%s*[-=]+$", "")
         if c ~= "" then
           return c
@@ -45,123 +41,63 @@ let
       return ""
     end
 
-    local function dsp_ret(dispatcher, arg)
+    local function ret(dispatcher, arg)
       return { __dispatcher = dispatcher, __arg = arg or "" }
     end
 
     hl = {} -- global: dofile'd config chunk needs to see it
-    hl.dsp = {}
-
-    -- register(path, fn) where fn(arg) returns dsp_ret; path may be dotted (window.close)
-    local function register(path, fn)
-      local obj = hl.dsp
-      local parts = {}
-      for part in path:gmatch("[^.]+") do
-        parts[#parts + 1] = part
-      end
-      local name = table.remove(parts)
-      for _, p in ipairs(parts) do
-        obj[p] = obj[p] or {}
-        obj = obj[p]
-      end
-      obj[name] = function(...)
-        return fn(select(1, ...))
-      end
-    end
-
-    register("exec_cmd", function(a)
-      return dsp_ret("exec", tostring(a))
-    end)
-    register("exit", function()
-      return dsp_ret("exit")
-    end)
-    register("window.close", function()
-      return dsp_ret("killactive")
-    end)
-    register("window.fullscreen", function()
-      return dsp_ret("fullscreen")
-    end)
-    register("window.float", function()
-      return dsp_ret("togglefloating")
-    end)
-    register("window.swap", function(a)
-      return dsp_ret("swapwindow", dir_short(a and a.direction))
-    end)
-    register("window.move", function(a)
-      return dsp_ret("movetoworkspace", ws_arg(a and a.workspace))
-    end)
-    register("window.drag", function()
-      return dsp_ret("movewindow", "mousemove")
-    end)
-    register("window.resize", function()
-      return dsp_ret("resizewindow", "mousemove")
-    end)
-    register("layout", function()
-      return dsp_ret("togglesplit")
-    end)
-    register("focus", function(a)
-      if type(a) == "table" and a.direction then
-        return dsp_ret("movefocus", dir_short(a.direction))
-      end
-      return dsp_ret("workspace", ws_arg(a and a.workspace))
-    end)
-
-    -- unknown dsp paths degrade to display-only rows (skipped on execute)
-    local dsp_mt = {
-      __index = function(_, name)
-        return function(...)
-          return dsp_ret("__" .. name)
+    hl.dsp = setmetatable({
+      exec_cmd = function(a) return ret("exec", tostring(a)) end,
+      exit     = function() return ret("exit") end,
+      layout   = function() return ret("togglesplit") end,
+      focus    = function(a)
+        if type(a) == "table" and a.direction then
+          return ret("movefocus", dir_short(a.direction))
         end
+        return ret("workspace", ws_arg(a and a.workspace))
       end,
-    }
-    setmetatable(hl.dsp, dsp_mt)
+      window = {
+        close      = function() return ret("killactive") end,
+        fullscreen = function() return ret("fullscreen") end,
+        float      = function() return ret("togglefloating") end,
+        swap       = function(a) return ret("swapwindow", dir_short(a and a.direction)) end,
+        move       = function(a) return ret("movetoworkspace", ws_arg(a and a.workspace)) end,
+        drag       = function() return ret("movewindow", "mousemove") end,
+        resize     = function() return ret("resizewindow", "mousemove") end,
+      },
+    }, {
+      -- unknown top-level dispatchers degrade to display-only rows (skipped on execute)
+      __index = function(_, name)
+        return function() return ret("__" .. name) end
+      end,
+    })
 
     local function noop() end
-
-    hl.monitor = noop
-    hl.config = noop
-    hl.env = noop
-    hl.gesture = noop
-    hl.on = noop
-    hl.exec_cmd = noop
-    hl.animation = noop
-    hl.curve = noop
-    hl.device = noop
-    hl.window_rule = noop
+    hl.monitor, hl.config, hl.env, hl.gesture, hl.on = noop, noop, noop, noop, noop
+    hl.exec_cmd, hl.animation, hl.curve, hl.device, hl.window_rule = noop, noop, noop, noop, noop
 
     hl.bind = function(mods_key, dispatcher, opts)
       opts = opts or {}
       local parts = {}
-      for raw_token in mods_key:gmatch("[^+]+") do
-        local token = raw_token:gsub("^%s+", ""):gsub("%s+$", "")
-        if token ~= "" then
-          parts[#parts + 1] = token
-        end
+      for token in mods_key:gmatch("[^+%s]+") do
+        parts[#parts + 1] = token
       end
       local key = table.remove(parts)
       local mods = table.concat(parts, " + ")
 
       local flags = {}
-      if opts.mouse then
-        flags[#flags + 1] = "mouse"
-      end
-      if opts.locked then
-        flags[#flags + 1] = "locked"
-      end
-      if opts.repeating then
-        flags[#flags + 1] = "repeat"
-      end
+      if opts.mouse then flags[#flags + 1] = "mouse" end
+      if opts.locked then flags[#flags + 1] = "locked" end
+      if opts.repeating then flags[#flags + 1] = "repeat" end
+      flags = table.concat(flags, ",")
 
       if type(dispatcher) ~= "table" then
         local info = debug.getinfo(dispatcher, "S")
-        local line = info and info.linedefined or 0
-        print(mods .. "\t" .. key .. "\tmacro\t" .. comment_before(line) .. "\t" .. table.concat(flags, ","))
+        print(("%s\t%s\tmacro\t%s\t%s"):format(mods, key, comment_before(info and info.linedefined or 0), flags))
         return
       end
-      local d = dispatcher.__dispatcher
-      local a = dispatcher.__arg or ""
 
-      print(mods .. "\t" .. key .. "\t" .. d .. "\t" .. a .. "\t" .. table.concat(flags, ","))
+      print(("%s\t%s\t%s\t%s\t%s"):format(mods, key, dispatcher.__dispatcher, dispatcher.__arg or "", flags))
     end
 
     local f = io.open(config_path, "r")
@@ -177,27 +113,21 @@ let
     local unpack = table.unpack or unpack
     chunk = chunk:gsub("\\u{(%x+)}", function(hex)
       local cp = tonumber(hex, 16)
-      local b = {}
       if cp < 0x80 then
-        b[1] = cp
-      elseif cp < 0x800 then
-        b[1] = 0xC0 + math.floor(cp / 0x40)
-        b[2] = 0x80 + cp % 0x40
-      elseif cp < 0x10000 then
-        b[1] = 0xE0 + math.floor(cp / 0x1000)
-        b[2] = 0x80 + math.floor(cp / 0x40) % 0x40
-        b[3] = 0x80 + cp % 0x40
-      else
-        b[1] = 0xF0 + math.floor(cp / 0x40000)
-        b[2] = 0x80 + math.floor(cp / 0x1000) % 0x40
-        b[3] = 0x80 + math.floor(cp / 0x40) % 0x40
-        b[4] = 0x80 + cp % 0x40
+        return string.char(cp)
       end
-      return string.char(unpack(b))
+      local n = cp < 0x800 and 2 or (cp < 0x10000 and 3 or 4)
+      local lead = ({ [2] = 0xC0, [3] = 0xE0, [4] = 0xF0 })[n]
+      local bytes = {}
+      for i = n, 2, -1 do
+        bytes[i] = 0x80 + cp % 0x40
+        cp = math.floor(cp / 0x40)
+      end
+      bytes[1] = lead + cp
+      return string.char(unpack(bytes))
     end)
 
-    local loaded = assert(load(chunk, config_path))
-    loaded()
+    assert(load(chunk, config_path))()
   '';
 in
 {
@@ -211,17 +141,15 @@ in
       )
 
       normalize_modifiers() {
-        local modifier="$1"
-        modifier=''${modifier//\$mainMod/󰘳}
-        modifier=''${modifier//SUPER/󰘳}
-        modifier=''${modifier//SHIFT/Shift}
-        modifier=''${modifier//CTRL/Ctrl}
-        modifier=''${modifier//Control/Ctrl}
-        modifier=''${modifier//ALT/Alt}
-        modifier=$(echo "$modifier" | sed 's/^ *//; s/ *$//; s/  */ /g')
-        modifier=''${modifier// /}
-        modifier=''${modifier//+/ + }
-        echo "$modifier"
+        local m="$1"
+        m=''${m//\$mainMod/󰘳}
+        m=''${m//SUPER/󰘳}
+        m=''${m//SHIFT/Shift}
+        m=''${m//CTRL/Ctrl}
+        m=''${m//Control/Ctrl}
+        m=''${m//ALT/Alt}
+        m=''${m//[[:space:]]/}
+        echo "''${m//+/ + }"
       }
 
       truncate_text() {
@@ -238,12 +166,7 @@ in
         local normalized label note_display body
 
         normalized=$(normalize_modifiers "$modifier")
-        if [[ -n $normalized ]]; then
-          label="$normalized + $key"
-        else
-          label="$key"
-        fi
-
+        label="''${normalized:+$normalized + }$key"
         note_display=$(truncate_text "$note")
 
         if [[ -n $note_display ]]; then
@@ -290,8 +213,8 @@ in
             for combo in "''${combos[@]}"; do
               [[ -z $combo ]] && continue
               kb_mod="''${combo%%+*}" kb_key="''${combo#*+}"
-              kb_mod=$(echo "$kb_mod" | sed 's/^ *//; s/ *$//')
-              kb_key=$(echo "$kb_key" | sed 's/^ *//; s/ *$//')
+              kb_mod="''${kb_mod// /}"
+              kb_key="''${kb_key// /}"
               format_display "$kb_mod" "$kb_key" "rofi → switch to ''${mode} mode" "config.rasi • kb-mode-''${mode}"
             done
           done

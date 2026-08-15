@@ -17,6 +17,10 @@
     ../../modules/nixos/tools/nvidia.nix
   ];
 
+  # Host hardware defaults consumed by shared modules
+  # (modules/nixos/options.nix).
+  myHost.batteryPath = "/sys/class/power_supply/BAT1";
+
   # ---------------------------------------------------------------------------
   # Kernel (host-specific; Chaotic-Nyx CachyOS build — see nyx.chaotic.cx)
   # ---------------------------------------------------------------------------
@@ -39,7 +43,7 @@
     ];
 
     trusted-public-keys = [
-      "hyprland.cachix.org-1:a7HPphkgeWcTfiMMCAmjvxnygJzylcsEB7W4AVUXv4U="
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
     ];
   };
 

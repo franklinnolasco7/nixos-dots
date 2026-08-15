@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   # PipeWire audio stack (NixOS 26.05 options).
@@ -40,10 +45,11 @@
 
   # CachyOS audio power management (see wiki.cachyos.org): disable
   # snd-hda-intel power saving on AC to prevent audio cracks, restore on battery.
-  services.udev.extraRules = ''
+  # Skipped when the host declares no battery path.
+  services.udev.extraRules = lib.mkIf (config.myHost.batteryPath != "") ''
     ACTION=="add", SUBSYSTEM=="sound", KERNEL=="card*", DRIVERS=="snd_hda_intel", TEST!="/run/udev/snd-hda-intel-powersave", \
         RUN+="${pkgs.bash}/bin/bash -c 'touch /run/udev/snd-hda-intel-powersave; \
-            [[ $$(cat /sys/class/power_supply/BAT1/status 2>/dev/null) != \"Discharging\" ]] && \
+            [[ $$(cat ${config.myHost.batteryPath}/status 2>/dev/null) != \"Discharging\" ]] && \
             echo $$(cat /sys/module/snd_hda_intel/parameters/power_save) > /run/udev/snd-hda-intel-powersave && \
             echo 0 > /sys/module/snd_hda_intel/parameters/power_save'"
 

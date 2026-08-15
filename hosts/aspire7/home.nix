@@ -1,6 +1,13 @@
 { ... }:
 
 {
+  # Host hardware defaults consumed by shared home modules
+  # (modules/home/options.nix).
+  myHost = {
+    batteryPath = "/sys/class/power_supply/BAT1";
+    backlightDevice = "amdgpu_bl1";
+  };
+
   # Host-specific hyprland settings for the physical laptop. Shared modules
   # (modules/home/wayland/hyprland) stay hardware-agnostic; NVIDIA PRIME env,
   # the laptop monitor and the mouse live here. Imported via

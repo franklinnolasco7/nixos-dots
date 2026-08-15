@@ -1,5 +1,5 @@
 {
-  # shared tokens
+  # shared by waybar, swaync and rofi
   base = "#080808";
   surfaceAlt = "#121212";
   surface = "#1a1a1a";

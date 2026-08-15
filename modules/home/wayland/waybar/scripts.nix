@@ -1,69 +1,76 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
+let
+  audioProps = {
+    sink = {
+      mutedIcon = "󰖁";
+      unmutedIcon = "󰕿";
+      mutedAlt = "muted";
+      mutedLabel = "Muted";
+      label = "Volume";
+    };
+    source = {
+      mutedIcon = "󰍭";
+      unmutedIcon = "󰍬";
+      mutedAlt = "source-muted";
+      mutedLabel = "Microphone Muted";
+      label = "Microphone";
+    };
+  };
+
+  mkAudioScript =
+    { name, device }:
+    let
+      inherit (audioProps.${device})
+        mutedIcon
+        unmutedIcon
+        mutedAlt
+        mutedLabel
+        label
+        ;
+    in
+    pkgs.writeShellScriptBin name ''
+      TARGET="@DEFAULT_${lib.toUpper device}@"
+      MAX_VOLUME=600
+
+      if [[ $1 == "up" ]]; then
+        current=$(pactl get-${device}-volume "$TARGET" | grep -oP '\d+(?=%)' | head -1)
+        new_volume=$((current + 5))
+        if [[ $new_volume -le $MAX_VOLUME ]]; then
+          pactl set-${device}-volume "$TARGET" +5%
+        fi
+        exit 0
+      elif [[ $1 == "down" ]]; then
+        pactl set-${device}-volume "$TARGET" -5%
+        exit 0
+      fi
+
+      volume=$(pactl get-${device}-volume "$TARGET" | grep -oP '\d+(?=%)' | head -1)
+      muted=$(pactl get-${device}-mute "$TARGET" | awk '{print $2}')
+
+      if [[ $muted == "yes" ]] || [[ $volume -eq 0 ]]; then
+        text="${mutedIcon} MUT"
+        alt="${mutedAlt}"
+        tooltip="${mutedLabel}\nVolume: 0%"
+      else
+        text="${unmutedIcon} ''${volume}%"
+        alt="unmuted"
+        tooltip="${label}: ''${volume}%"
+      fi
+
+      echo "{\"text\": \"''${text}\", \"alt\": \"''${alt}\", \"tooltip\": \"''${tooltip}\"}"
+    '';
+in
 {
-  audio-volume = pkgs.writeShellScriptBin "audio-volume" ''
-    SINK="@DEFAULT_SINK@"
-    MAX_VOLUME=600
+  audio-volume = mkAudioScript {
+    name = "audio-volume";
+    device = "sink";
+  };
 
-    if [[ $1 == "up" ]]; then
-      current=$(pactl get-sink-volume "$SINK" | grep -oP '\d+(?=%)' | head -1)
-      new_volume=$((current + 5))
-      if [[ $new_volume -le $MAX_VOLUME ]]; then
-        pactl set-sink-volume "$SINK" +5%
-      fi
-      exit 0
-    elif [[ $1 == "down" ]]; then
-      pactl set-sink-volume "$SINK" -5%
-      exit 0
-    fi
-
-    volume=$(pactl get-sink-volume "$SINK" | grep -oP '\d+(?=%)' | head -1)
-    muted=$(pactl get-sink-mute "$SINK" | awk '{print $2}')
-
-    if [[ $muted == "yes" ]] || [[ $volume -eq 0 ]]; then
-      text="󰖁 MUT"
-      alt="muted"
-      tooltip="Muted\nVolume: 0%"
-    else
-      text="󰕿 ''${volume}%"
-      alt="unmuted"
-      tooltip="Volume: ''${volume}%"
-    fi
-
-    echo "{\"text\": \"''${text}\", \"alt\": \"''${alt}\", \"tooltip\": \"''${tooltip}\"}"
-  '';
-
-  audio-microphone = pkgs.writeShellScriptBin "audio-microphone" ''
-    SOURCE="@DEFAULT_SOURCE@"
-    MAX_VOLUME=600
-
-    if [[ $1 == "up" ]]; then
-      current=$(pactl get-source-volume "$SOURCE" | grep -oP '\d+(?=%)' | head -1)
-      new_volume=$((current + 5))
-      if [[ $new_volume -le $MAX_VOLUME ]]; then
-        pactl set-source-volume "$SOURCE" +5%
-      fi
-      exit 0
-    elif [[ $1 == "down" ]]; then
-      pactl set-source-volume "$SOURCE" -5%
-      exit 0
-    fi
-
-    volume=$(pactl get-source-volume "$SOURCE" | grep -oP '\d+(?=%)' | head -1)
-    muted=$(pactl get-source-mute "$SOURCE" | awk '{print $2}')
-
-    if [[ $muted == "yes" ]] || [[ $volume -eq 0 ]]; then
-      text="󰍭 MUT"
-      alt="source-muted"
-      tooltip="Microphone Muted\nVolume: 0%"
-    else
-      text="󰍬 ''${volume}%"
-      alt="unmuted"
-      tooltip="Microphone: ''${volume}%"
-    fi
-
-    echo "{\"text\": \"''${text}\", \"alt\": \"''${alt}\", \"tooltip\": \"''${tooltip}\"}"
-  '';
+  audio-microphone = mkAudioScript {
+    name = "audio-microphone";
+    device = "source";
+  };
 
   cpu-governor = pkgs.writeShellScriptBin "cpu-governor" ''
     if [[ ''${1:-} != "menu" ]]; then

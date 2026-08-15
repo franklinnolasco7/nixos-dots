@@ -32,11 +32,7 @@
         xdg-utils
         wl-clipboard
         wl-clip-persist
-        (cliphist.overrideAttrs (old: {
-          postInstall = old.postInstall + ''
-            rm -f $out/bin/cliphist-rofi-img
-          '';
-        }))
+        cliphist
         imv
         imagemagick
         awww

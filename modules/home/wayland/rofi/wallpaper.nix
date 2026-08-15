@@ -5,6 +5,10 @@
     (pkgs.writeShellScriptBin "wallpaper" ''
       set -uo pipefail
 
+      # Keyboard-driven wallpaper switcher via awww (animated transitions).
+      # Boot restore is waypaper's job (`waypaper --restore` in
+      # autostart.nix), re-applied from swww state — deliberately independent
+      # of the last pick made here, since awww doesn't persist its image.
       WALLPAPER_DIR="$HOME/nixos-dots/themes/wallpapers"
       DRY_RUN=0
       case "''${1:-}" in
@@ -42,10 +46,14 @@
       }
 
       ensure_daemon() {
-        awww query >/dev/null 2>&1 || {
-          awww-daemon &
-          sleep 1
-        }
+        awww query >/dev/null 2>&1 && return 0
+        awww-daemon &
+        # poll for readiness — startup time varies, a fixed sleep races the first apply
+        for _ in {1..50}; do
+          awww query >/dev/null 2>&1 && return 0
+          sleep 0.1
+        done
+        warn "awww daemon did not become ready"
       }
 
       add_wallpaper() {

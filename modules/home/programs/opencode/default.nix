@@ -15,16 +15,26 @@ let
     hash = "sha256-1noGOiyAJig8ujSL9kuz1IgZqb/wiDmWl9XWwNn+kw4=";
   };
 
+  # rtk (https://github.com/rtk-ai/rtk) ships its skills and opencode plugin in
+  # its source tree, but pkgs.rtk follows nixpkgs-unstable, so a bump that
+  # renames or moves them would fail every eval with an obscure path error.
+  rtkSrc = pkgs.fetchFromGitHub {
+    owner = "rtk-ai";
+    repo = "rtk";
+    rev = "700bdde3343299ea06bbca18dc6670a80c88b289";
+    hash = "sha256-qOWWHov0m3A8V48r/UGN2Hxz+/XraPRYhNPnZ+B+ZBY=";
+  };
+
   # rtk ships its skills under .claude/skills in its source tree. Most have
   # proper `name:` frontmatter and are symlinked straight from the source.
-  rtkSkill = name: "${pkgs.rtk.src}/.claude/skills/${name}";
+  rtkSkill = name: "${rtkSrc}/.claude/skills/${name}";
 
   # Five rtk skills (performance, pr-review, repo-recap, security-guardian,
   # ship) lack the `name:` frontmatter field that opencode requires, so they
   # are inlined with the field prepended.
   rtkNamedSkill = name: ''
     name: ${name}
-    ${builtins.readFile "${pkgs.rtk.src}/.claude/skills/${name}/SKILL.md"}
+    ${builtins.readFile "${rtkSrc}/.claude/skills/${name}/SKILL.md"}
   '';
 
   cavemanSkill = name: "${cavemanSrc}/skills/${name}";
@@ -174,7 +184,7 @@ in
       # through `rtk` to cut bash output tokens. Requires `rtk` in PATH,
       # which is provided by pkgs.rtk (see modules/home/packages.nix).
       plugin = [
-        "${pkgs.rtk.src}/hooks/opencode/rtk.ts"
+        "${rtkSrc}/hooks/opencode/rtk.ts"
         notifyPlugin
         sensitiveFilesPlugin
       ];

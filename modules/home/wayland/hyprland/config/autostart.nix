@@ -1,7 +1,15 @@
-{ lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 
 let
   inline = lib.generators.mkLuaInline;
+  # battery-notify only exists when the host declares a battery path.
+  batteryNotify = lib.optionalString (
+    config.myHost.batteryPath != ""
+  ) "hl.exec_cmd(\"battery-notify &\")";
 in
 {
   wayland.windowManager.hyprland.settings.on = [
@@ -15,9 +23,10 @@ in
             hl.exec_cmd("wl-paste --type text --watch cliphist store")
             hl.exec_cmd("wl-paste --type image --watch cliphist store")
             hl.exec_cmd("wl-clip-persist --clipboard regular")
+            -- Boot restore only; interactive changes go through the wallpaper picker (rofi/wallpaper.nix)
             hl.exec_cmd("waypaper --restore")
             hl.exec_cmd("waybar")
-            hl.exec_cmd("battery-notify &")
+            ${batteryNotify}
             hl.exec_cmd("airplane-mode restore")
             hl.exec_cmd("toggle-laptop-kb restore")
             hl.exec_cmd("toggle-laptop-tp restore")

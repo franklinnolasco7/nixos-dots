@@ -1,11 +1,17 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  home.packages = [
+  # Skipped when the host declares no battery path (modules/home/options.nix).
+  home.packages = lib.optionals (config.myHost.batteryPath != "") [
     (pkgs.writeShellScriptBin "battery-notify" ''
       set -u
 
-      BATTERY=/sys/class/power_supply/BAT1
+      BATTERY="${config.myHost.batteryPath}"
       STATE_FILE=/tmp/battery-notify
       POLL_SECONDS=''${POLL_SECONDS:-3}
       WARN=''${WARN:-25}
@@ -36,8 +42,10 @@
 
       while true; do
         if [[ -f "$BATTERY/capacity" ]]; then
-          capacity=$(<"$BATTERY/capacity")
-          status=$(<"$BATTERY/status")
+          capacity=$(cat "$BATTERY/capacity" 2>/dev/null || true)
+          status=$(cat "$BATTERY/status" 2>/dev/null || true)
+          : "''${capacity:-0}"
+          : "''${status:-unknown}"
 
           if [[ $status == "Discharging" ]]; then
             if ((capacity <= URGENT)); then

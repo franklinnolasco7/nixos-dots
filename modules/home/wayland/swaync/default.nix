@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   scripts = import ./scripts.nix { inherit pkgs; };
@@ -54,15 +59,20 @@ in
       widgets = [
         "mpris"
         "volume"
+      ]
+      ++ lib.optionals (config.myHost.backlightDevice != "") [
         "backlight"
+      ]
+      ++ [
         "dnd"
         "notifications"
         "buttons-grid"
       ];
 
       widget-config = {
-        backlight = {
-          device = "amdgpu_bl1";
+        # Hidden when the host declares no backlight device.
+        backlight = lib.mkIf (config.myHost.backlightDevice != "") {
+          device = config.myHost.backlightDevice;
           label = "󰃠";
           slider = true;
           min = 5;
