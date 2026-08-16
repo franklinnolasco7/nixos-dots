@@ -14,6 +14,10 @@
 let
   pname = "graphite-gtk-theme";
 in
+# Validator chain: lib.checkListOfEnum returns the identity function when its
+# list is valid (lib.throwIfNot cond → x: x), so each passing check just pipes
+# the next expression through; any invalid variant throws the enum error at
+# eval time.
 lib.checkListOfEnum "${pname}: theme variants"
   [
     "default"

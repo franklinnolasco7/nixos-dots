@@ -5,8 +5,13 @@
 
 {
   # Home-side mirror of modules/nixos/options.nix. Injected by flake.nix
-  # mkSystem via config.home-manager.users.<user>.myProfile.
+  # mkSystem via config.home-manager.users.<user>.myProfile; hosts/<name>/
+  # sets the real myHost values so forks and the VM degrade cleanly.
   options.myProfile = lib.mkOption {
+    description = ''
+      Home-side mirror of myProfile in modules/nixos/options.nix: "full" or
+      "minimal". Injected by flake.nix via config.home-manager.users.<user>.myProfile.
+    '';
     type = lib.types.enum [
       "full"
       "minimal"
@@ -14,15 +19,20 @@
     default = "full";
   };
 
-  # Home-side mirror of the myHost defaults in modules/nixos/options.nix.
   options.myHost = {
-    # sysfs battery path used by battery-notify; "" skips the script.
     batteryPath = lib.mkOption {
+      description = ''
+        Path to the sysfs battery directory used by battery-notify. Empty
+        skips the script.
+      '';
       type = lib.types.str;
       default = "";
     };
-    # backlight device for the swaync widget; "" hides the widget.
     backlightDevice = lib.mkOption {
+      description = ''
+        Backlight device name for the swaync backlight widget. Empty hides
+        the widget.
+      '';
       type = lib.types.str;
       default = "";
     };
