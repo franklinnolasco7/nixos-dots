@@ -9,7 +9,7 @@
     ./fonts.nix
   ]
   ++ lib.optionals (profile == "full") [
-    # GUI theming — pointless without a display server.
+    # GUI theming; pointless without a display server.
     ./cursor.nix
     ./gtk.nix
     ./qt.nix

@@ -6,7 +6,7 @@
   # NOTE: some associated apps (vesktop, figma-linux, wine, onlyoffice,
   # freetube, gitkraken, inkscape, xournalpp, amberol, vlc, DaVinciResolve,
   # gimp, libreoffice, xed, gthumb, claude-code-url-handler, ...) are NOT
-  # declared in this flake — they're installed imperatively by choice. The
+  # declared in this flake; they're installed imperatively by choice. The
   # associations are inert until such an app exists; keep them so the binding
   # is correct once the app is present.
 

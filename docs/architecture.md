@@ -17,20 +17,20 @@ nixos-dots/
 │   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, printing, smartd, hardening, ...)
 │   │   └── tools/    # feature modules (desktop, gaming, virtualization, nvidia, sops)
 │   ├── home/      # reusable home modules, grouped into categories
-│   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync) — full profile only
+│   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync); full profile only
 │   │   ├── terminal/  # shell.nix (zsh, starship, btop, htop, fastfetch, cava) + emulator.nix (kitty, full only)
 │   │   ├── programs/  # standalone apps (micro; opencode, full only)
 │   │   ├── development/ # dev tooling (git; toolchain, full only)
 │   │   ├── styling/   # appearance (gtk, qt, cursor, fonts)
-│   │   ├── xdg/       # desktop integration (mimetypes) — full profile only
-│   │   └── scripts/   # helper binaries (airplane-mode, vpn-toggle, battery-notify, ...) — full profile only
+│   │   ├── xdg/       # desktop integration (mimetypes); full profile only
+│   │   └── scripts/   # helper binaries (airplane-mode, vpn-toggle, battery-notify, ...); full profile only
 │   └── disko/     # shared GPT partition layout (gpt-layout.nix)
 ├── users/frank/   # per-user home-manager entry point (default.nix)
 ├── pkgs/          # custom derivations (graphite-gtk-theme)
 ├── overlays/      # exports pkgs/* into the nixpkgs set
 ├── themes/
 │   └── wallpapers/ # committed pool; subfolders = gitignored local temp sets
-├── install/       # ops: install.sh, rebuild.sh, update.sh, format.sh, init-secrets.sh, backup-host-key.sh, run-vm.sh, aspire7.sh
+├── install/       # ops: install.sh, rebuild.sh, update.sh, format.sh, init-secrets.sh, key-backup.sh, run-vm.sh, aspire7.sh
 ├── docs/          # one page per topic
 └── secrets/       # sops-encrypted (committed; enabled via modules/nixos/tools/sops.nix)
 ```
@@ -38,7 +38,7 @@ nixos-dots/
 ## Wallpapers
 
 `themes/wallpapers/` holds the committed pool. Subfolders are gitignored
-(`themes/wallpapers/*/`), so add any personal folder — never committed. The
+(`themes/wallpapers/*/`), so add any personal folder; never committed. The
 `wallpaper` picker scans all subfolders, listing images by file name only.
 
 ## Configuration Flow
@@ -54,15 +54,15 @@ users/<user>/default.nix  (home-manager entry point)
     ▼
 modules/home/  (default.nix pulls wayland/terminal/programs/development/styling/xdg/scripts categories)
     ▼
-home-manager  (programs.*.settings, xdg.configFile, home.file — all native)
+home-manager  (programs.*.settings, xdg.configFile, home.file; all native)
 ```
 
 Disk layout lives in `hosts/<name>/disko.nix`: it pins the target `device` and
 imports the shared layout from `modules/disko/gpt-layout.nix`. The same file
 feeds two consumers:
 
-- `diskoConfigurations.<name>` — manual disko runs (`nix run .#disko -- ...`).
-- the NixOS module list (via `mkSystem`) — `disko.nixosModules.disko` turns the
+- `diskoConfigurations.<name>`; manual disko runs (`nix run .#disko -- ...`).
+- the NixOS module list (via `mkSystem`); `disko.nixosModules.disko` turns the
   layout into `fileSystems`/`swapDevices` at build time, so the regenerated
   `hardware-configuration.nix` is UUID-free.
 
@@ -72,7 +72,7 @@ system's disko script, regenerates `hardware-configuration.nix`
 
 ## Declarative configs only
 
-Every user config is declared natively inside `modules/home/` — either through
+Every user config is declared natively inside `modules/home/`; either through
 home-manager's typed `programs.*.settings` options or through
 `xdg.configFile`/`home.file` with the config written inline in the module. Apps
 with large configs are split across `config.nix` / `style.nix` / `scripts.nix`
@@ -82,14 +82,14 @@ drift from Nix.
 
 ## Hosts
 
-- `aspire7` — the physical machine. Host-specific pieces live in
+- `aspire7`; the physical machine. Host-specific pieces live in
   `hosts/aspire7/`: NVIDIA PRIME bus IDs, `acer-battery`; the
   OS disk is pinned by-id in `disko.nix`. NVMe health (wear, pending sectors,
   temp) is watched by smartd (`modules/nixos/system/smartd.nix`); alerts go to
-  wall, not mail — no MTA is configured. SSH is key-only with root login
+  wall, not mail; no MTA is configured. SSH is key-only with root login
   disabled (`modules/nixos/system/hardening.nix`), reachable only through the
   default-deny firewall's port 22 allowlist (`modules/nixos/system/firewall.nix`).
-- `vm` — QEMU/KVM rehearsal host. Reuses the same GPT layout on `/dev/vda` to
+- `vm`; QEMU/KVM rehearsal host. Reuses the same GPT layout on `/dev/vda` to
   rehearse the installer 1:1, but skips host-specific modules (nvidia,
   acer-battery, sops).
 
@@ -118,11 +118,11 @@ Every host has two flake configurations: the **full** desktop profile
 
 The profile is injected by `flake.nix` `mkSystem` as the **typed** `myProfile`
 option on both module systems (`modules/nixos/options.nix` and
-`modules/home/options.nix`) — `enum [ "full" "minimal" ]`, default `full`. A
+`modules/home/options.nix`); `enum [ "full" "minimal" ]`, default `full`. A
 typo in a flake profile fails eval on the enum, never silently. Body gates read
 `config.myProfile`. Because the module system forbids referencing `config` in
 `imports` (infinite recursion), `imports` lists branch on the raw `profile`
-value threaded through `specialArgs` / `home-manager.extraSpecialArgs` — the
+value threaded through `specialArgs` / `home-manager.extraSpecialArgs`; the
 two mechanisms never mix.
 
 The minimal profile gates out, on the NixOS side: the shared desktop module
@@ -137,12 +137,12 @@ image logo). `system.nixos.label` is `"<hostname>-<profile>"`, so systemd-boot
 shows `nixos-laptop` vs `nixos-laptop-minimal`.
 
 > [!IMPORTANT]
-> The `-min` suffix is **reserved** for profile variants of an existing host —
-> it is never a real hostname. `hosts/<name>-min/` must not be created;
+> The `-min` suffix is **reserved** for profile variants of an existing host.
+> It is never a real hostname. `hosts/<name>-min/` must not be created;
 > `install/rebuild.sh` maps `<host>-min` → `.#<host>-min`.
 
 ## Flake Inputs
 
-- `hyprland` — flake input, not nixpkgs. Pins own nixpkgs (reproducible builds + `hyprland.cachix.org`). Contributes both `nixosModules.default` and `homeManagerModules.default` (the latter imported in `users/frank/default.nix`).
-- `mcp-servers-nix` — follows nixpkgs.
-- `home-manager`, `sops-nix`, `disko`, `nixos-anywhere` — follow nixpkgs.
+- `hyprland`; flake input, not nixpkgs. Pins own nixpkgs (reproducible builds + `hyprland.cachix.org`). Contributes both `nixosModules.default` and `homeManagerModules.default` (the latter imported in `users/frank/default.nix`).
+- `mcp-servers-nix`; follows nixpkgs.
+- `home-manager`, `sops-nix`, `disko`, `nixos-anywhere`; follow nixpkgs.

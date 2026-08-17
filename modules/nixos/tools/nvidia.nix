@@ -35,7 +35,7 @@
             ];
           });
 
-        # CachyOS-parity driver (matches the CachyOS kernel build) — see
+        # CachyOS-parity driver (matches the CachyOS kernel build); see
         # nyx.chaotic.cx. The keylase patch list may lag a driver version; the
         # hasAttr guards below skip the patch instead of breaking the build.
         targetPkg = pkgs.nvidia_cachyos;

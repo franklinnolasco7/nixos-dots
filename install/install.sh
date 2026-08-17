@@ -6,7 +6,7 @@
 #   ./install/install.sh <hostname> --target <host[:port]> [--ssh-port N] [extra nixos-anywhere args...]
 #
 # <hostname> needs hosts/<hostname>/default.nix and hosts/<hostname>/disko.nix.
-# HOST_KEY_SRC defaults to /root/ssh-host-key-backup (see backup-host-key.sh).
+# HOST_KEY_SRC defaults to the repo's secrets/ dir (see key-backup.sh).
 #
 # --minimal installs the console-TTY variant of the host (flake config
 # .#<hostname>-min, profile = "minimal"): no display server, Wayland stack, or
@@ -15,16 +15,16 @@
 # The target defaults to the ISO this script runs on (nixos@localhost), and a
 # root check only applies to that default self-install case. For a remote
 # machine or the rehearsal VM, pass --target nixos@<host> (and --ssh-port, e.g.
-# 2222 for run-vm.sh) — no root needed. Every other argument is forwarded to
+# 2222 for run-vm.sh); no root needed. Every other argument is forwarded to
 # nixos-anywhere unchanged.
 #
 # nixos-anywhere runs the `disko,install` phases: it wipes and repartitions the
 # target disk (from hosts/<hostname>/disko.nix), regenerates the UUID-free
 # hardware-configuration.nix, restores the SSH host key via --extra-files, and
-# installs the system — but does not reboot, so /mnt stays mounted.
+# installs the system; but does not reboot, so /mnt stays mounted.
 #
 # Safety gates before anything destructive:
-#   1. Aborts unless the host key backup exists (see backup-host-key.sh).
+#   1. Aborts unless the host key backup exists (see key-backup.sh).
 #   2. Aborts if the backup host key cannot decrypt secrets/secrets.yaml (sops).
 #      Set SKIP_SOPS_CHECK=1 to bypass (e.g. throwaway-key VM rehearsals).
 #   3. Requires typing 'yes' to confirm the disk wipe.
@@ -62,7 +62,7 @@ while (($# > 0)); do
   esac
 done
 
-# The -min suffix is a profile variant of an existing host — never a real
+# The -min suffix is a profile variant of an existing host; never a real
 # hostname (see docs/architecture.md). The flake config is .#<host>-min; the
 # host dir (disko, hardware config) stays the base <host>.
 CFG="$HOST"
@@ -89,7 +89,7 @@ fi
 
 # Self-install (localhost target): the system is built ON the ISO by root, so
 # the flake's build caches (e.g. nyx-cache.chaotic.cx) must be configured for
-# root — nixos-anywhere only writes them to the *nixos* user's nix config on a
+# root; nixos-anywhere only writes them to the *nixos* user's nix config on a
 # remote target, which the local root build never reads. Without this the
 # CachyOS kernel etc. would be compiled from source on the ISO.
 bootstrap_local_nix_cache() {
@@ -122,19 +122,35 @@ case "$target_host_part" in
     ;;
 esac
 
-HOST_KEY_SRC="${HOST_KEY_SRC:-/root/ssh-host-key-backup}"
-
-if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
-  echo "Error: host key backup not found at $HOST_KEY_SRC." >&2
-  echo "  Back it up on the current system FIRST — this install wipes the disk." >&2
-  echo "    sudo bash install/backup-host-key.sh   # detects USB, saves the keys" >&2
-  echo "  Then re-run with: sudo HOST_KEY_SRC=<backup-dir> $0 $HOST" >&2
-  exit 1
-fi
+HOST_KEY_SRC="${HOST_KEY_SRC:-$PWD/secrets}"
 
 tmp=$(mktemp)
 extra=$(mktemp -d)
-trap 'rm -f "$tmp"; rm -rf "$extra"' EXIT
+keytmp=$(mktemp -d)
+trap 'rm -f "$tmp"; rm -rf "$extra" "$keytmp"' EXIT
+
+# The backup may be the age-passphrase blob committed by key-backup.sh;
+# decrypt it into a staging dir here. A wrong passphrase aborts before the
+# wipe; a plaintext dir (HOST_KEY_SRC given explicitly) is used as-is.
+if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" && -d $HOST_KEY_SRC ]]; then
+  for candidate in "$HOST_KEY_SRC/key-backup-$HOST.tar.age" "$HOST_KEY_SRC/key-backup-$(hostname).tar.age"; do
+    if [[ -f $candidate ]]; then
+      echo "==> Decrypting key backup ($candidate) ..."
+      nix --experimental-features "nix-command flakes" run .#age -d -o "$keytmp/key-backup.tar" "$candidate"
+      tar -xzf "$keytmp/key-backup.tar" -C "$keytmp"
+      HOST_KEY_SRC="$keytmp"
+      break
+    fi
+  done
+fi
+
+if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
+  echo "Error: host key backup not found at $HOST_KEY_SRC." >&2
+  echo "  Back it up on the current system FIRST; this install wipes the disk:" >&2
+  echo "    sudo bash install/key-backup.sh encrypt   # age passphrase, commits + pushes" >&2
+  echo "  The installer then finds secrets/key-backup-<host>.tar.age automatically." >&2
+  exit 1
+fi
 
 if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
   echo "==> [1/4] Verifying sops decryption from the backup host key..."
@@ -146,14 +162,14 @@ if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
     echo "  decryption ok"
   else
     echo "Error: backup host key cannot decrypt secrets/secrets.yaml." >&2
-    echo "  Aborting before the wipe — fix HOST_KEY_SRC or run" >&2
+    echo "  Aborting before the wipe; fix HOST_KEY_SRC or run" >&2
     echo "  install/init-secrets.sh to register this host first." >&2
     exit 1
   fi
 elif [[ -f secrets/secrets.yaml ]]; then
   echo "==> [1/4] Skipping sops decryption check (SKIP_SOPS_CHECK=1)."
 else
-  echo "==> [1/4] no secrets/secrets.yaml in this repo — skipping"
+  echo "==> [1/4] no secrets/secrets.yaml in this repo; skipping"
 fi
 
 disko_dev="$(sed -n 's/.*device = \(lib\.mkDefault \)\?"\([^"]*\)".*/\2/p' "hosts/$HOST/disko.nix" | head -1)"
@@ -182,10 +198,10 @@ install -d -m 0700 "$extra/root"
 printf '[safe]\n\tdirectory = *\n' >"$extra/root/.gitconfig"
 chmod 0600 "$extra/root/.gitconfig"
 
-echo "==> [2/4] Running nixos-anywhere (phases: disko,install) — target: $TARGET_HOST"
+echo "==> [2/4] Running nixos-anywhere (phases: disko,install); target: $TARGET_HOST"
 # Real self-install (no --target): the build machine IS the ISO. The VM
 # rehearsal targets localhost too (with --target + a forwarding port), but the
-# build runs there on the already-cached invoking machine — skip.
+# build runs there on the already-cached invoking machine; skip.
 if [[ $SELF_INSTALL == 1 ]]; then
   echo "  self-install: bootstrapping the ISO's root nix config with the flake build caches..."
   bootstrap_local_nix_cache
@@ -210,30 +226,30 @@ if [[ -d /mnt/root ]]; then
   install -d -m 0700 /mnt/root
   printf '[safe]\n\tdirectory = *\n' >/mnt/root/.gitconfig
   chmod 0600 /mnt/root/.gitconfig
-  echo "  wrote /mnt/root/.gitconfig (safe.directory = *) — no sudo rebuild friction"
+  echo "  wrote /mnt/root/.gitconfig (safe.directory = *); no sudo rebuild friction"
 else
-  echo "  target's /mnt is not local (remote install) — root safe.directory was"
+  echo "  target's /mnt is not local (remote install); root safe.directory was"
   echo "  already written into the new root via --extra-files."
 fi
 
 echo "==> [4/4] Installation complete!"
 echo
-echo "Installed profile: $CFG ($([ $MINIMAL == 1 ] && echo 'minimal — console TTY, no display server' || echo 'full — desktop'))."
+echo "Installed profile: $CFG ($([ $MINIMAL == 1 ] && echo 'minimal; console TTY, no display server' || echo 'full; desktop'))."
 echo "Self-install: reboot into NixOS with: reboot"
-echo "Remote install: the target is already installed — reboot it."
+echo "Remote install: the target is already installed; reboot it."
 echo
 echo "After boot:"
-echo "  1. Commit the regenerated hardware config (UUID-free — fileSystems come"
+echo "  1. Commit the regenerated hardware config (UUID-free; fileSystems come"
 echo "     from disko.nix, so there is nothing to churn):"
 echo "       cd /path/to/nixos-dots && git add hosts/$HOST/hardware-configuration.nix && git commit"
-echo "     On a rehearsal host (vm) revert it instead — the VM-specific file is"
+echo "     On a rehearsal host (vm) revert it instead; the VM-specific file is"
 echo "     not the config you want committed:"
 echo "       git checkout -- hosts/$HOST/hardware-configuration.nix"
 echo "  2. The user's password is declarative: it's the sops-managed hash"
 echo "     (secrets.yaml key user-password-hash). Change it there and rebuild;"
 echo "     on throwaway hosts without sops (vm) it's the fixed initialPassword."
-echo "  3. Restore the user age key if wanted (interactive sops edits only;"
-echo "     activation already uses the restored host key):"
-echo "       install -m 0600 $HOST_KEY_SRC/user-age-key.txt ~/.config/sops/age/keys.txt"
+echo "  3. Restore the user keys if wanted (interactive sops edits + ssh client"
+echo "     key; activation already uses the restored host key):"
+echo "       bash install/key-backup.sh decrypt"
 echo "  4. Verify sops secrets decrypted:"
 echo "       ls -l ~/.config/opencode/context7-key ~/.config/opencode/github-token"

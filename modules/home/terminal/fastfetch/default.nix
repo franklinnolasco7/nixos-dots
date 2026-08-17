@@ -16,7 +16,7 @@ in
 
       logo =
         if minimal then
-          # ASCII logo — no kitty image protocol on a console TTY.
+          # ASCII logo; no kitty image protocol on a console TTY.
           {
             type = "small";
             padding = {

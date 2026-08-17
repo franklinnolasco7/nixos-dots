@@ -19,10 +19,10 @@
 #
 # Imported in two places:
 #
-#   - nixosConfigurations.aspire7 (via flake.nix mkSystem) — disko's NixOS
+#   - nixosConfigurations.aspire7 (via flake.nix mkSystem); disko's NixOS
 #     module turns the layout into fileSystems/swapDevices at build time, so
 #     hardware-configuration.nix can stay UUID-free.
-#   - diskoConfigurations.aspire7 — manual disko runs.
+#   - diskoConfigurations.aspire7; manual disko runs.
 #
 # Before running a destructive Disko command, ALWAYS verify that the
 # by-id path still resolves to the intended physical disk.

@@ -7,7 +7,7 @@
 
       # Keyboard-driven wallpaper switcher via awww (animated transitions).
       # Boot restore is waypaper's job (`waypaper --restore` in
-      # autostart.nix), re-applied from swww state — deliberately independent
+      # autostart.nix), re-applied from swww state; deliberately independent
       # of the last pick made here, since awww doesn't persist its image.
       WALLPAPER_DIR="$HOME/nixos-dots/themes/wallpapers"
       DRY_RUN=0
@@ -48,7 +48,7 @@
       ensure_daemon() {
         awww query >/dev/null 2>&1 && return 0
         awww-daemon &
-        # poll for readiness — startup time varies, a fixed sleep races the first apply
+        # poll for readiness; startup time varies, a fixed sleep races the first apply
         for _ in {1..50}; do
           awww query >/dev/null 2>&1 && return 0
           sleep 0.1
@@ -85,7 +85,7 @@
 
       # Full scan every launch. A "newer than index" filter silently dropped
       # any image whose mtime predated the last index write (e.g. images copied
-      # in with old timestamps) — thumbnails are the real cache gate.
+      # in with old timestamps); thumbnails are the real cache gate.
       scan_wallpapers() {
         local img
         while IFS= read -r img; do

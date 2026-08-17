@@ -8,7 +8,7 @@
   imports = [
     ./options.nix
 
-    # Terminal (always — console-safe)
+    # Terminal (always; console-safe)
     ./terminal
 
     ./programs

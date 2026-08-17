@@ -24,4 +24,4 @@ body:
     id: files
     attributes:
       label: Related files
-      description: Module or dotfile paths you touched — links preferred
+      description: Module or dotfile paths you touched; links preferred

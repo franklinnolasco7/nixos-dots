@@ -13,7 +13,7 @@
     ../../modules/nixos/tools/sops.nix
   ]
   ++ lib.optionals (profile == "full") [
-    # NVIDIA driver — GUI-only; the minimal console uses the amdgpu iGPU.
+    # NVIDIA driver; GUI-only; the minimal console uses the amdgpu iGPU.
     ../../modules/nixos/tools/nvidia.nix
   ];
 
@@ -22,7 +22,7 @@
   myHost.batteryPath = "/sys/class/power_supply/BAT1";
 
   # ---------------------------------------------------------------------------
-  # Kernel (host-specific; Chaotic-Nyx CachyOS build — see nyx.chaotic.cx)
+  # Kernel (host-specific; Chaotic-Nyx CachyOS build; see nyx.chaotic.cx)
   # ---------------------------------------------------------------------------
 
   # CachyOS kernel with kconfig parity to upstream; uses the nyx binary cache.
@@ -83,7 +83,7 @@
   ];
 
   # Host-specific home-manager bits (NVIDIA hyprland env, laptop monitor,
-  # mouse device) — see home.nix. These configure the hyprland HM module, so
+  # mouse device); see home.nix. These configure the hyprland HM module, so
   # they only exist in the full profile.
   home-manager.users.${user}.imports = lib.optionals (profile == "full") [
     ./home.nix

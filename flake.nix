@@ -57,7 +57,7 @@
       #
       # hostDir: path to hosts/<name>/ (hardware-configuration.nix,
       #   disko.nix, configuration.nix).
-      # user: the declarative username — home-manager config is imported from
+      # user: the declarative username; home-manager config is imported from
       #   users/<user>/ and the name is passed to NixOS modules via specialArgs
       #   (modules/nixos/system/users.nix, modules/nixos/tools/sops.nix).
       # profile: "full" (desktop) or "minimal" (console TTY). Injected as the
@@ -105,7 +105,7 @@
                 config.home-manager.users.${user}.myProfile = profile;
               }
             )
-            # fileSystems/swapDevices come from the disko layout — the
+            # fileSystems/swapDevices come from the disko layout; the
             # regenerated hardware-configuration.nix stays UUID-free.
           ]
           ++ nixpkgs.lib.optionals useDiskoMounts [
@@ -197,6 +197,12 @@
         ssh-to-age = {
           type = "app";
           program = "${nixpkgs.legacyPackages.${system}.ssh-to-age}/bin/ssh-to-age";
+        };
+
+        # Passphrase-encrypted key backup (install/key-backup.sh).
+        age = {
+          type = "app";
+          program = "${nixpkgs.legacyPackages.${system}.age}/bin/age";
         };
       };
 

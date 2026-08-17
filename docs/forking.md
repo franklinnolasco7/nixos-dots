@@ -11,7 +11,7 @@ git mv users/frank users/<your-user>
 
 ## 2. Point the flake at your user
 
-`flake.nix` — every `mkSystem` call:
+`flake.nix`; every `mkSystem` call:
 
 ```nix
 nixosConfigurations.<hostname> = mkSystem {
@@ -53,10 +53,28 @@ bash install/init-secrets.sh   # creates an encrypted skeleton
 # then fill real values (see docs/secrets.md)
 ```
 
-## 5. Optional cleanups
+## 5. Key backup (recommended)
+
+```bash
+sudo bash install/key-backup.sh encrypt   # collects keys, encrypts, commits + pushes the blob
+```
+
+Backs up this machine's keys (host SSH key, user age key, `~/.ssh/id_ed25519`)
+into `secrets/key-backup-<hostname>.tar.age`, encrypted with an age
+**passphrase** you choose. Safe to commit even to a public fork.
+
+- Use your **own** passphrase, in your password manager, not the repo: it is
+  the single point of failure, lose it and the backup is useless.
+- Delete upstream's `secrets/key-backup-*.tar.age`: encrypted to upstream's
+  passphrase, it's undecryptable garbage to you, and the installer would
+  otherwise prompt for a passphrase you don't have.
+- The installer decrypts the blob automatically before wiping; after boot,
+  `bash install/key-backup.sh decrypt` restores the user keys.
+
+## 6. Optional cleanups
 
 - `README.md` / `docs/installation.md`: replace the upstream clone URL.
 - `docs/installation.md` VPN section: your own `wg0.conf` stays out of the
   repo (see the section for the manual steps).
 - `.github/workflows/project-automation.yml` and `CONTRIBUTING.md` reference
-  the upstream board — drop or point to your own.
+  the upstream board; drop or point to your own.

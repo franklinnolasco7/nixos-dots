@@ -17,7 +17,7 @@ ACTION="switch"
 
 # Arg detection: a hosts/<name>/ dir means <host>; an action word means ACTION.
 #
-# A host arg may be a hosts/<name>/ dir OR <name>-min — the "-min" suffix is
+# A host arg may be a hosts/<name>/ dir OR <name>-min; the "-min" suffix is
 # RESERVED for profile variants of an existing host; it is never a real
 # hostname. Don't create hosts/<name>-min/.
 if [[ $# -gt 0 ]]; then

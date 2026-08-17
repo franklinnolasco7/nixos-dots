@@ -8,7 +8,7 @@
 
 {
   home.packages =
-    # Core utilities — console-safe, always present (the minimal profile's tools).
+    # Core utilities; console-safe, always present (the minimal profile's tools).
     (with pkgs; [
       curl
       jq

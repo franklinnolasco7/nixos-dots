@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting. Fill in what you can — the more, the faster the fix.
+        Thanks for reporting. Fill in what you can; the more, the faster the fix.
         Check [troubleshooting](https://github.com/franklinnolasco7/nixos-dots/blob/main/docs/troubleshooting.md) and [maintenance](https://github.com/franklinnolasco7/nixos-dots/blob/main/docs/maintenance.md) first.
   - type: input
     id: host

@@ -24,7 +24,7 @@ in
       };
 
       character = {
-        # Minimal: ASCII-only — the console TTY font has no nerd glyphs.
+        # Minimal: ASCII-only; the console TTY font has no nerd glyphs.
         success_symbol = if minimal then "[>](bold #c8c8c8)" else "[❯](bold #c8c8c8)";
         error_symbol = if minimal then "[!](bold #5a5a5a)" else "[❯](bold #5a5a5a)";
       };

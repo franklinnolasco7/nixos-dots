@@ -17,18 +17,16 @@ Host config: `hosts/aspire7/`.
 ## Install
 
 ```bash
-sudo bash install/backup-host-key.sh   # detects USB drives and prompts (sops identities)
-sudo HOST_KEY_SRC=<backup-dir> ./install/aspire7.sh # nixos-anywhere wipe + install
+sudo bash install/key-backup.sh encrypt   # age-passphrase backup → commits + pushes the blob
+sudo ./install/aspire7.sh                 # nixos-anywhere wipe + install (decrypts the backup itself)
 sudo reboot
 ```
 
-`install/backup-host-key.sh` with no argument scans for removable drives
-(`lsblk RM=1`), picks the **largest** usable partition (skips Ventoy's
-`VTOYEFI`/EFI partitions), mounts it if needed, and saves the backup to
-`<mount>/ssh-host-key-backup`. Passed a dir explicitly (`<dest-dir>`), it
-saves to `<dest-dir>/ssh-host-key-backup` — or, if the arg already ends in
-`ssh-host-key-backup`, straight into it. Either way it prints the path —
-pass it as `HOST_KEY_SRC`.
+`install/key-backup.sh encrypt` packs the host key, user age key, and
+`~/.ssh/id_ed25519` into `secrets/key-backup-<hostname>.tar.age` under an age
+passphrase and commits + pushes it. The installer decrypts the blob
+automatically before wiping (details: [secrets.md](secrets.md)). Keep the
+passphrase in a password manager; it is the single secret.
 
 The installer aborts unless that backup exists and asks you to type `yes`
 before wiping the disk. It then runs nixos-anywhere from the flake (phases
@@ -45,7 +43,7 @@ mount). The same passphrase is asked at every boot to unlock the root disk.
 Post-install (SSH key, secrets, commit regenerated hardware config):
 [installation.md](installation.md#post-install).
 
-Back up the LUKS header off-machine while the disk is healthy — it is the only
+Back up the LUKS header off-machine while the disk is healthy; it is the only
 way to unlock the root disk if the header (or disk) is ever lost or corrupted:
 
 ```bash

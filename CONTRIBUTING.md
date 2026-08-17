@@ -2,13 +2,13 @@
 
 ## Principle
 
-**KISS — Keep It Simple.** No over-engineering, no gold-plating. If it adds
+**KISS; Keep It Simple.** No over-engineering, no gold-plating. If it adds
 complexity, it needs a reason.
 
-**YAGNI — You Aren't Gonna Need It.** Don't build for hypothetical futures;
+**YAGNI; You Aren't Gonna Need It.** Don't build for hypothetical futures;
 add something only when you actually need it.
 
-**DRY — Don't Repeat Yourself.** Prefer shared modules over copy-paste; a
+**DRY; Don't Repeat Yourself.** Prefer shared modules over copy-paste; a
 change should land in one place.
 
 ## Setup

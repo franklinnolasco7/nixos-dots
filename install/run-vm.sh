@@ -46,7 +46,7 @@ qemu_args=(
   -netdev user,id=n0,hostfwd=tcp::2222-:22 -device virtio-net-pci,netdev=n0
   -drive if=pflash,format=raw,readonly=on,file="$OVMF_DIR/FV/OVMF_CODE.fd"
   -drive if=pflash,format=raw,file="$VARS"
-  # Virtio GPU at 1080p — default std VGA gives ~800x600, which Hyprland
+  # Virtio GPU at 1080p; default std VGA gives ~800x600, which Hyprland
   # fills fullscreen and renders everything zoomed in.
   -device virtio-vga,xres=1920,yres=1080
 )

@@ -23,7 +23,7 @@ SOPS_YAML=.sops.yaml
 SECRETS_FILE=secrets/secrets.yaml
 
 if ! command -v nix >/dev/null 2>&1; then
-  echo "error: nix not found — run this on the NixOS host" >&2
+  echo "error: nix not found; run this on the NixOS host" >&2
   exit 1
 fi
 

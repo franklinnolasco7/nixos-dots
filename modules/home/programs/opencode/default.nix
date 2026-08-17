@@ -41,10 +41,10 @@ let
   cavemanSkill = name: "${cavemanSrc}/skills/${name}";
 
   # Notify plugin: notify when opencode asks a question (the question tool) or
-  # for permission — unless the active window is kitty (opencode runs inside
-  # kitty, so the prompt is already visible) — and when a task finishes
-  # (session.idle), regardless of the focused window. Inlined, not checked in
-  # — config lives in Nix modules.
+  # for permission (unless the active window is kitty, since opencode runs
+  # inside it and the prompt is already visible) and when a task finishes
+  # (session.idle), regardless of the focused window. Inlined, not checked in;
+  # config lives in Nix modules.
   notifyPlugin = pkgs.writeText "opencode-notify.ts" ''
     export const NotifyPlugin = async ({ $ }) => {
       const kittyFocused = async () => {
@@ -80,7 +80,7 @@ let
 
   # Sensitive paths opencode must never read. Guard plugin: blocks the read,
   # grep, glob, list, and mcp filesystem tools on these paths via
-  # tool.execute.before. Inlined, not checked in — config lives in Nix modules.
+  # tool.execute.before. Inlined, not checked in; config lives in Nix modules.
   sensitivePaths = [
     "${config.home.homeDirectory}/.config/opencode/context7-key"
     "${config.home.homeDirectory}/.config/opencode/github-token"

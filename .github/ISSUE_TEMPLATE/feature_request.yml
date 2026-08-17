@@ -22,7 +22,7 @@ body:
     id: how
     attributes:
       label: How it could work
-      description: Module, host, theme, option — rough idea is fine
+      description: Module, host, theme, option; rough idea is fine
       placeholder: |
         e.g. new module in modules/home/, new option in themes/colors.nix
   - type: textarea

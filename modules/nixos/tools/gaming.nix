@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  # 32-bit Mesa/glibc drivers — required for 32-bit games and their DXVK/Vulkan
+  # 32-bit Mesa/glibc drivers; required for 32-bit games and their DXVK/Vulkan
   # stacks (see wiki.nixos.org/wiki/Steam "Steam fails to start").
   hardware.graphics.enable32Bit = true;
 

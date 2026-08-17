@@ -22,12 +22,12 @@
 
   # Throwaway VM: no sops, so the user password is a fixed placeholder. The
   # hash of "123" is committed so no plaintext credential sits in the repo.
-  # (aspire7's password is the sops-managed hash — see modules/nixos/tools/sops.nix.)
+  # (aspire7's password is the sops-managed hash; see modules/nixos/tools/sops.nix.)
   users.users.${user}.initialHashedPassword =
     "$6$sjcDVBzcwzGX70tZ$zASI/c5uJh2C3Xz6bVaX4bIxbkbeQ/pMD3ng6QwZa.I3gO7.edAGb4fNW08mHWx/pd3ViUldMNLBirrN6W/xC.";
 
   # ---------------------------------------------------------------------------
-  # Display manager — ly itself is enabled by the shared desktop module
+  # Display manager; ly itself is enabled by the shared desktop module
   # (modules/nixos/tools/desktop.nix); the VM only forces its session.
   # ---------------------------------------------------------------------------
 

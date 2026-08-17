@@ -27,7 +27,7 @@ jobs:
 
             if (!PROJECTS_TOKEN) {
               core.warning(
-                'PROJECTS_TOKEN secret is not set — skipping project board sync. ' +
+                'PROJECTS_TOKEN secret is not set; skipping project board sync. ' +
                 'Create a fine-grained PAT with Projects: Read and write and store it ' +
                 'as the PROJECTS_TOKEN repository secret.',
               );
@@ -55,7 +55,7 @@ jobs:
 
             const project = proj.user.projectV2;
             if (!project) {
-              core.warning(`Project #${projectNumber} not found for @${PROJECT_OWNER} — skipping.`);
+              core.warning(`Project #${projectNumber} not found for @${PROJECT_OWNER}; skipping.`);
               return;
             }
 
@@ -68,7 +68,7 @@ jobs:
               const optionId = optionByName[statusName];
               if (!optionId) {
                 core.warning(
-                  `Board has no Status option named "${statusName}" — skipping this move. ` +
+                  `Board has no Status option named "${statusName}"; skipping this move. ` +
                   'Add it in the project Settings > Fields, or fix the mapping in this workflow.',
                 );
                 return;

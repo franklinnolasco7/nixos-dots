@@ -45,7 +45,7 @@ in
     };
 
     # frank's password hash (declarative). Applied on every activation, so a
-    # password change is "update the hash in secrets.yaml + rebuild" — no
+    # password change is "update the hash in secrets.yaml + rebuild"; no
     # plaintext anywhere. neededForUsers so it decrypts before the user is
     # created on a fresh install.
     sops.secrets.user-password-hash = {

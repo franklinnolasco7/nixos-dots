@@ -12,7 +12,7 @@ Existing file '/home/<user>/.config/<app>/config' would be clobbered
 Failed to start Home Manager environment for <user>.
 ```
 
-Fix — remove the stale symlink (user-owned, no sudo), then rebuild:
+Fix; remove the stale symlink (user-owned, no sudo), then rebuild:
 
 ```bash
 rm ~/.config/<app>

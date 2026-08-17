@@ -6,6 +6,7 @@ result-*
 # Secrets
 secrets/*
 !secrets/secrets.yaml
+!secrets/key-backup-*.tar.age
 
 # Environment files
 .env

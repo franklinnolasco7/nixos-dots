@@ -15,10 +15,10 @@
 #
 # Imported in two places:
 #
-#   - nixosConfigurations.vm (via flake.nix mkSystem) — disko's NixOS module
+#   - nixosConfigurations.vm (via flake.nix mkSystem); disko's NixOS module
 #     turns the layout into fileSystems/swapDevices at build time, so
 #     hardware-configuration.nix can stay UUID-free.
-#   - diskoConfigurations.vm — manual disko runs.
+#   - diskoConfigurations.vm; manual disko runs.
 
 { lib, ... }:
 

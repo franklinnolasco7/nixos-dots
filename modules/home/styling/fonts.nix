@@ -30,7 +30,7 @@
       noto-fonts-color-emoji
     ]
     ++ lib.optionals (config.myProfile == "full") [
-      # Nerd-glyph font — the full profile's terminal/starship/fastfetch glyphs.
+      # Nerd-glyph font; the full profile's terminal/starship/fastfetch glyphs.
       nerd-fonts.jetbrains-mono
     ];
 }

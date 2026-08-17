@@ -5,64 +5,71 @@
 NixOS Minimal ISO, internet.
 
 > [!WARNING]
-> Before wiping, back up the sops decryption identities — a fresh install
+> Before wiping, back up the sops decryption identities; a fresh install
 > regenerates the SSH host key, making committed secrets unreadable:
 
 ```bash
-sudo bash install/backup-host-key.sh              # detects USB drives and prompts
-sudo bash install/backup-host-key.sh <dest-dir>   # or pass a parent dir (saves to <dest-dir>/ssh-host-key-backup)
+sudo bash install/key-backup.sh encrypt   # age-passphrase backup → commits + pushes to the repo
 ```
+
+The installer finds the encrypted blob in `secrets/` automatically and prompts
+for the passphrase on the ISO console (details: [secrets.md](secrets.md)).
 
 ## Install
 
 Boot the NixOS Minimal ISO on the target machine (or `./install/run-vm.sh
-<iso>` to rehearse in a VM — see below). **On the ISO console**:
+<iso>` to rehearse in a VM; see below). **On the ISO console**:
 
 ```bash
 git clone https://github.com/franklinnolasco7/nixos-dots.git
 cd nixos-dots
-sudo passwd     # set a password for root — nixos-anywhere's one-time ssh-copy-id uses it
+sudo passwd     # set a password for root; nixos-anywhere's one-time ssh-copy-id uses it
 ```
 
 Then run the installer. From the repo **on the ISO** this is a self-install;
 from any other Nix machine it installs a remote target over SSH:
 
 ```bash
-sudo HOST_KEY_SRC=<usb-backup-dir> ./install/install.sh <hostname>          # self-install on the ISO
-HOST_KEY_SRC=<usb-backup-dir> ./install/install.sh <hostname> --target nixos@<ip>   # remote ISO over SSH
+sudo ./install/install.sh <hostname>          # self-install on the ISO
+./install/install.sh <hostname> --target nixos@<ip>   # remote ISO over SSH
 sudo reboot   # after a self-install; for a remote target, reboot it directly
 ```
 
 Add `--minimal` to install the console-TTY variant (flake config
 `.#<hostname>-min`, profile = "minimal"): **no display server, Wayland stack,
-or GUI apps** — good for a low-storage install or a headless setup:
+or GUI apps**; good for a low-storage install or a headless setup:
 
 ```bash
-sudo HOST_KEY_SRC=<usb-backup-dir> ./install/install.sh <hostname> --minimal
+sudo ./install/install.sh <hostname> --minimal
 ```
 
-The `-min` suffix is reserved for profile variants of an existing host — it is
+The `-min` suffix is reserved for profile variants of an existing host; it is
 never a real hostname, and `hosts/<hostname>-min/` must not be created.
 
-`HOST_KEY_SRC` defaults to `/root/ssh-host-key-backup`. The installer
-**refuses to start without a verified key backup**, verifies that the backup
-host key can decrypt `secrets/secrets.yaml` (so the wipe can't lock you out of
+`HOST_KEY_SRC` defaults to the repo's `secrets/` dir, where
+`install/key-backup.sh encrypt` committed the encrypted backup. If
+`secrets/key-backup-<hostname>.tar.age` is present the installer prompts for
+the backup passphrase and decrypts it into a temp dir (a wrong passphrase
+aborts before the wipe); a `HOST_KEY_SRC` pointing at a plaintext dir (e.g. the
+throwaway VM key below) is used as-is. The installer **refuses to start
+without a verified key backup**, verifies that the backup host key can decrypt
+`secrets/secrets.yaml` (so the wipe can't lock you out of
 your secrets), and asks you to type `yes` to confirm the wipe. Then it runs
 **nixos-anywhere** (pinned via the flake: `nix run .#nixos-anywhere -- ...`)
 with the `disko,install` phases:
 
 On a self-install (no `--target`) the system is built on the ISO itself, so
 `install.sh` first injects the flake's build caches (e.g. the nyx cache for the
-CachyOS kernel) into the ISO's root nix config — no manual cache setup on the
+CachyOS kernel) into the ISO's root nix config; no manual cache setup on the
 ISO.
 
 1. Wipes and repartitions the disk from `hosts/<hostname>/disko.nix`, mounting
-   the new layout at `/mnt`. No reboot phase — `/mnt` stays mounted.
+   the new layout at `/mnt`. No reboot phase; `/mnt` stays mounted.
    LUKS hosts (the shared layout) prompt for the disk passphrase here: twice to
    format, once to mount. The same passphrase is asked again at boot.
 2. Regenerates `hosts/<hostname>/hardware-configuration.nix` **without
    filesystems** (`--no-filesystems`): the mounts come from `disko.nix` at
-   build time (`useDiskoMounts = true`, default is off — see New Host), so the
+   build time (`useDiskoMounts = true`, default is off; see New Host), so the
    committed file is **UUID-free** and never needs churning after a reinstall.
 3. Restores the backed-up SSH host key via `--extra-files` (into the new
    system's `/etc/ssh/`) so sops can decrypt during activation.
@@ -83,7 +90,7 @@ nixos-anywhere unchanged.
 ```bash
 cd nixos-dots
 
-git add hosts/<hostname>/hardware-configuration.nix && git commit   # UUID-free — nothing to churn
+git add hosts/<hostname>/hardware-configuration.nix && git commit   # UUID-free; nothing to churn
 ./install/init-secrets.sh                                            # register new host in .sops.yaml
 ```
 
@@ -105,7 +112,7 @@ Secrets afterward: [secrets.md](secrets.md).
 
 ## WireGuard VPN (manual)
 
-The Proton profile stays out of the flake — `wg0.conf` is personal.
+The Proton profile stays out of the flake; `wg0.conf` is personal.
 
 1. Get `wg0.conf` from Proton (VPN → WireGuard configuration → generate keys).
 2. Install it:
@@ -117,7 +124,7 @@ The Proton profile stays out of the flake — `wg0.conf` is personal.
    > [!IMPORTANT]
    > `DNS = <proton-dns>` is **required** in `wg0.conf` (e.g. `10.2.0.2` for
    > Proton). wg-quick pushes DNS through the resolver only when the `DNS`
-   > key is present — without it the tunnel comes up but resolution leaks to
+   > key is present; without it the tunnel comes up but resolution leaks to
    > the clearnet.
 3. Toggle with `vpn-toggle` (a toggle button in the swaync control center,
    `modules/home/wayland/swaync/default.nix`):
@@ -137,7 +144,7 @@ The Proton profile stays out of the flake — `wg0.conf` is personal.
    `hardware-configuration.nix` with `--generate-hardware-config` on install)
 2. Copy hardware config into `hosts/<hostname>/`
 3. Add `disko.nix` for the disk layout (sets `device` + partitions)
-4. Wire into `flake.nix` — one line per config. Disko-mounted hosts must pass
+4. Wire into `flake.nix`; one line per config. Disko-mounted hosts must pass
    `useDiskoMounts = true` (default is off): without it the layout is ignored
    and the system builds **without any mounts**:
    ```nix
@@ -168,24 +175,24 @@ mkdir -p /tmp/ssh-host-key-backup
 ssh-keygen -t ed25519 -N "" -f /tmp/ssh-host-key-backup/ssh_host_ed25519_key
 SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/ssh-host-key-backup \
   ./install/install.sh vm --target nixos@localhost --ssh-port 2222
-# back on the host — boot the installed VM (no ISO):
+# back on the host: boot the installed VM (no ISO)
 ./install/run-vm.sh
 ```
 
 > [!WARNING]
 > The `vm` config derives its mounts from the disko layout (`disk-main-*`
-> partlabels). Never `nixos-rebuild switch --flake .#vm` on a real host — it
+> partlabels). Never `nixos-rebuild switch --flake .#vm` on a real host; it
 > rewrites fstab to those partlabels, which don't exist there, leaving `/boot`
 > unmounted. The switch must run inside the VM; on a real host use a dry
 > `install/rebuild.sh vm build` only.
 
 The VM uses the same LUKS layout as the physical host, so the disko phase
-prompts for the disk passphrase during the rehearsal too — and booting the VM
+prompts for the disk passphrase during the rehearsal too; and booting the VM
 asks for it again, which doubles as the unlock check.
 
 > [!NOTE]
-> The VM must boot with UEFI/OVMF (`ls /sys/firmware/efi` non-empty) —
-> systemd-boot requires it. No USB in the VM, so a freshly generated host key
-> satisfies the backup gate (sops is not active for the `vm` host anyway);
-> `SKIP_SOPS_CHECK=1` skips the sops pre-check, which a throwaway key cannot
-> pass.
+> The VM must boot with UEFI/OVMF (`ls /sys/firmware/efi` non-empty).
+> systemd-boot requires it. The rehearsal passes a throwaway plaintext key dir
+> via `HOST_KEY_SRC`; no encrypted backup involved (sops is not active for the
+> `vm` host anyway); `SKIP_SOPS_CHECK=1` skips the sops pre-check, which a
+> throwaway key cannot pass.
