@@ -4,10 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    hyprland.url = "github:hyprwm/Hyprland";
-    # NOTE: Intentionally not following nixpkgs — Hyprland pins its own nixpkgs
-    # for reproducible builds and binary-cache hits.
-
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,7 +43,6 @@
     inputs@{
       self,
       nixpkgs,
-      hyprland,
       disko,
       nixos-anywhere,
       home-manager,
@@ -125,8 +120,6 @@
             disko.nixosModules.disko
           ]
           ++ [
-            hyprland.nixosModules.default
-
             {
               nixpkgs.overlays = [ (import ./overlays) ];
             }

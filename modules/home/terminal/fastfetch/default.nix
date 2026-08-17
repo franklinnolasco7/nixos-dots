@@ -14,13 +14,6 @@ in
     settings = {
       "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json";
 
-      # Terminal version detection walks /proc + queries the kitty socket and
-      # costs ~90ms every run. Displaying "kitty" without its version is the
-      # price for a near-instant fetch.
-      general = {
-        detectVersion = false;
-      };
-
       logo =
         if minimal then
           # ASCII logo — no kitty image protocol on a console TTY.
