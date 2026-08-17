@@ -20,7 +20,7 @@ Packs the host key, the user age key and `~/.ssh/id_ed25519` into
 `secrets/key-backup-<hostname>.tar.age` (age passphrase, scrypt) and commits +
 pushes it. The passphrase is the only secret; keep it in a password manager,
 lose it and the backup is useless. The installer decrypts the blob
-automatically on the ISO; after boot, restore the optional user keys with
+automatically before the wipe; after boot, restore the optional user keys with
 `bash install/key-backup.sh decrypt`.
 
 ## Bootstrap (first host)
@@ -92,7 +92,6 @@ prompts for the backup passphrase, decrypts, and stages the key into the new
 system. Without the backup, previously committed secrets cannot be decrypted
 at activation; a wrong passphrase aborts the install before the wipe.
 
-Brand-new host with no backup yet: pregenerate a key on the ISO and install
-with `SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/newhost-key` (see
+Brand-new host with no backup yet: pregenerate a key and install with `SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/newhost-key` (see
 [installation.md](installation.md#new-host)), then register it above and
 create its first backup with `key-backup.sh encrypt`.

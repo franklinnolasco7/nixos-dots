@@ -16,11 +16,19 @@ Host config: `hosts/aspire7/`.
 
 ## Install
 
+Wipes the whole disk; see [installation.md](installation.md) for the flow and
+why the minimal ISO is not the install medium. Backup first, then run the
+installer from any Nix machine with SSH access to this host (kexec
+self-install on the laptop itself works too):
+
 ```bash
 sudo bash install/key-backup.sh encrypt   # age-passphrase backup → commits + pushes the blob
-sudo ./install/aspire7.sh                 # nixos-anywhere wipe + install (decrypts the backup itself)
-sudo reboot
+./install/aspire7.sh --target <user>@localhost --env-password   # wipe + install (kexec)
+reboot
 ```
+
+The target user needs passwordless sudo (one `sudoers.d` line; see
+installation.md).
 
 `install/key-backup.sh encrypt` packs the host key, user age key, and
 `~/.ssh/id_ed25519` into `secrets/key-backup-<hostname>.tar.age` under an age

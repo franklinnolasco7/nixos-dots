@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 # Automated installation for any host in the flake, via nixos-anywhere.
 #
-# Usage:
-#   sudo ./install/install.sh <hostname>                       # self-install from the ISO
-#   ./install/install.sh <hostname> --target <host[:port]> [--ssh-port N] [extra nixos-anywhere args...]
+# Usage (a host needs hosts/<hostname>/default.nix and hosts/<hostname>/disko.nix):
+#   ./install/install.sh <hostname> --target <user>@<host>      # install a machine over SSH
+#   ./install/install.sh <hostname> --target <user>@localhost   # kexec self-install
+#   [--ssh-port N] [extra nixos-anywhere args...]
 #
-# <hostname> needs hosts/<hostname>/default.nix and hosts/<hostname>/disko.nix.
+# The target user needs passwordless sudo (nixos-anywhere requirement).
 # HOST_KEY_SRC defaults to the repo's secrets/ dir (see key-backup.sh).
 #
 # --minimal installs the console-TTY variant of the host (flake config
 # .#<hostname>-min, profile = "minimal"): no display server, Wayland stack, or
 # GUI apps. Defaults to the full desktop profile.
 #
-# The target defaults to the ISO this script runs on (nixos@localhost), and a
-# root check only applies to that default self-install case. For a remote
-# machine or the rehearsal VM, pass --target nixos@<host> (and --ssh-port, e.g.
-# 2222 for run-vm.sh); no root needed. Every other argument is forwarded to
-# nixos-anywhere unchanged.
+# The default target is nixos@localhost, which only exists when this script
+# runs on a NixOS installer ISO; that ISO's RAM-backed store can't hold the
+# desktop profile, so passing --target from an existing NixOS machine is the
+# supported flow (see docs/installation.md). Every other argument is forwarded
+# to nixos-anywhere unchanged.
 #
 # nixos-anywhere runs the `disko,install` phases: it wipes and repartitions the
 # target disk (from hosts/<hostname>/disko.nix), regenerates the UUID-free

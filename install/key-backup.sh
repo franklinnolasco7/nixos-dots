@@ -149,9 +149,9 @@ if [[ $MODE == encrypt ]]; then
   fi
 
   echo
-  echo "done. The installer picks this up automatically:"
-  echo "  sudo ./install/install.sh <host>"
-  echo "(decryption prompts for the backup passphrase on the ISO console)"
+  echo "done. The installer picks this up automatically (install command and"
+  echo "flow: docs/installation.md)."
+  echo "(decryption prompts for the backup passphrase)"
 elif [[ $MODE == decrypt ]]; then
   file="$(backup_of || true)"
   if [[ -z $file ]]; then

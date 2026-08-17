@@ -22,9 +22,6 @@ Only an existing multi-user system that never ran the installer needs it once
 sudo git config --global --add safe.directory "$(pwd)"
 ```
 
-A fresh install's ISO runs everything as root, so it only needs this on an
-existing multi-user system.
-
 ## Update
 
 ```bash

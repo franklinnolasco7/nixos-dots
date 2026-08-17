@@ -22,7 +22,7 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 # Philosophy
 
 - **Reproducible.** Every machine should be rebuildable from this repo alone, no manual steps, no "it works on my laptop."
-- **Easy to set up.** A fresh install should go from ISO to a fully configured desktop in as few commands as possible.
+- **Easy to set up.** A fresh install should go from a wiped disk to a fully configured desktop in as few commands as possible.
 - **Stateless.** Nothing important should live outside version control. If a machine dies, the config doesn't.
 - **Declarative over imperative.** Describe the end state, let Nix figure out how to get there.
 - **Secure by default.** Secrets stay out of the store, and the system should fail safe, not silently.
@@ -39,7 +39,7 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 
 | Guide | Description |
 |---|---|
-| [Installation](docs/installation.md) | Fresh install via nixos-anywhere, ISO to first boot |
+| [Installation](docs/installation.md) | Fresh install via nixos-anywhere, wipe to first boot |
 | [Maintenance](docs/maintenance.md) | Updating, rebuilding, and garbage collection |
 | [Architecture](docs/architecture.md) | How the flake and modules are organized |
 | [Troubleshooting](docs/troubleshooting.md) | Common issues and fixes |
