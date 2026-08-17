@@ -67,15 +67,8 @@
       #   (referencing `config` in `imports` is an infinite recursion); all
       #   body gates read the typed config.myProfile.
       # useDiskoMounts: derive fileSystems/swapDevices from the host's disko
-      #   layout at build time instead of hardware-configuration.nix.
-      #
-      # ⚠ TEMPORARY: only the vm host uses disko-derived mounts. aspire7 was
-      # gated off (and its UUID hardware-configuration.nix restored) so
-      # `nixos-rebuild switch --flake .#aspire7` is safe on the live laptop
-      # while iterating; the live disk has no disk-main-* partlabels.
-      # REVERT before the real install: re-enable useDiskoMounts for aspire7
-      # and let nixos-anywhere regenerate the UUID-free hardware config.
-      # (tracked in TODO.md)
+      #   layout at build time instead of hardware-configuration.nix (which
+      #   install.sh's nixos-anywhere run regenerates UUID-free).
       mkSystem =
         {
           hostDir,
@@ -154,9 +147,7 @@
         aspire7 = mkSystem {
           hostDir = ./hosts/aspire7;
           user = "frank";
-          # ⚠ TEMPORARY: disko mounts gated off — live laptop uses its UUID
-          # hardware-configuration.nix until the real install (see TODO.md).
-          useDiskoMounts = false;
+          useDiskoMounts = true;
         };
 
         # Console-TTY variant: no display server, Wayland stack, or GUI apps.
@@ -164,7 +155,7 @@
           hostDir = ./hosts/aspire7;
           user = "frank";
           profile = "minimal";
-          useDiskoMounts = false;
+          useDiskoMounts = true;
         };
 
         vm = mkSystem {

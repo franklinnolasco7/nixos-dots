@@ -17,16 +17,7 @@
 # The partition layout lives in modules/disko/gpt-layout.nix (shared with
 # other hosts); this file only pins the target device.
 #
-# ⚠ TEMPORARY: this file is NOT imported as a NixOS module right now —
-# flake.nix gates disko-derived mounts to the vm host (useDiskoMounts) and
-# hosts/aspire7/hardware-configuration.nix carries the live-disk UUIDs again
-# so the laptop is safe to `switch` while iterating.
-#
-# Still imported by diskoConfigurations.aspire7 (manual disko runs) and by
-# install/install.sh at the real install. REVERT the gate in flake.nix when
-# installing for real (see TODO.md).
-#
-# Imported in two places when the gate is lifted:
+# Imported in two places:
 #
 #   - nixosConfigurations.aspire7 (via flake.nix mkSystem) — disko's NixOS
 #     module turns the layout into fileSystems/swapDevices at build time, so

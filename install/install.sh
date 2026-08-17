@@ -88,14 +88,37 @@ if [[ ! -f "hosts/$HOST/disko.nix" ]]; then
   exit 1
 fi
 
+# Self-install (localhost target): the system is built ON the ISO by root, so
+# the flake's build caches (e.g. nyx-cache.chaotic.cx) must be configured for
+# root — nixos-anywhere only writes them to the *nixos* user's nix config on a
+# remote target, which the local root build never reads. Without this the
+# CachyOS kernel etc. would be compiled from source on the ISO.
+bootstrap_local_nix_cache() {
+  local conf=/root/.config/nix/nix.conf
+  local sub keys
+  sub=$(nix --experimental-features "nix-command flakes" eval --raw --apply toString \
+    "#nixosConfigurations.\"${CFG}\".config.nix.settings.substituters")
+  keys=$(nix --experimental-features "nix-command flakes" eval --raw --apply toString \
+    "#nixosConfigurations.\"${CFG}\".config.nix.settings.trusted-public-keys")
+  mkdir -p "$(dirname "$conf")"
+  touch "$conf"
+  grep -q '^extra-substituters' "$conf" || echo "extra-substituters = $sub" >>"$conf"
+  grep -q '^extra-trusted-public-keys' "$conf" || echo "extra-trusted-public-keys = $keys" >>"$conf"
+  echo "  wrote $conf (build cache: $sub)"
+}
+
 target_host_part="${TARGET_HOST#*@}"
+SELF_INSTALL=0
 case "$target_host_part" in
   localhost | 127.0.0.1 | ::1)
-    if [[ $EUID -ne 0 ]] && [[ $TARGET_GIVEN != 1 ]]; then
-      echo "Error: self-install to $target_host_part must be run as root (or with sudo)." >&2
-      echo "  Root is only required for the default self-install (no --target)." >&2
-      echo "  For remote/VM targets use --target <host> (no root needed)." >&2
-      exit 1
+    if [[ $TARGET_GIVEN != 1 ]]; then
+      SELF_INSTALL=1
+      if [[ $EUID -ne 0 ]]; then
+        echo "Error: self-install to $target_host_part must be run as root (or with sudo)." >&2
+        echo "  Root is only required for the default self-install (no --target)." >&2
+        echo "  For remote/VM targets use --target <host> (no root needed)." >&2
+        exit 1
+      fi
     fi
     ;;
 esac
@@ -161,6 +184,13 @@ printf '[safe]\n\tdirectory = *\n' >"$extra/root/.gitconfig"
 chmod 0600 "$extra/root/.gitconfig"
 
 echo "==> [2/4] Running nixos-anywhere (phases: disko,install) — target: $TARGET_HOST"
+# Real self-install (no --target): the build machine IS the ISO. The VM
+# rehearsal targets localhost too (with --target + a forwarding port), but the
+# build runs there on the already-cached invoking machine — skip.
+if [[ $SELF_INSTALL == 1 ]]; then
+  echo "  self-install: bootstrapping the ISO's root nix config with the flake build caches..."
+  bootstrap_local_nix_cache
+fi
 # shellcheck disable=SC2054 # --phases is one comma-separated option, not an array
 nixos_anywhere_args=(
   --flake ".#$CFG"
@@ -197,6 +227,9 @@ echo "After boot:"
 echo "  1. Commit the regenerated hardware config (UUID-free — fileSystems come"
 echo "     from disko.nix, so there is nothing to churn):"
 echo "       cd /path/to/nixos-dots && git add hosts/$HOST/hardware-configuration.nix && git commit"
+echo "     On a rehearsal host (vm) revert it instead — the VM-specific file is"
+echo "     not the config you want committed:"
+echo "       git checkout -- hosts/$HOST/hardware-configuration.nix"
 echo "  2. The user's password is declarative: it's the sops-managed hash"
 echo "     (secrets.yaml key user-password-hash). Change it there and rebuild;"
 echo "     on throwaway hosts without sops (vm) it's the fixed initialPassword."

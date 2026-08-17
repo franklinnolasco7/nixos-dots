@@ -51,6 +51,11 @@ your secrets), and asks you to type `yes` to confirm the wipe. Then it runs
 **nixos-anywhere** (pinned via the flake: `nix run .#nixos-anywhere -- ...`)
 with the `disko,install` phases:
 
+On a self-install (no `--target`) the system is built on the ISO itself, so
+`install.sh` first injects the flake's build caches (e.g. the nyx cache for the
+CachyOS kernel) into the ISO's root nix config — no manual cache setup on the
+ISO.
+
 1. Wipes and repartitions the disk from `hosts/<hostname>/disko.nix`, mounting
    the new layout at `/mnt`. No reboot phase — `/mnt` stays mounted.
    LUKS hosts (the shared layout) prompt for the disk passphrase here: twice to
