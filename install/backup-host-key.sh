@@ -74,13 +74,11 @@ if [[ -n $DEST_ARG ]]; then
   exit 0
 fi
 
-# --- interactive: detect removable drives and let the user pick one ---------
-
-mount_point_of() { # $1 = device (e.g. /dev/sdb2) -> echo mountpoint (or nothing)
+mount_point_of() {
   lsblk -r -n -o MOUNTPOINT "$1" 2>/dev/null
 }
 
-usable_dev_of() { # $1 = disk name -> echo largest mountable dev (or nothing)
+usable_dev_of() {
   lsblk -r -n -o NAME,SIZE,FSTYPE "/dev/$1" 2>/dev/null \
     | awk '
       $3 ~ /^(vfat|exfat|ntfs|ext2|ext3|ext4|btrfs|xfs)$/ { print $1, $2 }

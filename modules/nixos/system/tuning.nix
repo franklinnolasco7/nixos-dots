@@ -43,7 +43,6 @@
 
   services.fstrim.enable = true;
 
-  # Allow wheel group to write CPU governor sysfs files
   services.udev.extraRules = ''
     SUBSYSTEM=="cpu", ACTION=="add", \
       RUN+="${pkgs.bash}/bin/bash -c '${pkgs.coreutils}/bin/chgrp wheel /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor && ${pkgs.coreutils}/bin/chmod g+w /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'"

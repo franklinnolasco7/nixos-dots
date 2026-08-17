@@ -19,7 +19,6 @@
       wireguard-tools
       rsync
     ])
-    # Desktop & extra utilities — full profile only.
     ++ lib.optionals (config.myProfile == "full") (
       with pkgs;
       [
@@ -43,26 +42,21 @@
         satty
         glib
 
-        # Hyprland Tools & Control
         hyprpicker
         hyprshot
         brightnessctl
         playerctl
         linuxPackages.cpupower
 
-        # Editors
         neovim
         vscodium
         antigravity-ide
 
-        # Terminal & Script Tools
         lua
 
-        # Audio
         pavucontrol
         pulseaudio
 
-        # LAN file sharing
         localsend
       ]
     );

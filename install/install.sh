@@ -70,7 +70,6 @@ if [[ $MINIMAL == 1 ]]; then
   CFG="$HOST-min"
 fi
 
-# --target accepts host:port shorthand.
 if [[ -z $SSH_PORT && $TARGET_HOST == *:* ]]; then
   SSH_PORT="${TARGET_HOST##*:}"
   TARGET_HOST="${TARGET_HOST%:*}"

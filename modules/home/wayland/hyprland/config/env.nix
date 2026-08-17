@@ -2,7 +2,6 @@
 
 {
   wayland.windowManager.hyprland.settings.env = [
-    # Cursor
     {
       _args = [
         "XCURSOR_SIZE"
@@ -22,7 +21,6 @@
       ];
     }
 
-    # Qt
     {
       _args = [
         "QT_QPA_PLATFORMTHEME"
@@ -48,7 +46,6 @@
       ];
     }
 
-    # Wayland
     {
       _args = [
         "XDG_SESSION_TYPE"

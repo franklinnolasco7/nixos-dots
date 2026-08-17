@@ -11,13 +11,8 @@
     # Terminal (always — console-safe)
     ./terminal
 
-    # Editors & apps
     ./programs
-
-    # Development
     ./development
-
-    # Packages & theming
     ./packages.nix
     ./styling
   ]

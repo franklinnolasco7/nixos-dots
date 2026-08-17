@@ -2,7 +2,6 @@
 
 {
   wayland.windowManager.hyprland.settings.window_rule = [
-    # Ignore maximize requests from apps
     {
       name = "suppress-maximize";
       match = {
@@ -23,7 +22,6 @@
       no_initial_focus = true;
     }
 
-    # Border for tiled windows
     {
       match = {
         float = false;
@@ -31,7 +29,6 @@
       border_color = "rgba(c4c4c4ee) rgba(1a1a1aee)";
     }
 
-    # Border for floating windows
     {
       match = {
         float = true;
@@ -39,7 +36,6 @@
       border_color = "0xff848484 0xff848484";
     }
 
-    # Firefox
     {
       match = {
         class = "^firefox$";
@@ -48,7 +44,6 @@
       opacity = "1.0 override 1.0 override 1.0 override";
     }
 
-    # Editors / IDE
     {
       match = {
         class = "^code-oss$";
@@ -68,7 +63,6 @@
       workspace = "2";
     }
 
-    # Steam
     {
       match = {
         class = "^steam$";
@@ -76,7 +70,6 @@
       workspace = "3 silent";
     }
 
-    # Steam game windows
     {
       match = {
         class = "^steam_app_[0-9]+$";
@@ -85,7 +78,6 @@
       opacity = "1.0 override 1.0 override 1.0 override";
     }
 
-    # Discord (Vesktop)
     {
       match = {
         class = "^vesktop$";
@@ -93,7 +85,6 @@
       workspace = "5 silent";
     }
 
-    # Obsidian
     {
       match = {
         class = "^md.Obsidian$";
@@ -101,7 +92,6 @@
       workspace = "4 silent";
     }
 
-    # Spotify / Blanket
     {
       match = {
         class = "^Spotify$";
@@ -115,7 +105,6 @@
       workspace = "6 silent";
     }
 
-    # gThumb
     {
       match = {
         class = "^org.gnome.gThumb$";
@@ -128,7 +117,6 @@
       center = true;
     }
 
-    # Satty
     {
       match = {
         class = "^com.gabm.satty$";
@@ -141,7 +129,6 @@
       center = true;
     }
 
-    # Picture in Picture
     {
       match = {
         title = "^Picture-in-Picture$";
@@ -150,7 +137,6 @@
       pin = true;
     }
 
-    # Always opaque
     {
       match = {
         class = "^blender$";

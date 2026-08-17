@@ -1,5 +1,4 @@
 {
-  # shared by waybar, swaync and rofi
   base = "#080808";
   surfaceAlt = "#121212";
   surface = "#1a1a1a";
@@ -10,11 +9,9 @@
   urgent = "#f0f0f0";
   overlay = "#202020";
 
-  # waybar-only
   accentRed = "#5a5a5a";
   accentAmber = "#a8a8a8";
 
-  # hyprland border colors
   borderActive = "#c4c4c4";
   borderInactive = "#1a1a1a";
 }

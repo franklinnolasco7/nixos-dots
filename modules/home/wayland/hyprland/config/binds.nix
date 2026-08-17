@@ -8,7 +8,6 @@ let
   fileManager = "thunar";
   web_search = "rofi-web-search";
 
-  # Bind with modifier(s): "${mods} + ${key}"
   mkBind = mods: key: luaExpr: opts: {
     _args = [
       "${mods} + ${key}"
@@ -17,7 +16,6 @@ let
     ++ opts;
   };
 
-  # Bind without modifier
   mkBindPlain = key: luaExpr: opts: {
     _args = [
       key
@@ -26,17 +24,14 @@ let
     ++ opts;
   };
 
-  # Exec bind with modifier(s), cmd is a raw Lua string literal
   mkExec =
     mods: key: luaString: opts:
     mkBind mods key "hl.dsp.exec_cmd(${luaString})" opts;
 
-  # Exec bind without modifier
   mkExecPlain =
     key: luaString: opts:
     mkBindPlain key "hl.dsp.exec_cmd(${luaString})" opts;
 
-  # Workspace keys: 1..9, 0 (Lua i % 10)
   workspaceBinds = lib.concatLists (
     lib.genList (
       i:
@@ -74,7 +69,6 @@ let
 in
 {
   wayland.windowManager.hyprland.settings = {
-    # local zoom function, reused by the zoom binds below
     zoom = {
       _var = mkLuaInline ''
         function(mult)

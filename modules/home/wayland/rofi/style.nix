@@ -371,7 +371,6 @@ in
         background-color: transparent;
     }
 
-    /* Must match thumbnail width in wallpaper.sh so tiles fill the grid */
     element-icon {
         size: 320px;
         border-radius: 0px;

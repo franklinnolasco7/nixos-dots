@@ -61,9 +61,9 @@ ISO.
    LUKS hosts (the shared layout) prompt for the disk passphrase here: twice to
    format, once to mount. The same passphrase is asked again at boot.
 2. Regenerates `hosts/<hostname>/hardware-configuration.nix` **without
-   filesystems** (`--no-filesystems`): `fileSystems`/`swapDevices` come from
-   `disko.nix` at build time, so the committed file is **UUID-free** and never
-   needs churning after a reinstall.
+   filesystems** (`--no-filesystems`): the mounts come from `disko.nix` at
+   build time (`useDiskoMounts = true`, default is off — see New Host), so the
+   committed file is **UUID-free** and never needs churning after a reinstall.
 3. Restores the backed-up SSH host key via `--extra-files` (into the new
    system's `/etc/ssh/`) so sops can decrypt during activation.
 4. Installs the system (`nixos-install`).
@@ -136,13 +136,13 @@ The Proton profile stays out of the flake — `wg0.conf` is personal.
 1. `nixos-generate-config --root /mnt` (or let nixos-anywhere generate the
    `hardware-configuration.nix` with `--generate-hardware-config` on install)
 2. Copy hardware config into `hosts/<hostname>/`
-3. Add `disko.nix` for the disk layout (sets `device` + partitions) — it is
-   imported automatically by `mkSystem`, so it also supplies
-   `fileSystems`/`swapDevices` at build time
-4. Wire into `flake.nix` — one line per config:
+3. Add `disko.nix` for the disk layout (sets `device` + partitions)
+4. Wire into `flake.nix` — one line per config. Disko-mounted hosts must pass
+   `useDiskoMounts = true` (default is off): without it the layout is ignored
+   and the system builds **without any mounts**:
    ```nix
-   nixosConfigurations.<hostname> = mkSystem { hostDir = ./hosts/<hostname>; user = "frank"; };
-   nixosConfigurations.<hostname>-min = mkSystem { hostDir = ./hosts/<hostname>; user = "frank"; profile = "minimal"; };
+   nixosConfigurations.<hostname> = mkSystem { hostDir = ./hosts/<hostname>; user = "frank"; useDiskoMounts = true; };
+   nixosConfigurations.<hostname>-min = mkSystem { hostDir = ./hosts/<hostname>; user = "frank"; profile = "minimal"; useDiskoMounts = true; };
    diskoConfigurations.<hostname> = mkDisko ./hosts/<hostname>;
    ```
    Add the `<hostname>-min` line only if you want the console-TTY variant.
