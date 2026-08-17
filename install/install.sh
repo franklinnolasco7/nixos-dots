@@ -146,9 +146,12 @@ fi
 
 if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
   echo "Error: host key backup not found at $HOST_KEY_SRC." >&2
-  echo "  Back it up on the current system FIRST; this install wipes the disk:" >&2
+  echo "  Reinstall? Back it up on the current system FIRST; this install wipes the disk:" >&2
   echo "    sudo bash install/key-backup.sh encrypt   # age passphrase, commits + pushes" >&2
   echo "  The installer then finds secrets/key-backup-<host>.tar.age automatically." >&2
+  echo "  Brand-new host with nothing to back up? Install a fresh key instead:" >&2
+  echo '    ssh-keygen -t ed25519 -N "" -f /tmp/newhost-key/ssh_host_ed25519_key' >&2
+  echo "    SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/newhost-key $0 $HOST" >&2
   exit 1
 fi
 

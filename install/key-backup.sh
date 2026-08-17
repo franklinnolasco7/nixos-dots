@@ -7,7 +7,8 @@
 #
 # encrypt packs the sops decryption identities into
 # secrets/key-backup-<hostname>.tar.age (age passphrase mode, scrypt) and
-# commits + pushes the blob. The passphrase is the only secret you must keep.
+# commits + pushes the blob (unsigned: it runs as root). The passphrase is the
+# only secret you must keep.
 # Put it in a password manager; lose it and the backup is useless. The blob is
 # safe to commit even to a public repo. --no-push skips the push (offline).
 #
@@ -121,11 +122,22 @@ if [[ $MODE == encrypt ]]; then
   age -p -o "$backup_file" "$stage/key-backup.tar"
   echo "  encrypted    -> $backup_file"
 
+  # The commit runs as root, which has no git identity; carry the real user's
+  # over via env (per-invocation, no config pollution). Unsigned by design:
+  # root has no signing key, and the blob is encrypted data anyway.
+  git_user_name="$(sudo -u "$real_user" git config --get user.name 2>/dev/null || true)"
+  git_user_email="$(sudo -u "$real_user" git config --get user.email 2>/dev/null || true)"
+  GIT_AUTHOR_NAME="${git_user_name:-$real_user}"
+  GIT_AUTHOR_EMAIL="${git_user_email:-$real_user@$host}"
+  GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+  GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+  export GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL
+
   git add "$backup_file"
   if git diff --cached --quiet -- "$backup_file"; then
     echo "  nothing new to commit"
   else
-    git commit -o "$backup_file" -m "chore(secrets): refresh $host key backup"
+    git -c commit.gpgsign=false commit -o "$backup_file" -m "chore(secrets): refresh $host key backup"
     if [[ $NO_PUSH == 0 ]]; then
       git push || {
         echo "error: push failed; the backup is only local, and the disk is" >&2
