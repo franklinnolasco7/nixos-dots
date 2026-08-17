@@ -133,22 +133,41 @@ trap 'rm -f "$tmp"; rm -rf "$extra" "$keytmp"' EXIT
 # decrypt it into a staging dir here. A wrong passphrase aborts before the
 # wipe; a plaintext dir (HOST_KEY_SRC given explicitly) is used as-is.
 if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" && -d $HOST_KEY_SRC ]]; then
+  # key-backup.sh names the blob after the machine hostname, which can
+  # differ from the flake host; fall back to any single blob in the dir.
+  backup=
   for candidate in "$HOST_KEY_SRC/key-backup-$HOST.tar.age" "$HOST_KEY_SRC/key-backup-$(hostname).tar.age"; do
     if [[ -f $candidate ]]; then
-      echo "==> Decrypting key backup ($candidate) ..."
-      nix --experimental-features "nix-command flakes" run .#age -d -o "$keytmp/key-backup.tar" "$candidate"
-      tar -xzf "$keytmp/key-backup.tar" -C "$keytmp"
-      HOST_KEY_SRC="$keytmp"
+      backup=$candidate
       break
     fi
   done
+  if [[ -z $backup ]]; then
+    blobs=("$HOST_KEY_SRC"/key-backup-*.tar.age)
+    if ((${#blobs[@]} > 1)); then
+      echo "Error: multiple key backups in $HOST_KEY_SRC and none named for $HOST." >&2
+      printf '  %s\n' "${blobs[@]}" >&2
+      echo "  Point HOST_KEY_SRC at the directory holding the right one." >&2
+      exit 1
+    fi
+    if ((${#blobs[@]} == 1)) && [[ -f ${blobs[0]} ]]; then
+      backup=${blobs[0]}
+    fi
+  fi
+  if [[ -n $backup ]]; then
+    echo "==> Decrypting key backup ($backup) ..."
+    nix --experimental-features "nix-command flakes" run .#age -- -d -o "$keytmp/key-backup.tar" "$backup"
+    tar -xzf "$keytmp/key-backup.tar" -C "$keytmp"
+    HOST_KEY_SRC="$keytmp"
+  fi
 fi
 
 if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
   echo "Error: host key backup not found at $HOST_KEY_SRC." >&2
   echo "  Reinstall? Back it up on the current system FIRST; this install wipes the disk:" >&2
   echo "    sudo bash install/key-backup.sh encrypt   # age passphrase, commits + pushes" >&2
-  echo "  The installer then finds secrets/key-backup-<host>.tar.age automatically." >&2
+  echo "  The installer then finds the backup automatically: by host, by" >&2
+  echo "  hostname, or any secrets/key-backup-*.tar.age if names differ." >&2
   echo "  Brand-new host with nothing to back up? Install a fresh key instead:" >&2
   echo '    ssh-keygen -t ed25519 -N "" -f /tmp/newhost-key/ssh_host_ed25519_key' >&2
   echo "    SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/newhost-key $0 $HOST" >&2
