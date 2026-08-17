@@ -30,6 +30,9 @@ in
 
     # Declarative SSH access for remote clients; sshd is key-only
     # (see hardening.nix), so every client key must be listed here.
-    openssh.authorizedKeys.keys = [ termiusMobile ];
+    openssh.authorizedKeys.keys = [
+      termiusMobile
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHtOXqQXYBzKOemkphICYNyUGXOBAMe2HH3bxszTd6R0 franklin.nolasco.dev@gmail.com"
+    ];
   };
 }

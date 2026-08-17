@@ -235,8 +235,14 @@ nixos_anywhere_args=(
   --target-host "$TARGET_HOST"
   --extra-files "$extra"
   --generate-hardware-config nixos-generate-config "./hosts/$HOST/hardware-configuration.nix"
-  --phases disko,install
 )
+# ISO self-install runs from a RAM-backed store, so the disk is already free
+# and disko can repartition it directly.  Running from an installed NixOS on
+# the target disk requires kexec first: it boots into a minimal RAM Linux,
+# freeing the disk for disko.
+if [[ $SELF_INSTALL == 1 ]]; then
+  nixos_anywhere_args+=(--phases disko,install)
+fi
 if [[ -n $SSH_PORT ]]; then
   nixos_anywhere_args+=(--ssh-port "$SSH_PORT")
 fi

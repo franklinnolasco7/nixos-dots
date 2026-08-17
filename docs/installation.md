@@ -26,6 +26,9 @@
 - Backed-up keys on the current system (see [secrets.md](secrets.md):
   `sudo bash install/key-backup.sh encrypt`). The installer aborts the wipe
   unless the backup is found and decrypts `secrets/secrets.yaml`.
+- Wired Ethernet on the target for the install window: the kexec handover
+  drops Wi-Fi, and nixos-anywhere cannot use it (upstream limitation).
+- The disk wipe destroys the repo working copy: `git push` first.
 
 ### Source machine
 
@@ -44,6 +47,66 @@ Debian, Fedora, ...):
   the source) and passwordless sudo for the target user. A NixOS source
   already runs sshd; other distros need it enabled.
 
+## Pre-flight runbook
+
+Run these in order before any install; nothing here is destructive yet:
+
+1. The SSH key must be in the agent (signed commits and the installer's SSH
+   auth both go through it):
+   ```bash
+   ssh-add -l        # should list id_ed25519; if not: ssh-add
+   ```
+2. Repo committed + pushed — the wipe destroys the working copy:
+   ```bash
+   git status --short      # must be empty
+   git push
+   ```
+3. Back up the keys. This is the installer's abort-gate: it refuses to wipe
+   unless a decodable backup exists:
+   ```bash
+   sudo bash install/key-backup.sh encrypt
+   ```
+   - Prompts: age passphrase (type + confirm — save it; it is the single
+     secret).
+   - Verify: `ls secrets/key-backup-<hostname>.tar.age`, and `git status`
+     shows the new blob (the script commits + pushes it). On a reinstall,
+     rerunning encrypt refreshes it in place.
+   - Failure fallback: if the script errors (git identity, push), fix and
+     rerun — do not proceed to the wipe.
+4. Passwordless sudo for nixos-anywhere. Temporary by construction: the wipe
+   destroys the drop-in it writes, so nothing needs cleanup afterwards:
+   ```bash
+   echo '<user> ALL=(ALL:ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/99-nixos-anywhere
+   sudo visudo -c            # must print "parsed OK"
+   ```
+5. Temporary root SSH for the kexec handover. nixos-anywhere uploads its
+   installer key to `root@localhost`, but this repo's hosts harden root login
+   away (`PermitRootLogin = "no"`), so the wipe fails at the key upload. On
+   NixOS, `/etc/ssh/sshd_config` is a read-only symlink to the Nix store —
+   drop-in files in `/etc/ssh/sshd_config.d/` are ignored (the generated
+   config has no `Include` line). The only way to change it is through the
+   NixOS module. Temporarily allow key-only root login; the wipe destroys
+   the change with the disk:
+   ```bash
+   # In modules/nixos/system/hardening.nix, change:
+   #   PermitRootLogin = "no";
+   # To:
+   #   PermitRootLogin = "prohibit-password";
+   sudo nixos-rebuild switch
+   sudo mkdir -p /root/.ssh
+   sudo cp ~/.ssh/id_ed25519.pub /root/.ssh/authorized_keys
+   sudo sshd -T | grep -i permitrootlogin   # must say prohibit-password
+   ssh root@localhost 'echo root-ssh-ok'     # verify before continuing
+   ```
+6. Wired Ethernet on the install window: the kexec handover drops Wi-Fi, and
+   nixos-anywhere cannot use it.
+7. Optional sanity: `nix flake check` (catches a broken flake before the
+   long build).
+
+> [!IMPORTANT]
+> Nothing is wiped until the installer's `yes` prompt; abort there if any
+> step above failed or is unverified.
+
 ## Install
 
 The installer builds the system closure on the machine that runs
@@ -54,20 +117,21 @@ recovery and rehearsal medium, not the install medium.
 ### On an existing NixOS machine (recommended)
 
 The build reuses the store already on the disk (incremental), then kexecs
-into the installer and wipes the disk from there.
+into the installer and wipes the disk from there. Pre-flight steps 3 and 4
+(key backup, passwordless sudo) apply here too.
 
 ```bash
-# nixos-anywhere needs passwordless sudo for a non-root target user
-echo '<user> ALL=(ALL:ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/99-nixos-anywhere
-sudo visudo -c
-
 # SSHPASS skips the interactive ssh-copy-id; omit the env var and flag to type it
 SSHPASS='<login password>' ./install/install.sh <host> --target <user>@localhost --env-password
 ```
 
-> [!NOTE]
-> The NOPASSWD drop-in is temporary by construction: the wipe destroys the
-> disk it lives on, so nothing needs to be cleaned up afterwards.
+> [!TIP]
+> `SSHPASS`/`--env-password` is the password-auth form, used by the rehearsal
+> VM. This repo's hosts run key-only sshd: the command form is
+> `./install/install.sh <host> --target <user>@localhost`, with the key in
+> the agent (`ssh-add -l`; load it once per login — the persistent agent does
+> not auto-load keys). `nix flake check` is a cheap pre-flight that catches a
+> broken flake before the long build.
 
 Prompts, in order: the age backup passphrase, `yes` to confirm the wipe, and
 the new LUKS disk passphrase (twice, then again at every boot). The machine
@@ -96,12 +160,29 @@ real hostname.
 
 ## Post-install
 
+The wipe destroyed the repo, so clone it back first (signed commits need the
+SSH key in the agent):
+
+```bash
+git clone https://github.com/franklinnolasco7/nixos-dots.git
+cd nixos-dots
+```
+
 Commit the regenerated hardware config (mounts come from disko, so it is
 UUID-free):
 
 ```bash
 git add hosts/<host>/hardware-configuration.nix && git commit
 ```
+
+Restore the personal user keys (SSH client key and sops user keys; the host
+key is already restored by the installer):
+
+```bash
+bash install/key-backup.sh decrypt
+```
+
+Per-host checklist and LUKS header backup: [aspire7.md](aspire7.md).
 
 - LUKS hosts: back up the disk header off-machine while it is healthy; it is
   the only way to unlock the root after a lost or corrupt header:

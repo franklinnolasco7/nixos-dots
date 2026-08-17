@@ -17,18 +17,19 @@ Host config: `hosts/aspire7/`.
 ## Install
 
 Wipes the whole disk; see [installation.md](installation.md) for the flow and
-why the minimal ISO is not the install medium. Backup first, then run the
-installer from any Nix machine with SSH access to this host (kexec
-self-install on the laptop itself works too):
+why the minimal ISO is not the install medium. Needs, before you start: wired
+Ethernet for the install window, the repo pushed to GitHub (the disk is
+wiped), and the SSH key in the agent. Backup first, then install:
 
 ```bash
 sudo bash install/key-backup.sh encrypt   # age-passphrase backup → commits + pushes the blob
-./install/aspire7.sh --target <user>@localhost --env-password   # wipe + install (kexec)
+./install/aspire7.sh --target <user>@localhost   # wipe + install (kexec; agent key auth)
 reboot
 ```
 
 The target user needs passwordless sudo (one `sudoers.d` line; see
-installation.md).
+installation.md). sshd here is key-only, so the agent key authenticates and
+`--env-password` is neither needed nor accepted.
 
 `install/key-backup.sh encrypt` packs the host key, user age key, and
 `~/.ssh/id_ed25519` into `secrets/key-backup-<hostname>.tar.age` under an age
