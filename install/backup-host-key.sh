@@ -3,12 +3,12 @@
 #
 # Run ON THE CURRENT SYSTEM before a fresh install:
 #   sudo bash install/backup-host-key.sh            # auto-detect USB, pick one
-#   sudo bash install/backup-host-key.sh /some/path # save to an explicit dir
+#   sudo bash install/backup-host-key.sh /some/path # pass a parent dir, no prompt
 #
 # With no argument it lists removable drives (lsblk RM=1), lets you pick one,
 # mounts it if needed, and saves the backup there (to the largest partition
 # with a usable filesystem, so Ventoy-style VTOYEFI/EFI partitions are skipped).
-# With a dest-dir argument it saves straight there (no prompt).
+# With a parent-dir argument it saves to $dest/ssh-host-key-backup (no prompt).
 #
 # Backs up:
 #   1. /etc/ssh/ssh_host_ed25519_key{,.pub}  — sops age identity derived from
@@ -36,6 +36,13 @@ fi
 real_user="${SUDO_USER:-$(logname 2>/dev/null || echo root)}"
 user_home="$(getent passwd "$real_user" | cut -d: -f6)"
 user_age_key="$user_home/.config/sops/age/keys.txt"
+
+backup_dir_of() {
+  case "$1" in
+    */ssh-host-key-backup) printf '%s' "$1" ;;
+    *) printf '%s/ssh-host-key-backup' "$1" ;;
+  esac
+}
 
 backup_to() {
   local dest="$1"
@@ -70,7 +77,7 @@ backup_to() {
 }
 
 if [[ -n $DEST_ARG ]]; then
-  backup_to "$DEST_ARG"
+  backup_to "$(backup_dir_of "$DEST_ARG")"
   exit 0
 fi
 
@@ -98,8 +105,8 @@ done < <(lsblk -d -r -n -o NAME,RM,SIZE,MODEL)
 
 if ((${#names[@]} == 0)); then
   echo "error: no removable storage detected." >&2
-  echo "  Plug in a USB stick and re-run, or pass an explicit destination:" >&2
-  echo "  sudo bash install/backup-host-key.sh /path/to/backup" >&2
+  echo "  Plug in a USB stick and re-run, or pass a parent dir:" >&2
+  echo "  sudo bash install/backup-host-key.sh /path/to/backup   # saves to /ssh-host-key-backup" >&2
   exit 1
 fi
 
@@ -150,7 +157,7 @@ if [[ -z $mp ]]; then
   mounted_by_us=1
 fi
 
-backup_to "$mp/ssh-host-key-backup"
+backup_to "$(backup_dir_of "$mp")"
 
 if [[ -n ${mounted_by_us:-} ]]; then
   echo "==> unmounting $mp ..."

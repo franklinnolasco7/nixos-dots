@@ -10,7 +10,7 @@ NixOS Minimal ISO, internet.
 
 ```bash
 sudo bash install/backup-host-key.sh              # detects USB drives and prompts
-sudo bash install/backup-host-key.sh <dest-dir>   # or save to an explicit dir
+sudo bash install/backup-host-key.sh <dest-dir>   # or pass a parent dir (saves to <dest-dir>/ssh-host-key-backup)
 ```
 
 ## Install

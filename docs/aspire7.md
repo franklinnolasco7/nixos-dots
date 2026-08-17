@@ -24,8 +24,11 @@ sudo reboot
 
 `install/backup-host-key.sh` with no argument scans for removable drives
 (`lsblk RM=1`), picks the **largest** usable partition (skips Ventoy's
-`VTOYEFI`/EFI partitions), mounts it if needed, saves the backup to
-`<mount>/ssh-host-key-backup`, and prints the path — pass it as `HOST_KEY_SRC`.
+`VTOYEFI`/EFI partitions), mounts it if needed, and saves the backup to
+`<mount>/ssh-host-key-backup`. Passed a dir explicitly (`<dest-dir>`), it
+saves to `<dest-dir>/ssh-host-key-backup` — or, if the arg already ends in
+`ssh-host-key-backup`, straight into it. Either way it prints the path —
+pass it as `HOST_KEY_SRC`.
 
 The installer aborts unless that backup exists and asks you to type `yes`
 before wiping the disk. It then runs nixos-anywhere from the flake (phases
