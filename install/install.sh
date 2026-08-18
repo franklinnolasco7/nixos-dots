@@ -174,6 +174,7 @@ if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" && -d $HOST_KEY_SRC ]]; then
   fi
   if [[ -n $backup ]]; then
     echo "==> Decrypting key backup ($backup) ..."
+    echo "  (host key only; user keys restore after boot: bash install/key-backup.sh decrypt)"
     nix --experimental-features "nix-command flakes" run .#age -- -d -o "$keytmp/key-backup.tar" "$backup"
     tar -xzf "$keytmp/key-backup.tar" -C "$keytmp"
     HOST_KEY_SRC="$keytmp"
@@ -193,7 +194,7 @@ if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
 fi
 
 if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
-  echo "==> [1/5] Verifying sops decryption from the backup host key..."
+  echo "==> [1/5] Verifying the backup host key can decrypt sops secrets (safety check, not a restore)..."
   if nix --experimental-features "nix-command flakes" run .#ssh-to-age -- \
     -private-key -i "$HOST_KEY_SRC/ssh_host_ed25519_key" >"$tmp" \
     && chmod 600 "$tmp" \
@@ -258,7 +259,7 @@ nixos_anywhere_args=(
 # the target disk requires kexec first: it boots into a minimal RAM Linux,
 # freeing the disk for disko.
 if [[ $SELF_INSTALL == 1 ]]; then
-  nixos_anywhere_args+=(--phases disko,install)
+  nixos_anywhere_args+=(--phases "disko,install")
 fi
 if [[ -n $SSH_PORT ]]; then
   nixos_anywhere_args+=(--ssh-port "$SSH_PORT")
@@ -307,8 +308,12 @@ echo "     On a rehearsal host (vm) revert it instead; the VM-specific file is"
 echo "     not the config you want committed:"
 echo "       git checkout -- hosts/$HOST/hardware-configuration.nix"
 echo "  2. Passwords set with passwd are mutable and survive NixOS rebuilds."
-echo "  3. Restore the user keys if wanted (interactive sops edits + ssh client"
-echo "     key; activation already uses the restored host key):"
+echo "  3. Restore the user keys BEFORE the first signed commit (git signing,"
+echo "     interactive sops edits); the installer only restored the host key:"
 echo "       bash install/key-backup.sh decrypt"
+echo "     - never with sudo (keys would land in /root)"
+echo "     - expect a y/N prompt if the boot-time key hook already generated a"
+echo "       throwaway key; answer y"
+echo "     - verify: ssh-keygen -lf ~/.ssh/id_ed25519.pub matches your GitHub key"
 echo "  4. Verify sops secrets decrypted:"
 echo "       ls -l ~/.config/opencode/context7-key ~/.config/opencode/github-token"

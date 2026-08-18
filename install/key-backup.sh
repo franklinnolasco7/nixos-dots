@@ -13,7 +13,7 @@
 # safe to commit even to a public repo. --no-push skips the push (offline).
 #
 # decrypt prompts for the passphrase and either extracts the archive to DIR
-# (--dir) or restores the user keys into the current home directory.
+# (--dir) or restores the user keys into the real user's home (sudo-safe).
 #
 # The archive contains (missing files are skipped with a warning):
 #   1. /etc/ssh/ssh_host_ed25519_key{,.pub}; the sops age identity; a fresh
@@ -160,6 +160,15 @@ elif [[ $MODE == decrypt ]]; then
     exit 1
   fi
 
+  # Mirror encrypt's real-user resolution: under sudo $HOME is /root, and a
+  # silent restore into root's home looks like a dead key restore.
+  if [[ $EUID -eq 0 ]]; then
+    real_user="${SUDO_USER:-$(logname 2>/dev/null || echo root)}"
+    user_home="$(getent passwd "$real_user" | cut -d: -f6)"
+  else
+    user_home="$HOME"
+  fi
+
   stage=$(mktemp -d)
   trap 'rm -rf "$stage"' EXIT
 
@@ -190,8 +199,9 @@ elif [[ $MODE == decrypt ]]; then
     echo "  restored $(basename "$dst")"
   }
 
-  restore "$stage/user-age-key.txt" "$HOME/.config/sops/age/keys.txt" 0600
-  restore "$stage/id_ed25519" "$HOME/.ssh/id_ed25519" 0600
-  restore "$stage/id_ed25519.pub" "$HOME/.ssh/id_ed25519.pub" 0644
-  echo "done."
+  restore "$stage/user-age-key.txt" "$user_home/.config/sops/age/keys.txt" 0600
+  restore "$stage/id_ed25519" "$user_home/.ssh/id_ed25519" 0600
+  restore "$stage/id_ed25519.pub" "$user_home/.ssh/id_ed25519.pub" 0644
+  echo "done. Keys restored to $user_home."
+  echo "Verify: ssh-keygen -lf $user_home/.ssh/id_ed25519.pub  # must match the GitHub signing key"
 fi

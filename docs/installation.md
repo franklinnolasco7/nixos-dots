@@ -188,18 +188,26 @@ git clone https://github.com/franklinnolasco7/nixos-dots.git
 cd nixos-dots
 ```
 
-Commit the regenerated hardware config (mounts come from disko, so it is
+Restore the personal user keys before the first signed commit (SSH client /
+git-signing key and sops user keys; the installer's passphrase prompt restored
+only the host key):
+
+```bash
+bash install/key-backup.sh decrypt
+```
+
+- Never run it with `sudo`; the keys land in `/root` instead of the user's
+  home.
+- If the boot-time key hook already generated a throwaway `~/.ssh/id_ed25519`,
+  answer `y` to the overwrite prompt.
+- Verify afterwards: `ssh-keygen -lf ~/.ssh/id_ed25519.pub` must match your
+  GitHub signing key.
+
+Then commit the regenerated hardware config (mounts come from disko, so it is
 UUID-free):
 
 ```bash
 git add hosts/<host>/hardware-configuration.nix && git commit
-```
-
-Restore the personal user keys (SSH client key and sops user keys; the host
-key is already restored by the installer):
-
-```bash
-bash install/key-backup.sh decrypt
 ```
 
 Per-host checklist and LUKS header backup: [aspire7.md](aspire7.md).

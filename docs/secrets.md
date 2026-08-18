@@ -19,9 +19,20 @@ sudo bash install/key-backup.sh encrypt
 Packs the host key, the user age key and `~/.ssh/id_ed25519` into
 `secrets/key-backup-<hostname>.tar.age` (age passphrase, scrypt) and commits +
 pushes it. The passphrase is the only secret; keep it in a password manager,
-lose it and the backup is useless. The installer decrypts the blob
-automatically before the wipe; after boot, restore the optional user keys with
-`bash install/key-backup.sh decrypt`.
+lose it and the backup is useless.
+
+The installer's passphrase prompt decrypts the blob before the wipe, but
+restores only the **host key** (the sops activation identity). After boot,
+restore the personal keys separately, before the first signed commit:
+
+```bash
+bash install/key-backup.sh decrypt
+```
+
+Never run that with `sudo` (the keys land in `/root`); answer `y` to the
+overwrite prompt if the boot-time key hook already generated one; verify
+afterwards with `ssh-keygen -lf ~/.ssh/id_ed25519.pub` against your GitHub
+key.
 
 ## Bootstrap (first host)
 
