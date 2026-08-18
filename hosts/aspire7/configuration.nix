@@ -56,9 +56,12 @@
 
   services.openssh.enable = true;
 
-  # User password is declarative: the sops-managed hash (user-password-hash),
-  # applied on every activation. Change it by editing secrets.yaml + rebuild.
-  users.users.${user}.hashedPasswordFile = config.sops.secrets.user-password-hash.path;
+  # Bootstrap local login for direct nixos-install runs. install.sh replaces
+  # this before first reboot; with mutableUsers, later passwd changes persist.
+  # Hash of "123" (yescrypt would also work; this existing SHA-512 hash is
+  # retained only as a short-lived bootstrap credential).
+  users.users.${user}.initialHashedPassword =
+    "$6$sjcDVBzcwzGX70tZ$zASI/c5uJh2C3Xz6bVaX4bIxbkbeQ/pMD3ng6QwZa.I3gO7.edAGb4fNW08mHWx/pd3ViUldMNLBirrN6W/xC.";
 
   # ---------------------------------------------------------------------------
   # NVIDIA PRIME (host-specific bus IDs)

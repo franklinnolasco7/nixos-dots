@@ -10,6 +10,7 @@
   ]
   ++ lib.optionals (profile == "full") [
     ./opencode
+    ./zed
     ./gaming.nix
   ];
 }

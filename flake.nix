@@ -41,7 +41,6 @@
 
   outputs =
     inputs@{
-      self,
       nixpkgs,
       disko,
       nixos-anywhere,
@@ -88,19 +87,13 @@
             # Parens required: a formals pattern as a bare list element is
             # ambiguous to the Nix parser (attrset vs function) and fails.
             (
-              {
-                config,
-                ...
-              }:
+              { ... }:
               {
                 config.myProfile = profile;
               }
             )
             (
-              {
-                config,
-                ...
-              }:
+              { ... }:
               {
                 config.home-manager.users.${user}.myProfile = profile;
               }

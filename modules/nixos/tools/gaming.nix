@@ -14,7 +14,7 @@
   programs.steam.extraCompatPackages = [ pkgs.proton-cachyos ];
 
   # MangoHud must live inside Steam's FHS env so games can dlopen its overlay;
-  # toggling happens via MANGOHUD=1 (set session-wide in modules/home/programs/gaming.nix).
+  # enable it per game with the MANGOHUD=1 environment variable.
   programs.steam.extraPackages = [ pkgs.mangohud ];
 
   programs.gamemode.enable = true;

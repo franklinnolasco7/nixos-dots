@@ -20,9 +20,8 @@
   # console-TTY profile (e.g. nixos-vm vs nixos-vm-minimal).
   system.nixos.label = "${config.networking.hostName}-${config.myProfile}";
 
-  # Throwaway VM: no sops, so the user password is a fixed placeholder. The
-  # hash of "123" is committed so no plaintext credential sits in the repo.
-  # (aspire7's password is the sops-managed hash; see modules/nixos/tools/sops.nix.)
+  # Throwaway VM: initialize the user with the fixed password "123". The hash
+  # is committed so no plaintext credential is stored in the user declaration.
   users.users.${user}.initialHashedPassword =
     "$6$sjcDVBzcwzGX70tZ$zASI/c5uJh2C3Xz6bVaX4bIxbkbeQ/pMD3ng6QwZa.I3gO7.edAGb4fNW08mHWx/pd3ViUldMNLBirrN6W/xC.";
 

@@ -143,6 +143,13 @@ shows `nixos-laptop` vs `nixos-laptop-minimal`.
 
 ## Flake Inputs
 
-- `hyprland`; flake input, not nixpkgs. Pins own nixpkgs (reproducible builds + `hyprland.cachix.org`). Contributes both `nixosModules.default` and `homeManagerModules.default` (the latter imported in `users/frank/default.nix`).
-- `mcp-servers-nix`; follows nixpkgs.
+- `nixpkgs`; `nixos-unstable`. Hyprland is no longer a flake input: both sides
+  (NixOS `programs.hyprland`, home-manager `wayland.windowManager.hyprland`)
+  resolve from this pinned nixpkgs.
+- `chaotic`; nyx `nyxpkgs-unstable`, served from the nyx binary cache. Provides
+  the CachyOS kernel + NVIDIA drivers (`linuxPackages_cachyos`, `nvidia_cachyos`).
+- `nvidia-patch`; follows nixpkgs. FBC/NVENC patch overlay for the NVIDIA
+  driver (used in `modules/nixos/tools/nvidia.nix`).
+- `mcp-servers-nix`; follows nixpkgs. MCP servers for opencode
+  (`modules/home/programs/opencode/default.nix`).
 - `home-manager`, `sops-nix`, `disko`, `nixos-anywhere`; follow nixpkgs.

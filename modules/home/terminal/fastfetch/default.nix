@@ -1,13 +1,22 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
 let
   minimal = config.myProfile == "minimal";
+
+  # Cached, near-instant nix package count (see scripts/pkgs.nix).
+  pkgsScript = import ./scripts/pkgs.nix { inherit pkgs; };
 in
 {
+  home.file.".local/libexec/fastfetch/pkgs" = {
+    source = "${pkgsScript}/bin/pkgs";
+    executable = true;
+  };
+
   programs.fastfetch = {
     enable = true;
 
@@ -80,10 +89,15 @@ in
           type = "uptime";
           key = "uptime";
         }
+        # Built-in "packages" pays 5+ nix-store spawns every run (~66ms),
+        # mostly to re-verify counts that only change on rebuild. This
+        # command module caches the count keyed by generation fingerprints,
+        # so steady state is ~1ms with the same output (see scripts/pkgs.nix).
         {
-          type = "packages";
+          type = "command";
           key = "pkgs";
-          combined = true;
+          text = "${config.home.homeDirectory}/.local/libexec/fastfetch/pkgs";
+          format = "{result} (nix)";
         }
         {
           type = "shell";
@@ -96,9 +110,20 @@ in
       ]
       ++ lib.optionals (!minimal) [
         # No window manager on a console TTY.
+        # Built-in "wm" detection takes ~100ms (it probes Hyprland's socket
+        # repeatedly); asking hyprctl directly when a session is live costs
+        # ~15ms but takes ~1ms otherwise. Runs parallel with other modules.
         {
-          type = "wm";
+          type = "command";
           key = "wm";
+          text = ''
+            if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+              hyprctl version 2>/dev/null | head -1 | awk '{print $1, $2, "(Wayland)"}'
+            else
+              printf '%s\n' "''${XDG_CURRENT_DESKTOP:-none}"
+            fi
+          '';
+          format = "{result}";
         }
       ]
       ++ [

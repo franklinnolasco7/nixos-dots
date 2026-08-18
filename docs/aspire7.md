@@ -23,7 +23,7 @@ wiped), and the SSH key in the agent. Backup first, then install:
 
 ```bash
 sudo bash install/key-backup.sh encrypt   # age-passphrase backup → commits + pushes the blob
-./install/aspire7.sh --target <user>@localhost   # wipe + install (kexec; agent key auth)
+./install/aspire7.sh --target <user>@localhost   # wipe + install; prompts for frank's password
 reboot
 ```
 
@@ -38,7 +38,9 @@ automatically before wiping (details: [secrets.md](secrets.md)). Keep the
 passphrase in a password manager; it is the single secret.
 
 The installer aborts unless that backup exists and asks you to type `yes`
-before wiping the disk. It then runs nixos-anywhere from the flake (phases
+before wiping the disk. Near the end it prompts for `frank`'s permanent login
+password, replacing the fresh-install bootstrap password `123`. It then runs
+nixos-anywhere from the flake (phases
 `disko,install`), regenerating a **UUID-free** `hardware-configuration.nix`
 (filesystems come from `disko.nix` at build time) and restoring the SSH host
 key into the new system via `--extra-files`.

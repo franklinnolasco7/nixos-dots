@@ -63,9 +63,8 @@ nix shell nixpkgs#sops -c sops secrets/secrets.yaml
 ```
 
 New secret: add a key in the file, wire it up in
-`modules/nixos/tools/sops.nix`, rebuild. The user's login password is
-`user-password-hash` (a `mkpasswd -m sha-512-crypt` hash); update it there and
-rebuild, `passwd` gets overwritten on activation.
+`modules/nixos/tools/sops.nix`, then rebuild. Login passwords are not managed
+by sops; set them directly with `passwd`.
 
 ## Re-encrypt (new key / host)
 

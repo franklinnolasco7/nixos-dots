@@ -15,9 +15,6 @@
 
   programs.mangohud = {
     enable = true;
-    # MANGOHUD=1 + MANGOHUD_DLSYM=1 for every app started from the session.
-    # Steam games pick it up because mangohud is in the Steam FHS env
-    # (modules/nixos/tools/gaming.nix).
-    enableSessionWide = true;
+    enableSessionWide = false;
   };
 }

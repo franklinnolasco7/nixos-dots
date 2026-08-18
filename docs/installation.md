@@ -107,6 +107,14 @@ Run these in order before any install; nothing here is destructive yet:
 > Nothing is wiped until the installer's `yes` prompt; abort there if any
 > step above failed or is unverified.
 
+> [!CAUTION]
+> Never run `sudo mkdir`, `sudo touch`, `sudo cp`, or similar commands against
+> paths inside a regular user's home. For example, do **not** run
+> `sudo mkdir -p ~/.config/dconf`: if a parent is missing, root creates it as
+> `root:root`, which can break dconf, abort Home Manager activation, and leave
+> Hyprland without a usable config. Run home-directory commands as that user;
+> reserve `sudo` for system paths such as `/etc` and `/root`.
+
 ## Install
 
 The installer builds the system closure on the machine that runs
@@ -136,11 +144,23 @@ SSHPASS='<login password>' ./install/install.sh <host> --target <user>@localhost
 Prompts, in order: the age backup passphrase, `yes` to confirm the wipe, and
 the new LUKS disk passphrase (twice, then again at every boot). The machine
 goes briefly offline during the kexec handover and reconnects on its own.
-Then:
+
+After installation, `install.sh` finds the single normal user declared by the
+flake (`frank`) and runs `passwd` on the mounted target. Enter and confirm the
+new login password at that prompt, then reboot:
 
 ```bash
 reboot
 ```
+
+The username remains declarative in `flake.nix`; the installer does not ask for
+or modify it. It aborts if a configuration declares zero or multiple normal
+users instead of guessing which account should receive the password.
+
+A direct `nixos-install --flake .#aspire7-min` bypasses the installer prompt.
+For that path, `frank` is created with the bootstrap password `123`; after the
+first local login, immediately run `passwd`. Password authentication over SSH
+is disabled, but the bootstrap password should still be changed promptly.
 
 ### Remote target over SSH
 
@@ -189,8 +209,9 @@ Per-host checklist and LUKS header backup: [aspire7.md](aspire7.md).
 
 > [!IMPORTANT]
 > `sudo cryptsetup luksHeaderBackup /dev/disk/by-partlabel/disk-main-root --header-backup-file <off-machine-path>`
-- The user's password is the sops-managed `user-password-hash` in
-  `secrets/secrets.yaml`; change it there and rebuild.
+- Nix provides only the fresh-install bootstrap password `123`. Login
+  passwords are otherwise mutable and not managed by sops; later `passwd`
+  changes are preserved by rebuilds.
 
 ## New host
 

@@ -15,10 +15,15 @@ in
       "/etc/ssh/ssh_host_ed25519_key"
     ];
 
-    # sops-install-secrets runs as root and creates parent dirs of its secret
-    # targets, which breaks home-manager linking into user-owned dirs (e.g.
-    # ~/.config/opencode/opencode.json). Create them user-owned first.
+    # Root-run setup (including sops-install-secrets) must not create missing
+    # parents in the user's home: `mkdir -p` would make them root-owned and
+    # block Home Manager before it can create the Hyprland config. Declare the
+    # complete directory chain, including dconf's writable database directory.
+    # tmpfiles also repairs the ownership/mode of these directories if they
+    # already exist with the wrong owner.
     systemd.tmpfiles.rules = [
+      "d ${homeDir}/.config 0755 ${user} users -"
+      "d ${homeDir}/.config/dconf 0700 ${user} users -"
       "d ${homeDir}/.config/opencode 0755 ${user} users -"
       "d ${homeDir}/.config/github 0755 ${user} users -"
     ];
@@ -44,15 +49,5 @@ in
       mode = "0400";
     };
 
-    # frank's password hash (declarative). Applied on every activation, so a
-    # password change is "update the hash in secrets.yaml + rebuild"; no
-    # plaintext anywhere. neededForUsers so it decrypts before the user is
-    # created on a fresh install.
-    sops.secrets.user-password-hash = {
-      neededForUsers = true;
-      owner = "root";
-      group = "root";
-      mode = "0400";
-    };
   };
 }

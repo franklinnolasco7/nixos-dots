@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
@@ -50,7 +49,7 @@
 
         neovim
         vscodium
-        antigravity-ide
+        antigravity-cli
 
         lua
 

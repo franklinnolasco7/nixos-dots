@@ -88,6 +88,23 @@ if [[ ! -f "hosts/$HOST/disko.nix" ]]; then
   exit 1
 fi
 
+# Discover the normal user that this flake configuration will create. The
+# username remains declarative; the installer only prompts for its password.
+mapfile -t NORMAL_USERS < <(
+  # shellcheck disable=SC2016 # ${name} belongs to the literal Nix expression.
+  nix --experimental-features "nix-command flakes" eval --raw \
+    ".#nixosConfigurations.\"${CFG}\".config.users.users" \
+    --apply 'users: builtins.concatStringsSep "\n" (builtins.filter (name: users.${name}.isNormalUser or false) (builtins.attrNames users))'
+)
+if ((${#NORMAL_USERS[@]} != 1)); then
+  echo "Error: configuration '$CFG' must declare exactly one normal user; found ${#NORMAL_USERS[@]}." >&2
+  printf '  Declared normal users:' >&2
+  printf ' %s' "${NORMAL_USERS[@]}" >&2
+  printf '\n' >&2
+  exit 1
+fi
+LOGIN_USER="${NORMAL_USERS[0]}"
+
 # Self-install (localhost target): the system is built ON the ISO by root, so
 # the flake's build caches (e.g. nyx-cache.chaotic.cx) must be configured for
 # root; nixos-anywhere only writes them to the *nixos* user's nix config on a
@@ -176,7 +193,7 @@ if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
 fi
 
 if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
-  echo "==> [1/4] Verifying sops decryption from the backup host key..."
+  echo "==> [1/5] Verifying sops decryption from the backup host key..."
   if nix --experimental-features "nix-command flakes" run .#ssh-to-age -- \
     -private-key -i "$HOST_KEY_SRC/ssh_host_ed25519_key" >"$tmp" \
     && chmod 600 "$tmp" \
@@ -190,9 +207,9 @@ if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
     exit 1
   fi
 elif [[ -f secrets/secrets.yaml ]]; then
-  echo "==> [1/4] Skipping sops decryption check (SKIP_SOPS_CHECK=1)."
+  echo "==> [1/5] Skipping sops decryption check (SKIP_SOPS_CHECK=1)."
 else
-  echo "==> [1/4] no secrets/secrets.yaml in this repo; skipping"
+  echo "==> [1/5] no secrets/secrets.yaml in this repo; skipping"
 fi
 
 disko_dev="$(sed -n 's/.*device = \(lib\.mkDefault \)\?"\([^"]*\)".*/\2/p' "hosts/$HOST/disko.nix" | head -1)"
@@ -221,7 +238,7 @@ install -d -m 0700 "$extra/root"
 printf '[safe]\n\tdirectory = *\n' >"$extra/root/.gitconfig"
 chmod 0600 "$extra/root/.gitconfig"
 
-echo "==> [2/4] Running nixos-anywhere (phases: disko,install); target: $TARGET_HOST"
+echo "==> [2/5] Running nixos-anywhere (phases: disko,install); target: $TARGET_HOST"
 # Real self-install (no --target): the build machine IS the ISO. The VM
 # rehearsal targets localhost too (with --target + a forwarding port), but the
 # build runs there on the already-cached invoking machine; skip.
@@ -250,7 +267,7 @@ nixos_anywhere_args+=("${PASS_ARGS[@]}")
 
 nix --experimental-features "nix-command flakes" run .#nixos-anywhere -- "${nixos_anywhere_args[@]}"
 
-echo "==> [3/4] Setting safe.directory for root on the new system..."
+echo "==> [3/5] Setting safe.directory for root on the new system..."
 if [[ -d /mnt/root ]]; then
   install -d -m 0700 /mnt/root
   printf '[safe]\n\tdirectory = *\n' >/mnt/root/.gitconfig
@@ -261,11 +278,26 @@ else
   echo "  already written into the new root via --extra-files."
 fi
 
-echo "==> [4/4] Installation complete!"
+echo "==> [4/5] Setting the login password for declarative user '$LOGIN_USER'..."
+if [[ -d /mnt/etc ]]; then
+  nixos-enter --root /mnt -c "passwd $LOGIN_USER"
+else
+  ssh_args=(-tt)
+  if [[ -n $SSH_PORT ]]; then
+    ssh_args+=(-p "$SSH_PORT")
+  fi
+  # LOGIN_USER came from the flake's single declared normal user above.
+  # shellcheck disable=SC2029 # Intentional client-side expansion.
+  ssh "${ssh_args[@]}" "$TARGET_HOST" \
+    "sudo nixos-enter --root /mnt -c 'passwd $LOGIN_USER'"
+fi
+
+echo "==> [5/5] Installation complete!"
 echo
 echo "Installed profile: $CFG ($([ $MINIMAL == 1 ] && echo 'minimal; console TTY, no display server' || echo 'full; desktop'))."
+echo "Password configured for: $LOGIN_USER"
 echo "Self-install: reboot into NixOS with: reboot"
-echo "Remote install: the target is already installed; reboot it."
+echo "Remote install: reboot the target."
 echo
 echo "After boot:"
 echo "  1. Commit the regenerated hardware config (UUID-free; fileSystems come"
@@ -274,9 +306,7 @@ echo "       cd /path/to/nixos-dots && git add hosts/$HOST/hardware-configuratio
 echo "     On a rehearsal host (vm) revert it instead; the VM-specific file is"
 echo "     not the config you want committed:"
 echo "       git checkout -- hosts/$HOST/hardware-configuration.nix"
-echo "  2. The user's password is declarative: it's the sops-managed hash"
-echo "     (secrets.yaml key user-password-hash). Change it there and rebuild;"
-echo "     on throwaway hosts without sops (vm) it's the fixed initialPassword."
+echo "  2. Passwords set with passwd are mutable and survive NixOS rebuilds."
 echo "  3. Restore the user keys if wanted (interactive sops edits + ssh client"
 echo "     key; activation already uses the restored host key):"
 echo "       bash install/key-backup.sh decrypt"

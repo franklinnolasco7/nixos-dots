@@ -1,5 +1,35 @@
 # Troubleshooting
 
+## Home Manager/dconf/Hyprland fail with permission errors
+
+If `~/.config` or one of its subdirectories was created with `sudo`, Home
+Manager may fail at `dconfSettings` with `Permission denied`, and Hyprland may
+then report that it could not create its config directory. The Hyprland error
+is downstream: Home Manager aborted before linking its config.
+
+Check the ownership of every path component:
+
+```bash
+namei -l ~/.config/dconf
+```
+
+Repair the user configuration tree, then rerun Home Manager activation:
+
+```bash
+sudo chown -R "$USER":users "$HOME/.config"
+sudo systemctl restart "home-manager-$USER.service"
+```
+
+Do not launch Hyprland from `sudo -i`; that root shell has no normal logind
+session and therefore no `XDG_RUNTIME_DIR`. This is separate from ownership
+errors.
+
+Prevention: never use `sudo mkdir`, `sudo touch`, `sudo cp`, or similar for a
+path under a regular user's home. This configuration declares `~/.config`,
+`~/.config/dconf`, and the root-managed secret directories through
+systemd-tmpfiles with user ownership. A required pre-Home-Manager service also
+repairs wrongly owned entries anywhere below `~/.config` before each activation.
+
 ## Home Manager: "Existing file ... would be clobbered"
 
 Converting an app from raw `xdg.configFile` (e.g. a whole-dir
