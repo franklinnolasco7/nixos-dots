@@ -61,4 +61,18 @@
       ];
     }
   ];
+
+  # Allow wheel to switch/hold power profiles; ly doesn't mark Hyprland active
+  # Consumer: modules/home/wayland/waybar/scripts.nix (power-profile)
+  security.polkit.extraConfig = ''
+    polkit.addRule(function (action, subject) {
+      if (
+        subject.isInGroup("wheel") &&
+        (action.id == "org.freedesktop.UPower.PowerProfiles.switch-profile" ||
+          action.id == "org.freedesktop.UPower.PowerProfiles.hold-profile")
+      ) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
 }
