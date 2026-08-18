@@ -1,11 +1,29 @@
 {
   config,
+  pkgs,
   ...
 }:
 {
-  # One agent per login, exported to every shell (zsh included) via
-  # sshAuthSock; without it each terminal needs its own `eval "$(ssh-agent)"`.
   services.ssh-agent.enable = true;
+
+  systemd.user.services.ssh-add = {
+    Unit = {
+      Description = "Load SSH keys into agent";
+      After = [ "ssh-agent.service" ];
+      Requires = [ "ssh-agent.service" ];
+    };
+    Service = {
+      Type = "oneshot";
+      Restart = "on-failure";
+      RestartSec = 2;
+      StartLimitIntervalSec = 30;
+      StartLimitBurst = 3;
+      ExecStart = "${pkgs.openssh}/bin/ssh-add ${config.home.homeDirectory}/.ssh/id_ed25519";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 
   programs.git = {
     enable = true;

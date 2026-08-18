@@ -159,7 +159,6 @@ in
             .. " --selector-args='-no-show-icons'"
         '' [ ])
         (mkExec mainMod "I" ''"hypr-keybinds"'' [ ])
-        (mkExec mainMod "H" ''"killall -SIGUSR1 waybar"'' [ ])
         (mkExec mainMod "L" ''"hyprlock"'' [ ])
         (mkExec mainMod "CTRL + F12" ''"toggle-laptop-kb"'' [ ])
         (mkExec mainMod "CTRL + F11" ''"toggle-laptop-tp"'' [ ])

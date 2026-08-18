@@ -21,7 +21,6 @@
     ++ lib.optionals (config.myProfile == "full") (
       with pkgs;
       [
-        obsidian
         rofimoji
         thunar
         libnotify
@@ -57,6 +56,7 @@
         pulseaudio
 
         localsend
+        ani-cli
       ]
     );
 }

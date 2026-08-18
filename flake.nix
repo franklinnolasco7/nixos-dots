@@ -37,6 +37,16 @@
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    obsidian-extensions = {
+      url = "github:karaolidis/nix-obsidian-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -47,6 +57,8 @@
       home-manager,
       sops-nix,
       chaotic,
+      spicetify-nix,
+      obsidian-extensions,
       ...
     }:
     let
@@ -107,7 +119,10 @@
           ]
           ++ [
             {
-              nixpkgs.overlays = [ (import ./overlays) ];
+              nixpkgs.overlays = [
+                (import ./overlays)
+                obsidian-extensions.overlays.default
+              ];
             }
 
             sops-nix.nixosModules.sops
@@ -124,7 +139,12 @@
                 inherit inputs user profile;
               };
 
-              home-manager.users.${user} = import ./users/${user}/default.nix;
+              home-manager.users.${user} = {
+                imports = [
+                  spicetify-nix.homeManagerModules.default
+                  (import ./users/${user}/default.nix)
+                ];
+              };
             }
           ];
         };

@@ -12,5 +12,7 @@
     ./opencode
     ./zed
     ./gaming.nix
+    ./spotify
+    ./obsidian
   ];
 }
