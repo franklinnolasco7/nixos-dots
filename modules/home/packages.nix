@@ -39,6 +39,7 @@
         slurp
         satty
         glib
+        mpv
 
         hyprpicker
         hyprshot
@@ -48,7 +49,6 @@
 
         neovim
         vscodium
-        antigravity-cli
 
         lua
 

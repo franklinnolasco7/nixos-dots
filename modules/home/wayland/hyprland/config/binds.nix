@@ -191,6 +191,10 @@ in
           hl.dsp.exec_cmd("hyprshot -m active -m window -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")
         '' [ ])
 
+        # --- Recording ---
+        (mkExec mainMod "F10" ''"gsr toggle"'' [ ])
+        (mkExec mainMod "F9" ''"gsr save"'' [ ])
+
         # --- Zoom ---
         (mkBind mainMod "Z" "zoom" [ ])
         (mkBind mainMod "equal" "function() zoom(1.1) end" [ { repeating = true; } ])

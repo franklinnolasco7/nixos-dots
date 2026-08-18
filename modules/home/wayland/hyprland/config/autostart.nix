@@ -26,6 +26,7 @@ in
             -- Boot restore only; interactive changes go through the wallpaper picker (rofi/wallpaper.nix)
             hl.exec_cmd("waypaper --restore")
             hl.exec_cmd("waybar")
+            hl.exec_cmd("gsr start")
             ${batteryNotify}
             hl.exec_cmd("airplane-mode restore")
             hl.exec_cmd("toggle-laptop-kb restore")

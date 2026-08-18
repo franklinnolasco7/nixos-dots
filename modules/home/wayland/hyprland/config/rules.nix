@@ -46,19 +46,7 @@
 
     {
       match = {
-        class = "^code-oss$";
-      };
-      workspace = "2";
-    }
-    {
-      match = {
-        class = "^antigravity$";
-      };
-      workspace = "2";
-    }
-    {
-      match = {
-        class = "^cursor$";
+        class = "^codium$";
       };
       workspace = "2";
     }
@@ -98,12 +86,6 @@
       };
       workspace = "6 silent";
     }
-    {
-      match = {
-        class = "^com.rafaelmardojai.Blanket$";
-      };
-      workspace = "6 silent";
-    }
 
     {
       match = {
@@ -137,12 +119,6 @@
       pin = true;
     }
 
-    {
-      match = {
-        class = "^blender$";
-      };
-      opacity = "1.0 override 1.0 override 1.0 override";
-    }
     {
       match = {
         class = "^gimp$";
