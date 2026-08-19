@@ -19,7 +19,7 @@ in
         modules-left = [
           "idle_inhibitor"
           "hyprland/workspaces"
-          "hyprland/window"
+          "custom/window"
         ];
         modules-center = [ "clock" ];
         modules-right = [
@@ -182,9 +182,10 @@ in
           on-click-right = "${scripts.battery-limit-toggle}/bin/battery-limit-toggle";
         };
 
-        "hyprland/window" = {
-          format = "{class}";
-          max-length = 20;
+        "custom/window" = {
+          exec = "${scripts.window-title}/bin/window-title";
+          format = "{}";
+          max-length = 60;
         };
 
         "custom/notification" = {

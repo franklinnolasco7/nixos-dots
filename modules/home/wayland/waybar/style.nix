@@ -115,11 +115,19 @@ in
     font-size: 12px;
   }
 
-  #window {
+  #window,
+  #custom-window {
     color: #848484;
     padding: 0 8px;
     font-size: 12px;
     font-weight: 400;
+  }
+
+  window#waybar.empty #window,
+  window#waybar.empty #custom-window {
+    padding: 0;
+    margin: 0;
+    opacity: 0;
   }
 
   #cpu,

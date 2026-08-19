@@ -72,6 +72,55 @@ in
     device = "source";
   };
 
+  window-title = pkgs.writeShellScriptBin "window-title" ''
+    update_active_window_title() {
+      local window_info
+      window_info=$(${pkgs.hyprland}/bin/hyprctl activewindow -j 2>/dev/null) || return 0
+
+      local window_class window_title initial_title
+      IFS=$'\t' read -r window_class window_title initial_title < <(
+        echo "$window_info" | ${pkgs.jq}/bin/jq -r '[.class // "", .title // "", .initialTitle // ""] | @tsv' 2>/dev/null
+      )
+
+      if [[ -z "$window_class" || "$window_class" == "null" || "$window_class" == "invalid" ]]; then
+        echo ""
+        return 0
+      fi
+
+      local candidate_name title_separator redundant_suffix suffix_length
+      for candidate_name in "$initial_title" "$window_class"; do
+        [[ -z "$candidate_name" ]] && continue
+        for title_separator in " - " " — " " – "; do
+          redundant_suffix="''${title_separator}''${candidate_name}"
+          if [[ ''${window_title,,} == *"''${redundant_suffix,,}" ]]; then
+            suffix_length=''${#redundant_suffix}
+            window_title="''${window_title:0:-suffix_length}"
+            break 2
+          fi
+        done
+      done
+
+      if [[ -n "$window_title" && "''${window_title,,}" != "''${window_class,,}" ]]; then
+        echo "''${window_class} - ''${window_title}"
+      else
+        echo "''${window_class}"
+      fi
+    }
+
+    update_active_window_title
+
+    hyprland_socket_path="''${XDG_RUNTIME_DIR}/hypr/''${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
+    if [[ -S "$hyprland_socket_path" ]]; then
+      ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$hyprland_socket_path" - 2>/dev/null | while read -r hyprland_event; do
+        case "$hyprland_event" in
+          activewindow*|focusedmon*|closewindow*|workspace*|windowtitle*)
+            update_active_window_title
+            ;;
+        esac
+      done
+    fi
+  '';
+
   cpu-governor = pkgs.writeShellScriptBin "cpu-governor" ''
     if [[ ''${1:-} != "menu" ]]; then
       exit 0
