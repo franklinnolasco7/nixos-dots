@@ -8,7 +8,10 @@
         themeVariants = [ "default" ];
         colorVariants = [ "dark" ];
         sizeVariants = [ "standard" ];
-        tweaks = [ "rimless" ];
+        tweaks = [
+          "black"
+          "rimless"
+        ];
       };
     };
     iconTheme = {

@@ -8,6 +8,11 @@
 {
   nixpkgs.config.allowUnfree = true;
 
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
   time.timeZone = "Asia/Manila";
 
   i18n.defaultLocale = "en_US.UTF-8";

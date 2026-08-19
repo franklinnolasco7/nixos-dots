@@ -1,5 +1,8 @@
 { pkgs, ... }:
 
+let
+  colors = import ../styling/palette.nix;
+in
 {
   home.packages = [
     (pkgs.writeShellScriptBin "vpn-toggle" ''
@@ -59,7 +62,7 @@
           if wait_for_tunnel; then
             local loc
             loc=$(get_location)
-            notify-send -i "network-vpn-symbolic" "VPN Connected" "<span color='#a6e3a1'>''${loc:-Unknown}</span>"
+            notify-send -i "network-vpn-symbolic" "VPN Connected" "<span color='${colors.notifySuccess}'>''${loc:-Unknown}</span>"
           else
             notify-send -u critical -i "network-vpn-symbolic" "VPN Error" "Tunnel established but no connectivity"
           fi
@@ -83,7 +86,7 @@
         sudo resolvconf -u &>/dev/null
 
         echo "false" >"$STATE_FILE"
-        notify-send -i "network-vpn-symbolic" "VPN Disconnected" "<span color='#f38ba8'>[OFF]</span>"
+        notify-send -i "network-vpn-symbolic" "VPN Disconnected" "<span color='${colors.notifyDanger}'>[OFF]</span>"
       }
 
       case "''${1:-toggle}" in

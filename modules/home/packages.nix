@@ -57,6 +57,8 @@
 
         localsend
         ani-cli
+        github-copilot-cli
+        antigravity-ide-fhs
       ]
     );
 }

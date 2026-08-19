@@ -14,4 +14,7 @@
 
   borderActive = "#c4c4c4";
   borderInactive = "#1a1a1a";
+
+  notifySuccess = "#a6e3a1";
+  notifyDanger = "#f38ba8";
 }

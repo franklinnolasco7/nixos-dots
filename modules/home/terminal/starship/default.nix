@@ -2,6 +2,73 @@
 
 let
   minimal = config.myProfile == "minimal";
+  disabledLangs = [
+    "bun"
+    "c"
+    "cmake"
+    "cobol"
+    "cpp"
+    "crystal"
+    "daml"
+    "dart"
+    "deno"
+    "dotnet"
+    "elixir"
+    "elm"
+    "erlang"
+    "fennel"
+    "fortran"
+    "gleam"
+    "golang"
+    "gradle"
+    "haskell"
+    "haxe"
+    "helm"
+    "java"
+    "julia"
+    "kotlin"
+    "lua"
+    "maven"
+    "meson"
+    "mojo"
+    "nim"
+    "nodejs"
+    "ocaml"
+    "odin"
+    "opa"
+    "perl"
+    "php"
+    "pulumi"
+    "purescript"
+    "python"
+    "quarto"
+    "raku"
+    "red"
+    "rlang"
+    "ruby"
+    "rust"
+    "scala"
+    "solidity"
+    "swift"
+    "typst"
+    "vagrant"
+    "vlang"
+    "xmake"
+    "zig"
+  ];
+  disabledTools = [
+    "buf"
+    "conda"
+    "direnv"
+    "env_var"
+    "gcloud"
+    "guix_shell"
+    "mise"
+    "openstack"
+    "azure"
+    "pixi"
+    "spack"
+  ];
 in
 {
   programs.starship = {
@@ -71,6 +138,9 @@ in
         disabled = true;
       };
     }
+    // lib.genAttrs (disabledLangs ++ disabledTools) (name: {
+      disabled = true;
+    })
     // lib.optionalAttrs minimal {
       # Nerd-glyph modules have nothing meaningful to show on a console TTY.
       aws.disabled = true;

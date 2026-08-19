@@ -1,5 +1,8 @@
 { pkgs }:
 
+let
+  colors = import ../styling/palette.nix;
+in
 {
   name,
   stateFile,
@@ -26,11 +29,11 @@ pkgs.writeShellScriptBin name ''
     if [[ $target == "true" ]]; then
       hyprctl eval 'hl.device({ name = "${device}", enabled = false })'
       notify-send -i "${icon}" "${title}" \
-        "<span color='#f38ba8'>[DISABLED]</span>"
+        "<span color='${colors.notifyDanger}'>[DISABLED]</span>"
     else
       hyprctl eval 'hl.device({ name = "${device}", enabled = true })'
       notify-send -i "${icon}" "${title}" \
-        "<span color='#a6e3a1'>[ENABLED]</span>"
+        "<span color='${colors.notifySuccess}'>[ENABLED]</span>"
     fi
   }
 

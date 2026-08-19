@@ -29,17 +29,6 @@
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
 
   # ---------------------------------------------------------------------------
-  # Nix
-  # ---------------------------------------------------------------------------
-
-  nix.settings = {
-    experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-  };
-
-  # ---------------------------------------------------------------------------
   # Networking (host-specific; NetworkManager lives in
   # modules/nixos/system/networking.nix)
   # ---------------------------------------------------------------------------

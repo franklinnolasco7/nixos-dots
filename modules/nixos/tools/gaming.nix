@@ -95,8 +95,4 @@
     "${pkgs.bash}/bin/bash -c 'echo +cpu > /sys/fs/cgroup/cgroup.subtree_control || true'"
   ];
 
-  # Protontricks drives Steam's own Proton prefixes; no system wine needed.
-  environment.systemPackages = with pkgs; [
-    protontricks
-  ];
 }
