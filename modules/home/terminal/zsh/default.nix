@@ -24,6 +24,10 @@
       ".." = "cd ..";
     };
 
+    sessionVariables = {
+      BASH_MAX_OUTPUT_LENGTH = "15000";
+    };
+
     completionInit = ''
       autoload -U compinit
       compinit -C

@@ -28,6 +28,12 @@
       }
       {
         _args = [
+          "MOZ_DISABLE_RDD_SANDBOX"
+          "1"
+        ];
+      }
+      {
+        _args = [
           "__GLX_VENDOR_LIBRARY_NAME"
           "nvidia"
         ];

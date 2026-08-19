@@ -25,7 +25,6 @@
         thunar
         libnotify
         chromium
-        firefox
         vesktop
         xdg-utils
         wl-clipboard
@@ -59,6 +58,7 @@
         ani-cli
         github-copilot-cli
         antigravity-ide-fhs
+        codeburn
       ]
     );
 }
