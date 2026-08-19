@@ -1,12 +1,51 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
   graphite-kde-theme = pkgs.fetchFromGitHub {
     owner = "vinceliuice";
     repo = "Graphite-kde-theme";
-    rev = "2022-02-08";
-    hash = "sha256-bltA0RDxE76iVqT5dVGsMXgaxkEDMV28vvM1t4Mu1l4=";
+    rev = "09665ba967475da01ad9ec2a5a5822f15ba14e84";
+    hash = "sha256-4Uw6MgfiAzcbhuEPX7XEuj/8m7sL/kU0h2k7gu2OD+o=";
   };
+
+  recolor =
+    lib.replaceStrings
+      [
+        # kvconfig colors
+        "#2c2c2c"
+        "#2e2e2e"
+        "#4d4d4d"
+        "#535353"
+        "#474747"
+        "#282828"
+        "#323232"
+        # svg chrome
+        "#1a1a1a"
+        "#212121"
+        "#1f1f1f"
+        "#1e1e1e"
+      ]
+      [
+        "#0f0f0f"
+        "#121212"
+        "#1f1f1f"
+        "#242424"
+        "#1c1c1c"
+        "#0a0a0a"
+        "#121212"
+        "#0f0f0f"
+        "#121212"
+        "#121212"
+        "#121212"
+      ];
+
+  graphite-black-kvconfig = recolor (
+    builtins.readFile "${graphite-kde-theme}/Kvantum/Graphite-rimless/Graphite-rimlessDark.kvconfig"
+  );
+
+  graphite-black-svg = recolor (
+    builtins.readFile "${graphite-kde-theme}/Kvantum/Graphite-rimless/Graphite-rimlessDark.svg"
+  );
 in
 {
   home.packages = with pkgs; [
@@ -27,11 +66,13 @@ in
   };
 
   xdg.configFile = {
-    "Kvantum/Graphite".source = "${graphite-kde-theme}/Kvantum/Graphite";
+    "Kvantum/GraphiteBlack/GraphiteBlack.kvconfig".text = graphite-black-kvconfig;
+
+    "Kvantum/GraphiteBlack/GraphiteBlack.svg".text = graphite-black-svg;
 
     "Kvantum/kvantum.kvconfig".text = ''
       [General]
-      theme=GraphiteDark
+      theme=GraphiteBlack
     '';
   };
 }
