@@ -12,6 +12,7 @@
     # GUI/desktop feature modules; not part of the console-TTY minimal profile.
     ./desktop.nix
     ./gaming.nix
+    ./samba.nix
     ./virtualization.nix
   ];
 }

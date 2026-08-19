@@ -22,7 +22,6 @@
       with pkgs;
       [
         rofimoji
-        thunar
         libnotify
         chromium
         vesktop

@@ -1,6 +1,14 @@
 { ... }:
 
 {
+  # exo (used by Thunar's "Open Terminal Here" via exo-open --launch
+  # TerminalEmulator) resolves the terminal from this file, not from MIME
+  # associations.
+  xdg.configFile."xfce4/helpers.rc".text = ''
+    [Default]
+    TerminalEmulator=kitty
+  '';
+
   programs.kitty = {
     enable = true;
 

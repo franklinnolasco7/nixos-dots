@@ -6,7 +6,20 @@
 {
   services.displayManager.ly.enable = true;
   services.gvfs.enable = true;
+  services.tumbler.enable = true;
   programs.dconf.enable = true;
+
+  programs.thunar = {
+    enable = true;
+    plugins = [
+      pkgs.thunar-archive-plugin
+      pkgs.thunar-media-tags-plugin
+      pkgs.thunar-volman
+      pkgs.thunar-shares-plugin
+    ];
+  };
+
+  environment.systemPackages = [ pkgs.engrampa ];
 
   xdg.portal = {
     enable = true;
