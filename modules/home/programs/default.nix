@@ -9,10 +9,11 @@
     ./micro
   ]
   ++ lib.optionals (profile == "full") [
-    ./firefox.nix
+    ./firefox
     ./opencode
-    ./gaming.nix
+    ./gaming
     ./spotify
     ./obsidian
+    ./thunar
   ];
 }

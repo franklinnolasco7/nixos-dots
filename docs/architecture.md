@@ -17,9 +17,9 @@ nixos-dots/
 │   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, printing, smartd, hardening, ...)
 │   │   └── tools/    # feature modules (desktop, gaming, virtualization, nvidia, sops)
 │   ├── home/      # reusable home modules, grouped into categories
-│   │   ├── wayland/   # desktop stack (hyprland, hypridle, hyprlock, waybar, rofi, swaync); full profile only
-│   │   ├── terminal/  # shell.nix (zsh, starship, btop, htop, fastfetch, cava) + emulator.nix (kitty, full only)
-│   │   ├── programs/  # standalone apps (micro; opencode, full only)
+│   │   ├── wayland/   # desktop stack, one folder per app (hyprland, hypridle, hyprlock, waybar, rofi, swaync, gpu-screen-recorder); full profile only
+│   │   ├── terminal/  # per-app folders (zsh, starship, btop, htop, fastfetch, cava) imported by shell.nix, + emulator.nix (kitty, full only)
+│   │   ├── programs/  # standalone apps, one folder per app (micro; firefox, gaming, obsidian, opencode, spotify, thunar, full only)
 │   │   ├── development/ # dev tooling (git; toolchain, full only)
 │   │   ├── styling/   # appearance (gtk, qt, cursor, fonts)
 │   │   ├── xdg/       # desktop integration (mimetypes); full profile only
@@ -79,6 +79,13 @@ with large configs are split across `config.nix` / `style.nix` / `scripts.nix`
 (e.g. hyprland, waybar, rofi, swaync); standalone helper binaries live as
 per-script modules under `scripts/`. There is no raw config directory to
 drift from Nix.
+
+## Where does new config go?
+
+- **A new app → a folder.** Standalone apps live in `modules/home/<category>/<app>/` with a `default.nix`; pick the category that matches what the app is (GUI stack in `wayland/`, shell/TUI in `terminal/`, everything else in `programs/`). Split a large app's module into `config.nix` / `style.nix` / `scripts.nix` inside its folder. Only aggregators that group per-app folders by profile (e.g. `terminal/shell.nix`, `terminal/emulator.nix`) sit flat in the category.
+- **A new setting/feature, not an app → a flat file.** Config domains (`development/`, `styling/`, `xdg/`, `scripts/`) and NixOS categories (`system/`, `tools/`) are one `.nix` per concern. A single concern under ~50 lines doesn't earn a folder. Split a file only when one `config` block starts covering unrelated tools.
+- **A shared helper or data file → keep it in-tree, imported, not imported-as-module.** Shared libs/data (palette, toggle writers) live beside the modules that use them, are imported by those modules, and stay out of the category's `default.nix` imports.
+- **An app or feature with both system and user sides** → put each side under whichever module system owns the option: system services under `modules/nixos/`, user prefs under `modules/home/`. If home-manager has no option for the system part, the system side must live in `modules/nixos/` regardless of where the user side sits.
 
 ## Hosts
 
