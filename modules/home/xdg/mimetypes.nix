@@ -14,43 +14,45 @@
     "image/png" = "org.gnome.gThumb.desktop";
     "x-scheme-handler/discord" = "vesktop.desktop";
     "application/vnd.microsoft.portable-executable" = "wine.desktop";
-    "text/plain" = "code-oss.desktop";
+    "text/plain" = "codium.desktop";
     "x-scheme-handler/figma" = "figma-linux.desktop";
     "audio/mpeg" = "io.bassi.Amberol.desktop";
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" =
       "onlyoffice-desktopeditors.desktop";
     "application/pdf" = "org.pwmt.zathura-pdf-mupdf.desktop";
     "image/jpeg" = "org.gnome.gThumb.desktop";
-    "text/html" = "code-oss.desktop";
+    "text/html" = "codium.desktop";
     "x-scheme-handler/http" = "firefox.desktop";
     "x-scheme-handler/https" = "firefox.desktop";
     "x-scheme-handler/about" = "firefox.desktop";
     "x-scheme-handler/unknown" = "firefox.desktop";
-    "text/css" = "code-oss.desktop";
-    "text/x-lua" = "code-oss.desktop";
+    "text/css" = "codium.desktop";
+    "text/x-lua" = "codium.desktop";
     "x-scheme-handler/freetube" = "FreeTube.desktop";
-    "text/x-devicetree-source" = "code-oss.desktop";
-    "text/x-csrc" = "code-oss.desktop";
+    "text/x-devicetree-source" = "codium.desktop";
+    "text/x-csrc" = "codium.desktop";
     "text/x-scss" = "org.x.editor.desktop";
     "x-scheme-handler/gitkraken" = "GitKraken.desktop";
     "image/svg+xml" = "org.inkscape.Inkscape.desktop";
-    "application/schema+json" = "code-oss.desktop";
-    "application/x-shellscript" = "code-oss.desktop";
-    "application/json" = "code-oss.desktop";
-    "text/x-c++src" = "code-oss.desktop";
+    "application/schema+json" = "codium.desktop";
+    "application/x-shellscript" = "codium.desktop";
+    "application/json" = "codium.desktop";
+    "text/x-c++src" = "codium.desktop";
     "audio/x-flac+ogg" = "mpv.desktop";
     "audio/x-vorbis+ogg" = "io.bassi.Amberol.desktop";
     "inode/directory" = "thunar.desktop";
-    "text/x-c" = "code-oss.desktop";
-    "application/x-zerosize" = "code-oss.desktop";
+    "application/x-terminal-emulator" = "kitty.desktop";
+    "x-scheme-handler/terminal" = "kitty.desktop";
+    "text/x-c" = "codium.desktop";
+    "application/x-zerosize" = "codium.desktop";
     "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
-    "application/xml" = "code-oss.desktop";
+    "application/xml" = "codium.desktop";
     "video/mp4" = "mpv.desktop";
-    "application/vnd.sqlite3" = "code-oss.desktop";
-    "application/x-php" = "code-oss.desktop";
-    "application/pgp-keys" = "code-oss.desktop";
+    "application/vnd.sqlite3" = "codium.desktop";
+    "application/x-php" = "codium.desktop";
+    "application/pgp-keys" = "codium.desktop";
     "video/x-matroska" = "mpv.desktop";
-    "application/x-trash" = "code-oss.desktop";
+    "application/x-trash" = "codium.desktop";
     "x-scheme-handler/antigravity" = "antigravity.desktop";
   };
 
@@ -84,20 +86,20 @@
     ];
     "text/css" = [
       "org.x.editor.desktop"
-      "code-oss.desktop"
+      "codium.desktop"
     ];
-    "text/x-lua" = [ "code-oss.desktop" ];
+    "text/x-lua" = [ "codium.desktop" ];
     "text/x-devicetree-source" = [
-      "code-oss.desktop"
+      "codium.desktop"
       "org.x.editor.desktop"
     ];
     "application/x-shellscript" = [
       "org.x.editor.desktop"
-      "code-oss.desktop"
+      "codium.desktop"
     ];
     "text/x-csrc" = [
       "org.x.editor.desktop"
-      "code-oss.desktop"
+      "codium.desktop"
     ];
     "text/x-scss" = [ "org.x.editor.desktop" ];
     "image/svg+xml" = [
@@ -105,30 +107,30 @@
       "libreoffice-draw.desktop"
       "org.inkscape.Inkscape.desktop"
     ];
-    "application/json" = [ "code-oss.desktop" ];
-    "text/x-makefile" = [ "code-oss.desktop" ];
+    "application/json" = [ "codium.desktop" ];
+    "text/x-makefile" = [ "codium.desktop" ];
     "audio/x-flac+ogg" = [
       "mpv.desktop"
       "io.bassi.Amberol.desktop"
       "vlc.desktop"
     ];
     "audio/x-vorbis+ogg" = [ "io.bassi.Amberol.desktop" ];
-    "application/x-zerosize" = [ "code-oss.desktop" ];
+    "application/x-zerosize" = [ "codium.desktop" ];
     "application/x-msdownload" = [ "faugus-shortcut.desktop" ];
-    "application/xml" = [ "code-oss.desktop" ];
+    "application/xml" = [ "codium.desktop" ];
     "video/mp4" = [
       "mpv.desktop"
       "vlc.desktop"
       "DaVinciResolve.desktop"
     ];
-    "application/vnd.sqlite3" = [ "code-oss.desktop" ];
-    "text/html" = [ "code-oss.desktop" ];
-    "application/x-php" = [ "code-oss.desktop" ];
-    "inode/directory" = [ "code-oss.desktop" ];
+    "application/vnd.sqlite3" = [ "codium.desktop" ];
+    "text/html" = [ "codium.desktop" ];
+    "application/x-php" = [ "codium.desktop" ];
+    "inode/directory" = [ "codium.desktop" ];
     "application/epub+zip" = [ "org.pwmt.zathura-pdf-mupdf.desktop" ];
-    "application/pgp-keys" = [ "code-oss.desktop" ];
+    "application/pgp-keys" = [ "codium.desktop" ];
     "image/gif" = [ "imv.desktop" ];
     "video/quicktime" = [ "vlc.desktop" ];
-    "application/x-trash" = [ "code-oss.desktop" ];
+    "application/x-trash" = [ "codium.desktop" ];
   };
 }
