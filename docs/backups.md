@@ -38,7 +38,7 @@ B2's free tier is **10 GB stored**; storage above that is billed. restic keeps
 stored size ≈ source size (dedup across snapshots), so the module caps the
 source with `backups.restic.sizeLimit` (default `9 GiB` to leave margin for
 restic tree overhead). If the source exceeds it, the run aborts with a
-notification before anything is uploaded — no billing risk.
+notification before anything is uploaded.
 
 To check current usage:
 
@@ -47,8 +47,11 @@ export RESTIC_REPOSITORY=s3:https://s3.<region>.backblazeb2.com/<bucket>
 export AWS_ACCESS_KEY_ID=$(cat ~/.config/restic/b2-key-id)
 export AWS_SECRET_ACCESS_KEY=$(cat ~/.config/restic/b2-application-key)
 export RESTIC_PASSWORD_FILE=~/.config/restic/restic-password
-restic stats --mode raw-data latest     # bytes currently stored
+restic stats --mode raw-data latest     # bytes in the latest snapshot
 ```
+
+The `latest` snapshot is not the whole repository; pruned/deleted data from
+older snapshots can still be stored.
 
 Raise or lower the ceiling by editing the `sizeLimit` default.
 

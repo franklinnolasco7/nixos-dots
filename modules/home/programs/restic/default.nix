@@ -51,8 +51,9 @@ in
       description = ''
         Maximum total source size in bytes (9 GiB by default). B2 bills once
         the bucket passes 10 GB stored; restic dedups unchanged files, so
-        stored size tracks source size. The backup aborts with a notification
-        instead of uploading past this budget.
+        stored size tracks source size. A source-size check runs before each
+        upload and aborts with a notification if the source exceeds this
+        budget.
       '';
     };
 

@@ -53,8 +53,11 @@ let
     # before uploading if the source exceeds the configured ceiling.
     total=0
     for p in "''${paths[@]}"; do
-      sz=$(du -sb "$p" 2>/dev/null | cut -f1)
-      total=$(( total + ''${sz:-0} ))
+      sz=$(du -sb "$p" 2>/dev/null | cut -f1) || {
+        notify "backup source scan failed: ''${p}"
+        exit 1
+      }
+      total=$(( total + sz ))
     done
     if (( total > ${toString sizeLimit} )); then
       notify "backup source ''${total} bytes exceeds ${toString sizeLimit} budget; nothing uploaded"
