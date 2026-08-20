@@ -21,13 +21,16 @@
 #
 # nixos-anywhere runs the `disko,install` phases: it wipes and repartitions the
 # target disk (from hosts/<hostname>/disko.nix), regenerates the UUID-free
-# hardware-configuration.nix, restores the SSH host key via --extra-files, and
-# installs the system; but does not reboot, so /mnt stays mounted.
+# hardware-configuration.nix, restores the dedicated sops age key and the SSH
+# host key via --extra-files, and installs the system; but does not reboot, so
+# /mnt stays mounted.
 #
 # Safety gates before anything destructive:
-#   1. Aborts unless the host key backup exists (see key-backup.sh).
-#   2. Aborts if the backup host key cannot decrypt secrets/secrets.yaml (sops).
-#      Set SKIP_SOPS_CHECK=1 to bypass (e.g. throwaway-key VM rehearsals).
+#   1. Aborts unless the key backup exists (see key-backup.sh), containing the
+#      dedicated sops age key (sops-age-key.txt) and the SSH host key.
+#   2. Aborts if the backup sops age key cannot decrypt secrets/secrets.yaml
+#      (sops). Set SKIP_SOPS_CHECK=1 to bypass (e.g. throwaway-key VM
+#      rehearsals).
 #   3. Requires typing 'yes' to confirm the disk wipe.
 set -euo pipefail
 
@@ -142,15 +145,14 @@ esac
 
 HOST_KEY_SRC="${HOST_KEY_SRC:-$PWD/secrets}"
 
-tmp=$(mktemp)
 extra=$(mktemp -d)
 keytmp=$(mktemp -d)
-trap 'rm -f "$tmp"; rm -rf "$extra" "$keytmp"' EXIT
+trap 'rm -rf "$extra" "$keytmp"' EXIT
 
 # The backup may be the age-passphrase blob committed by key-backup.sh;
 # decrypt it into a staging dir here. A wrong passphrase aborts before the
 # wipe; a plaintext dir (HOST_KEY_SRC given explicitly) is used as-is.
-if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" && -d $HOST_KEY_SRC ]]; then
+if [[ ! -f "$HOST_KEY_SRC/sops-age-key.txt" && -d $HOST_KEY_SRC ]]; then
   # key-backup.sh names the blob after the machine hostname, which can
   # differ from the flake host; fall back to any single blob in the dir.
   backup=
@@ -174,35 +176,33 @@ if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" && -d $HOST_KEY_SRC ]]; then
   fi
   if [[ -n $backup ]]; then
     echo "==> Decrypting key backup ($backup) ..."
-    echo "  (host key only; user keys restore after boot: bash install/key-backup.sh decrypt)"
+    echo "  (sops age key + SSH host key; user keys restore after boot: bash install/key-backup.sh decrypt)"
     nix --experimental-features "nix-command flakes" run .#age -- -d -o "$keytmp/key-backup.tar" "$backup"
     tar -xzf "$keytmp/key-backup.tar" -C "$keytmp"
     HOST_KEY_SRC="$keytmp"
   fi
 fi
 
-if [[ ! -f "$HOST_KEY_SRC/ssh_host_ed25519_key" ]]; then
-  echo "Error: host key backup not found at $HOST_KEY_SRC." >&2
+if [[ ! -f "$HOST_KEY_SRC/sops-age-key.txt" ]]; then
+  echo "Error: dedicated sops age key (sops-age-key.txt) not found at $HOST_KEY_SRC." >&2
   echo "  Reinstall? Back it up on the current system FIRST; this install wipes the disk:" >&2
   echo "    sudo bash install/key-backup.sh encrypt   # age passphrase, commits + pushes" >&2
   echo "  The installer then finds the backup automatically: by host, by" >&2
   echo "  hostname, or any secrets/key-backup-*.tar.age if names differ." >&2
   echo "  Brand-new host with nothing to back up? Install a fresh key instead:" >&2
-  echo '    ssh-keygen -t ed25519 -N "" -f /tmp/newhost-key/ssh_host_ed25519_key' >&2
+  echo '    nix shell nixpkgs#age -c age-keygen -o /tmp/newhost-key/sops-age-key.txt' >&2
   echo "    SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/newhost-key $0 $HOST" >&2
   exit 1
 fi
 
 if [[ ${SKIP_SOPS_CHECK:-0} != 1 && -f secrets/secrets.yaml ]]; then
-  echo "==> [1/5] Verifying the backup host key can decrypt sops secrets (safety check, not a restore)..."
-  if nix --experimental-features "nix-command flakes" run .#ssh-to-age -- \
-    -private-key -i "$HOST_KEY_SRC/ssh_host_ed25519_key" >"$tmp" \
-    && chmod 600 "$tmp" \
-    && SOPS_AGE_KEY_FILE="$tmp" nix --experimental-features "nix-command flakes" run \
+  echo "==> [1/5] Verifying the backup sops age key can decrypt sops secrets (safety check, not a restore)..."
+  if chmod 600 "$HOST_KEY_SRC/sops-age-key.txt" \
+    && SOPS_AGE_KEY_FILE="$HOST_KEY_SRC/sops-age-key.txt" nix --experimental-features "nix-command flakes" run \
       .#sops -- -d "$(realpath secrets/secrets.yaml)" >/dev/null; then
     echo "  decryption ok"
   else
-    echo "Error: backup host key cannot decrypt secrets/secrets.yaml." >&2
+    echo "Error: backup sops age key cannot decrypt secrets/secrets.yaml." >&2
     echo "  Aborting before the wipe; fix HOST_KEY_SRC or run" >&2
     echo "  install/init-secrets.sh to register this host first." >&2
     exit 1
@@ -230,8 +230,11 @@ if [[ $answer != "yes" ]]; then
 fi
 echo
 
-# Stage the sops decryption identity (host key) and root's safe.directory into
-# the tree nixos-anywhere copies to the root (/) of the new system.
+# Stage the sops decryption identity (dedicated age key), the SSH host key,
+# and root's safe.directory into the tree nixos-anywhere copies to the root
+# (/) of the new system.
+install -d -m 0700 "$extra/etc/sops-nix"
+install -m 0600 "$HOST_KEY_SRC/sops-age-key.txt" "$extra/etc/sops-nix/keys.txt"
 install -d -m 0755 "$extra/etc/ssh"
 install -m 0600 "$HOST_KEY_SRC/ssh_host_ed25519_key" "$extra/etc/ssh/ssh_host_ed25519_key"
 install -m 0644 "$HOST_KEY_SRC/ssh_host_ed25519_key.pub" "$extra/etc/ssh/ssh_host_ed25519_key.pub"
@@ -309,11 +312,14 @@ echo "     not the config you want committed:"
 echo "       git checkout -- hosts/$HOST/hardware-configuration.nix"
 echo "  2. Passwords set with passwd are mutable and survive NixOS rebuilds."
 echo "  3. Restore the user keys BEFORE the first signed commit (git signing,"
-echo "     interactive sops edits); the installer only restored the host key:"
+echo "     interactive sops edits); the installer only restored the sops age"
+echo "     key and the SSH host key:"
 echo "       bash install/key-backup.sh decrypt"
 echo "     - never with sudo (keys would land in /root)"
 echo "     - expect a y/N prompt if the boot-time key hook already generated a"
 echo "       throwaway key; answer y"
 echo "     - verify: ssh-keygen -lf ~/.ssh/id_ed25519.pub matches your GitHub key"
-echo "  4. Verify sops secrets decrypted:"
+echo "  4. Verify sops secrets decrypt (prints nothing on success):"
 echo "       ls -l ~/.config/opencode/context7-key ~/.config/opencode/github-token"
+echo '       sudo SOPS_AGE_KEY_FILE=/etc/sops-nix/keys.txt \'
+echo "         nix run .#sops -- -d secrets/secrets.yaml >/dev/null"

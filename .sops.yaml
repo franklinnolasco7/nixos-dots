@@ -1,6 +1,6 @@
 keys:
-  # nixos-laptop host key
-  - &host-nixos-laptop age1wvrflc26s33z8regje0sc599s8qlakx4pd8c45905r8g2mghqv5s2qq8d8
+  # nixos-laptop dedicated host age key (sops identity)
+  - &host-nixos-laptop age15zfdd3ktmcgadwttc0advxurlgkyf3mr4jm9z0hpjp98a0fy3v7qg7vjzm
   # user key (frank) - enables editing secrets without sudo
   - &user-frank age17huf4n5tvf09sazcvdz66h70ecwey26fqjzv99dwrdx0wpx934fq602ne9
 creation_rules:

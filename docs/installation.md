@@ -9,8 +9,8 @@
   bootloaders, stray LUKS or swap partitions, the old ESP. No manual partition
   cleanup is needed, and nothing on the disk survives. The machine ends up
   single-boot NixOS by design.
-- **Restores the SSH host key** from the repo's encrypted backup, so sops
-  secrets stay readable on the new system.
+- **Restores the dedicated sops age key and the SSH host key** from the repo's
+  encrypted backup, so sops secrets stay readable on the new system.
 - **Does not reboot.** The installer finishes with the disk mounted; you
   reboot manually.
 
@@ -190,7 +190,7 @@ cd nixos-dots
 
 Restore the personal user keys before the first signed commit (SSH client /
 git-signing key and sops user keys; the installer's passphrase prompt restored
-only the host key):
+only the dedicated sops age key and the SSH host key):
 
 ```bash
 bash install/key-backup.sh decrypt
@@ -230,10 +230,11 @@ Per-host checklist and LUKS header backup: [aspire7.md](aspire7.md).
 3. Wire `hosts/<host>/` into `flake.nix`: `mkSystem` with `useDiskoMounts =
    true` plus a `mkDisko` entry (see the existing host entries)
 4. The declared user needs a `users/<user>/` home-manager config
-5. First install (nothing to back up): pregenerate a key, skip the sops
-   check, then install as above:
+5. First install (nothing to back up): pregenerate the dedicated sops age
+   key, skip the sops check, then install as above:
    ```bash
-   ssh-keygen -t ed25519 -N "" -f /tmp/newhost-key/ssh_host_ed25519_key
+   mkdir -p /tmp/newhost-key
+   nix shell nixpkgs#age -c age-keygen -o /tmp/newhost-key/sops-age-key.txt
    SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/newhost-key \
      ./install/install.sh <host> --target root@<ip>
    ```
@@ -248,9 +249,9 @@ flow (disko wipe, key restore, install) against a throwaway QEMU disk, VM ssh
 on host port 2222. From the repo on the host:
 
 ```bash
-mkdir -p /tmp/ssh-host-key-backup
-ssh-keygen -t ed25519 -N "" -f /tmp/ssh-host-key-backup/ssh_host_ed25519_key
-SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/ssh-host-key-backup \
+mkdir -p /tmp/sops-age-key-backup
+nix shell nixpkgs#age -c age-keygen -o /tmp/sops-age-key-backup/sops-age-key.txt
+SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/sops-age-key-backup \
   ./install/install.sh vm --target nixos@localhost --ssh-port 2222
 ./install/run-vm.sh   # boot the installed VM (no ISO)
 ```

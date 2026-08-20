@@ -59,17 +59,22 @@ bash install/init-secrets.sh   # creates an encrypted skeleton
 sudo bash install/key-backup.sh encrypt   # collects keys, encrypts, commits + pushes the blob
 ```
 
-Backs up this machine's keys (host SSH key, user age key, `~/.ssh/id_ed25519`)
-into `secrets/key-backup-<hostname>.tar.age`, encrypted with an age
-**passphrase** you choose. Safe to commit even to a public fork.
+Backs up this machine's keys (dedicated sops age key, host SSH key, user age
+key, `~/.ssh/id_ed25519`) into `secrets/key-backup-<hostname>.tar.age`,
+encrypted with an age **passphrase** you choose. Safe to commit even to a
+public fork.
 
 - Use your **own** passphrase, in your password manager, not the repo: it is
-  the single point of failure, lose it and the backup is useless.
+  a single point of failure, lose it and the backup is useless.
+- The dedicated sops age key (`/etc/sops-nix/keys.txt`) is an independent
+  recovery artifact: also export it to your password manager (Bitwarden), so
+  recovery never depends on this machine or the blob.
 - Delete upstream's `secrets/key-backup-*.tar.age`: encrypted to upstream's
   passphrase, it's undecryptable garbage to you, and the installer would
   otherwise prompt for a passphrase you don't have.
 - The installer decrypts the blob automatically before wiping; after boot,
-  `bash install/key-backup.sh decrypt` restores the user keys.
+  `bash install/key-backup.sh decrypt` restores the sops age key and the user
+  keys.
 
 ## 6. Optional cleanups
 

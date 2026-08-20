@@ -11,9 +11,13 @@ in
   config = {
     sops.defaultSopsFile = secretsFile;
 
-    sops.age.sshKeyPaths = [
-      "/etc/ssh/ssh_host_ed25519_key"
-    ];
+    # Dedicated age key, decoupled from the SSH host key: rotating the host
+    # key never affects secret decryption. Provisioned by install.sh and
+    # key-backup.sh; generateKey only bootstraps a fresh host with no key
+    # staged - that generated identity is not an authorized recipient of
+    # existing committed secrets (see docs/secrets.md).
+    sops.age.keyFile = "/etc/sops-nix/keys.txt";
+    sops.age.generateKey = true;
 
     # Root-run setup (including sops-install-secrets) must not create missing
     # parents in the user's home: `mkdir -p` would make them root-owned and

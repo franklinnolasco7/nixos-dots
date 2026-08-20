@@ -61,9 +61,9 @@ the body:
 ```text
 fix: purge eval-time impurity from flake
 
-- sops: drop pathExists-gated age keyFile; host key is the only decryption identity
+- sops: dedicated age key (keyFile) replaces the SSH-host-key identity
 - opencode: filesystem MCP root from config.home.homeDirectory
-- docs/secrets.md, install.sh: host key = activation, age key = interactive edits
+- docs/secrets.md, install.sh: sops age key = activation, user age key = interactive edits
 ```
 
 Common types:

@@ -31,19 +31,21 @@ The target user needs passwordless sudo (one `sudoers.d` line; see
 installation.md). sshd here is key-only, so the agent key authenticates and
 `--env-password` is neither needed nor accepted.
 
-`install/key-backup.sh encrypt` packs the host key, user age key, and
-`~/.ssh/id_ed25519` into `secrets/key-backup-<hostname>.tar.age` under an age
-passphrase and commits + pushes it. The installer decrypts the blob
-automatically before wiping (details: [secrets.md](secrets.md)). Keep the
-passphrase in a password manager; it is the single secret.
+`install/key-backup.sh encrypt` packs the dedicated sops age key, the host
+SSH key, the user age key, and `~/.ssh/id_ed25519` into
+`secrets/key-backup-<hostname>.tar.age` under an age passphrase and commits +
+pushes it. The installer decrypts the blob automatically before wiping
+(details: [secrets.md](secrets.md)). Keep the passphrase in a password
+manager; also export `/etc/sops-nix/keys.txt` to Bitwarden - it is an
+independent recovery artifact.
 
 The installer aborts unless that backup exists and asks you to type `yes`
 before wiping the disk. Near the end it prompts for `frank`'s permanent login
 password, replacing the fresh-install bootstrap password `123`. It then runs
 nixos-anywhere from the flake (phases
 `disko,install`), regenerating a **UUID-free** `hardware-configuration.nix`
-(filesystems come from `disko.nix` at build time) and restoring the SSH host
-key into the new system via `--extra-files`.
+(filesystems come from `disko.nix` at build time) and restoring the dedicated
+sops age key and SSH host key into the new system via `--extra-files`.
 
 The disko phase prompts for the LUKS passphrase (twice to format, once to
 mount). The same passphrase is asked at every boot to unlock the root disk.
@@ -73,6 +75,8 @@ which airplane-mode vpn-toggle toggle-laptop-kb  # scripts on PATH
 lsblk -f                                 # disk layout = disko.nix (root under luks-root)
 lsblk -o NAME,TYPE | grep -i luks        # root is LUKS-encrypted
 ls -l ~/.config/opencode/context7-key    # sops secrets decrypted
+sudo SOPS_AGE_KEY_FILE=/etc/sops-nix/keys.txt \
+  nix run .#sops -- -d secrets/secrets.yaml >/dev/null   # real decryption test, prints nothing
 grep -iE "qemu|virtualbox" /etc/nixos/hardware-configuration.nix   # no VM remnants
 ```
 

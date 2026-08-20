@@ -8,7 +8,7 @@
 nixos-dots/
 ├── flake.nix      # entry point: inputs, mkSystem/mkDisko helpers, nixosConfigurations + diskoConfigurations
 ├── flake.lock
-├── .sops.yaml     # sops recipients (per-host age keys)
+├── .sops.yaml     # sops recipients (dedicated host + user age keys)
 ├── hosts/         # per-machine config
 │   ├── aspire7/   #   physical laptop: default.nix entry, hw-config, disko.nix, configuration.nix (PRIME, DM), acer-battery
 │   └── vm/        #   QEMU/KVM rehearsal VM: same GPT layout, targets /dev/vda

@@ -13,17 +13,22 @@
 # safe to commit even to a public repo. --no-push skips the push (offline).
 #
 # decrypt prompts for the passphrase and either extracts the archive to DIR
-# (--dir) or restores the user keys into the real user's home (sudo-safe).
+# (--dir) or restores the dedicated sops age key (to /etc/sops-nix/keys.txt,
+# via sudo) and the user keys into the real user's home (sudo-safe).
 #
 # The archive contains (missing files are skipped with a warning):
-#   1. /etc/ssh/ssh_host_ed25519_key{,.pub}; the sops age identity; a fresh
-#      install regenerates it, making committed secrets unreadable without it.
-#   2. ~/.config/sops/age/keys.txt; user age key (interactive sops editing).
-#   3. ~/.ssh/id_ed25519{,.pub}; the user's SSH client / git-signing key.
+#   1. /etc/sops-nix/keys.txt; the dedicated sops age identity. An
+#      independent recovery artifact - also export it to Bitwarden so
+#      recovery never depends on this machine or this blob.
+#   2. /etc/ssh/ssh_host_ed25519_key{,.pub}; the SSH host identity (kept
+#      stable across reinstalls; no longer load-bearing for sops).
+#   3. ~/.config/sops/age/keys.txt; user age key (interactive sops editing).
+#   4. ~/.ssh/id_ed25519{,.pub}; the user's SSH client / git-signing key.
 #
 # install.sh consumes the blob automatically: with HOST_KEY_SRC pointing at the
 # repo's secrets/ dir it prompts for the passphrase and decrypts before the
-# wipe; see docs/secrets.md.
+# wipe; it stages the sops age key and SSH host key into the new root; see
+# docs/secrets.md.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -81,6 +86,10 @@ if [[ $MODE == encrypt ]]; then
     echo "error: encrypt must run as root (sudo); reads /etc/ssh" >&2
     exit 1
   fi
+  if [[ ! -f /etc/sops-nix/keys.txt ]]; then
+    echo "error: /etc/sops-nix/keys.txt not found (the dedicated sops age key)" >&2
+    exit 1
+  fi
   if [[ ! -f /etc/ssh/ssh_host_ed25519_key ]]; then
     echo "error: /etc/ssh/ssh_host_ed25519_key not found" >&2
     exit 1
@@ -93,11 +102,13 @@ if [[ $MODE == encrypt ]]; then
   stage=$(mktemp -d)
   trap 'rm -rf "$stage"' EXIT
 
+  install -m 0600 /etc/sops-nix/keys.txt "$stage/sops-age-key.txt"
+  echo "  sops age key -> $stage/sops-age-key.txt"
   install -m 0600 /etc/ssh/ssh_host_ed25519_key "$stage/ssh_host_ed25519_key"
   install -m 0644 /etc/ssh/ssh_host_ed25519_key.pub "$stage/ssh_host_ed25519_key.pub"
   echo "  host key     -> $stage/ssh_host_ed25519_key{,.pub}"
 
-  include=(ssh_host_ed25519_key ssh_host_ed25519_key.pub)
+  include=(sops-age-key.txt ssh_host_ed25519_key ssh_host_ed25519_key.pub)
   if [[ -f $user_age_key ]]; then
     install -m 0600 "$user_age_key" "$stage/user-age-key.txt"
     echo "  user age key -> $stage/user-age-key.txt"
@@ -148,6 +159,10 @@ if [[ $MODE == encrypt ]]; then
     fi
   fi
 
+  echo
+  echo "The dedicated sops age key (/etc/sops-nix/keys.txt) is an independent"
+  echo "recovery artifact. Also export it to Bitwarden, so recovery never"
+  echo "depends on this machine or this blob."
   echo
   echo "done. The installer picks this up automatically (install command and"
   echo "flow: docs/installation.md)."
@@ -202,6 +217,25 @@ elif [[ $MODE == decrypt ]]; then
   restore "$stage/user-age-key.txt" "$user_home/.config/sops/age/keys.txt" 0600
   restore "$stage/id_ed25519" "$user_home/.ssh/id_ed25519" 0600
   restore "$stage/id_ed25519.pub" "$user_home/.ssh/id_ed25519.pub" 0644
-  echo "done. Keys restored to $user_home."
+
+  # The dedicated sops age key is a system identity (root-owned); restore it
+  # separately, through sudo, with the same overwrite-prompt semantics.
+  if [[ -f $stage/sops-age-key.txt ]]; then
+    sudo install -d -m 0700 /etc/sops-nix
+    do_restore=1
+    if sudo test -e /etc/sops-nix/keys.txt && ! sudo cmp -s "$stage/sops-age-key.txt" /etc/sops-nix/keys.txt; then
+      read -rp "overwrite existing /etc/sops-nix/keys.txt? [y/N] " yn
+      if [[ $yn != [yY] ]]; then
+        do_restore=0
+        echo "  skipped /etc/sops-nix/keys.txt"
+      fi
+    fi
+    if [[ $do_restore == 1 ]]; then
+      sudo install -m 0600 "$stage/sops-age-key.txt" /etc/sops-nix/keys.txt
+      echo "  restored /etc/sops-nix/keys.txt (dedicated sops age key)"
+    fi
+  fi
+
+  echo "done. Keys restored to $user_home and /etc/sops-nix/keys.txt."
   echo "Verify: ssh-keygen -lf $user_home/.ssh/id_ed25519.pub  # must match the GitHub signing key"
 fi

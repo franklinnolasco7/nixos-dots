@@ -5,20 +5,22 @@
 #   bash install/init-secrets.sh
 #
 # Actions (idempotent, safe to re-run):
-#   1. Derive an age recipient from the host SSH key
-#      (/etc/ssh/ssh_host_ed25519_key.pub).
+#   1. Derive an age recipient from the dedicated host age key
+#      (/etc/sops-nix/keys.txt).
 #   2. Register this host's recipient in .sops.yaml if missing.
 #   3. Create an encrypted skeleton secrets/secrets.yaml if absent.
 #   4. Re-encrypt secrets/secrets.yaml to every registered host.
 #
 # Prerequisites:
 #   - nix is installed (run on the NixOS host)
-#   - host SSH key exists (always true on NixOS, services.openssh)
+#   - dedicated age key exists (/etc/sops-nix/keys.txt; provisioned by
+#     install.sh, or generate + install one, or sops.age.generateKey creates
+#     one on first activation if absent)
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-HOST_KEY_PUB=/etc/ssh/ssh_host_ed25519_key.pub
+AGE_KEY=/etc/sops-nix/keys.txt
 SOPS_YAML=.sops.yaml
 SECRETS_FILE=secrets/secrets.yaml
 
@@ -27,21 +29,25 @@ if ! command -v nix >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ ! -f $HOST_KEY_PUB ]]; then
-  echo "error: $HOST_KEY_PUB not found" >&2
-  echo "  enable services.openssh or verify the host key path" >&2
+if [[ ! -f $AGE_KEY ]]; then
+  echo "error: $AGE_KEY not found" >&2
+  echo "  the dedicated sops age key lives at /etc/sops-nix/keys.txt" >&2
+  echo "  generate and install one:" >&2
+  echo "    nix shell nixpkgs#age -c age-keygen -o /tmp/sops-age-key.txt" >&2
+  echo "    sudo install -d -m 0700 /etc/sops-nix" >&2
+  echo "    sudo install -m 0600 /tmp/sops-age-key.txt /etc/sops-nix/keys.txt" >&2
   exit 1
 fi
 
-ssh-to-age() {
-  nix run .#ssh-to-age -- "$@"
+age-keygen() {
+  nix run .#age-keygen -- "$@"
 }
 sops() {
   nix run .#sops -- "$@"
 }
 
-echo "[1/4] deriving age recipient from host key ..."
-recipient=$(ssh-to-age -i "$HOST_KEY_PUB")
+echo "[1/4] deriving age recipient from dedicated host age key ..."
+recipient=$(age-keygen -y "$AGE_KEY")
 anchor="host-$(hostname | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-')"
 echo "  $anchor: $recipient"
 
@@ -124,11 +130,8 @@ echo "[4/4] verifying decryption ..."
 abs_secrets="$(realpath "$SECRETS_FILE")"
 sudo bash -c '
   set -euo pipefail
-  tmp=$(mktemp)
-  trap "rm -f \"$tmp\"" EXIT
-  nix shell nixpkgs#ssh-to-age -c ssh-to-age -private-key -i /etc/ssh/ssh_host_ed25519_key > "$tmp"
-  chmod 600 "$tmp"
-  SOPS_AGE_KEY_FILE="$tmp" nix shell nixpkgs#sops -c sops -d "$1" >/dev/null
+  SOPS_AGE_KEY_FILE=/etc/sops-nix/keys.txt \
+    nix run .#sops -- -d "$1" >/dev/null
 ' _ "$abs_secrets"
 echo "  decryption ok"
 

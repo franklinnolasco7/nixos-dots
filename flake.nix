@@ -212,6 +212,12 @@
           program = "${nixpkgs.legacyPackages.${system}.ssh-to-age}/bin/ssh-to-age";
         };
 
+        # Dedicated host age key derivation (install/init-secrets.sh).
+        age-keygen = {
+          type = "app";
+          program = "${nixpkgs.legacyPackages.${system}.age}/bin/age-keygen";
+        };
+
         # Passphrase-encrypted key backup (install/key-backup.sh).
         age = {
           type = "app";

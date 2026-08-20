@@ -1,5 +1,28 @@
 # Troubleshooting
 
+## Sops secrets fail to decrypt
+
+Secret decryption uses the dedicated age key at `/etc/sops-nix/keys.txt`,
+never the SSH host key - rotating `/etc/ssh/ssh_host_ed25519_key` does not
+affect sops. If secrets fail to decrypt:
+
+1. Check the key exists: `sudo test -f /etc/sops-nix/keys.txt`
+2. Test decryption (prints nothing on success):
+
+   ```bash
+   sudo SOPS_AGE_KEY_FILE=/etc/sops-nix/keys.txt \
+     nix run .#sops -- -d secrets/secrets.yaml >/dev/null
+   ```
+
+3. Restore the key from the backup (`sudo bash install/key-backup.sh decrypt`)
+   or from the Bitwarden copy, then rebuild.
+
+On a fresh host, `sops.age.generateKey` may have minted a random key that is
+not an authorized recipient of existing committed secrets (chicken-and-egg):
+either restore the backed-up key before activation, or run
+`install/init-secrets.sh` to register the host and re-encrypt from an existing
+host (`sops updatekeys --yes secrets/secrets.yaml`).
+
 ## Home Manager/dconf/Hyprland fail with permission errors
 
 If `~/.config` or one of its subdirectories was created with `sudo`, Home

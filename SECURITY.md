@@ -28,7 +28,7 @@ Include: repo revision (`git log -1 --format=%h`), host/profile affected, reprod
 ## Posture
 
 - Secrets: sops/age, encrypted in git, never in the store ([docs/secrets.md](docs/secrets.md))
-- Host SSH key is the only activation identity
+- Dedicated host age key (`/etc/sops-nix/keys.txt`) is the sops activation identity; the SSH host key is for SSH auth only
 - Flake purity enforced: no `--impure`, no eval-time machine reads
 - Inputs pinned deliberately, no silent `nix flake update`
 
