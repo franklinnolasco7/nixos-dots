@@ -8,6 +8,10 @@
     backlightDevice = "amdgpu_bl1";
   };
 
+  # aspire7 is the only host with the sops restic secrets, so the daily
+  # restic backup to B2 is enabled here and nowhere else.
+  backups.restic.enable = true;
+
   # aspire7 is the only host with the sops github-token, so the GitHub MCP
   # server is enabled here and nowhere else.
   programs.opencode.enableGithubMcpServer = true;

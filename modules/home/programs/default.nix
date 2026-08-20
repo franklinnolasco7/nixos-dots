@@ -15,5 +15,6 @@
     ./spotify
     ./obsidian
     ./thunar
+    ./restic
   ];
 }

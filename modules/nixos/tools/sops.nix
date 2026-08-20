@@ -26,6 +26,7 @@ in
       "d ${homeDir}/.config/dconf 0700 ${user} users -"
       "d ${homeDir}/.config/opencode 0755 ${user} users -"
       "d ${homeDir}/.config/github 0755 ${user} users -"
+      "d ${homeDir}/.config/restic 0700 ${user} users -"
     ];
 
     sops.secrets.context7-api-key = {
@@ -44,6 +45,29 @@ in
 
     sops.secrets.github-project-token = {
       path = "${homeDir}/.config/github/projects-token";
+      owner = user;
+      group = "users";
+      mode = "0400";
+    };
+
+    # restic (modules/home/programs/restic): one file per credential so the
+    # backup script can read each value directly.
+    sops.secrets.b2-key-id = {
+      path = "${homeDir}/.config/restic/b2-key-id";
+      owner = user;
+      group = "users";
+      mode = "0400";
+    };
+
+    sops.secrets.b2-application-key = {
+      path = "${homeDir}/.config/restic/b2-application-key";
+      owner = user;
+      group = "users";
+      mode = "0400";
+    };
+
+    sops.secrets.restic-password = {
+      path = "${homeDir}/.config/restic/restic-password";
       owner = user;
       group = "users";
       mode = "0400";
