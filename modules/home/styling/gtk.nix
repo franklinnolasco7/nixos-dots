@@ -1,24 +1,33 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   gtk = {
     enable = true;
     theme = {
-      name = "Graphite-Dark";
-      package = pkgs.graphite-gtk-theme.override {
-        themeVariants = [ "default" ];
-        colorVariants = [ "dark" ];
-        sizeVariants = [ "standard" ];
-        tweaks = [
-          "black"
-          "rimless"
-        ];
-      };
+      name = lib.mkForce "Graphite-Dark";
+      package = lib.mkForce (
+        pkgs.graphite-gtk-theme.override {
+          themeVariants = [ "default" ];
+          colorVariants = [ "dark" ];
+          sizeVariants = [ "standard" ];
+          tweaks = [
+            "black"
+            "rimless"
+          ];
+        }
+      );
     };
     iconTheme = {
-      name = "Tela-circle-black-dark";
-      package = pkgs.tela-circle-icon-theme.override {
-        colorVariants = [ "black" ];
-      };
+      name = lib.mkForce "Tela-circle-black-dark";
+      package = lib.mkForce (
+        pkgs.tela-circle-icon-theme.override {
+          colorVariants = [ "black" ];
+        }
+      );
     };
     gtk4.extraCss = ''
       @import url("${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk.css");

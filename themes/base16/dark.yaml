@@ -1,0 +1,21 @@
+scheme: "Dark"
+author: "frank"
+
+base00: "0a0a0a"
+base01: "1e1e1e"
+base02: "323232"
+base03: "464646"
+
+base04: "606060"
+base05: "808080"
+base06: "8c8c8c"
+base07: "999999"
+
+base08: "a8a8a8"
+base09: "b8b8b8"
+base0A: "c4c4c4"
+base0B: "d0d0d0"
+base0C: "dadada"
+base0D: "e2e2e2"
+base0E: "eaeaea"
+base0F: "f5f5f5"

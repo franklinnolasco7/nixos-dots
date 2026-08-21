@@ -1,20 +1,23 @@
-{ ... }:
+{ config, lib, ... }:
 
+let
+  colors = (config.lib.stylix or { }).colors.withHashtag or { };
+in
 {
   programs.cava = {
     enable = true;
 
-    settings = {
+    settings = lib.optionalAttrs (colors != { }) {
       color = {
         gradient = 1;
-        gradient_color_1 = "'#1a1a1a'";
-        gradient_color_2 = "'#3d3d3d'";
-        gradient_color_3 = "'#5c5c5c'";
-        gradient_color_4 = "'#707070'";
-        gradient_color_5 = "'#848484'";
-        gradient_color_6 = "'#a6a6a6'";
-        gradient_color_7 = "'#c0c0c0'";
-        gradient_color_8 = "'#e0e0e0'";
+        gradient_color_1 = "'${colors.base02}'";
+        gradient_color_2 = "'${colors.base03}'";
+        gradient_color_3 = "'${colors.base04}'";
+        gradient_color_4 = "'${colors.base05}'";
+        gradient_color_5 = "'${colors.base08}'";
+        gradient_color_6 = "'${colors.base09}'";
+        gradient_color_7 = "'${colors.base0A}'";
+        gradient_color_8 = "'${colors.base0F}'";
       };
     };
   };

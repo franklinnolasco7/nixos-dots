@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   imports = [
@@ -13,7 +13,7 @@
 
   programs.rofi = {
     enable = true;
-    font = "Inter 12";
+    font = lib.mkForce "Inter 12";
 
     extraConfig = {
       modi = "drun,run,ssh,window";

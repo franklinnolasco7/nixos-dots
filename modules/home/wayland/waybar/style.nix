@@ -1,18 +1,21 @@
+{ config, lib, ... }:
 let
-  colors = import ../../styling/palette.nix;
+  colors = config.lib.stylix.colors.withHashtag;
 in
 ''
-  @define-color bg ${colors.base};
-  @define-color surface ${colors.surfaceAlt};
-  @define-color border ${colors.surface};
-  @define-color fg ${colors.fg};
-  @define-color fg_muted ${colors.textDim};
+  @define-color bg ${colors.base00};
+  @define-color surface ${colors.base01};
+  @define-color border ${colors.base02};
+  @define-color fg ${colors.base08};
+  @define-color fg_muted ${colors.base04};
 
-  @define-color accent_blue ${colors.selected};
-  @define-color accent_red ${colors.accentRed};
-  @define-color urgent ${colors.urgent};
-  @define-color accent_amber ${colors.accentAmber};
-  @define-color accent_green ${colors.active};
+  @define-color accent_blue ${colors.base0D};
+  @define-color accent_red ${colors.base04};
+  @define-color urgent ${colors.base0F};
+  @define-color accent_amber ${colors.base0A};
+  @define-color accent_green ${colors.base0D};
+  @define-color hover ${colors.base0A};
+  @define-color critical ${colors.base04};
 
   * {
     font-family: "Inter", "JetBrainsMono Nerd Font", sans-serif;
@@ -28,7 +31,6 @@ in
   window#waybar {
     background-color: @bg;
     color: @fg;
-    border-bottom: 1px solid #1a1a1a;
   }
 
   .modules-left,
@@ -76,13 +78,13 @@ in
   }
 
   #workspaces button:hover {
-    color: #848484;
+    color: @hover;
     background-color: transparent;
     box-shadow: none;
   }
 
   #workspaces button.active {
-    color: #c4c4c4;
+    color: ${colors.base0A};
     font-weight: 700;
     background-color: transparent;
     box-shadow: none;
@@ -102,13 +104,13 @@ in
       color: @urgent;
     }
     to {
-      color: #ffffff;
+      color: ${colors.base08};
     }
   }
 
   #clock {
     background-color: transparent;
-    color: #c4c4c4;
+    color: ${colors.base0A};
     padding: 0 8px;
     margin: 0;
     font-weight: 600;
@@ -116,7 +118,7 @@ in
   }
 
   #window {
-    color: #848484;
+    color: ${colors.base04};
     padding: 0 8px;
     font-size: 12px;
     font-weight: 400;
@@ -140,7 +142,7 @@ in
   #custom-notification,
   #idle_inhibitor {
     background-color: transparent;
-    color: #a6a6a6;
+    color: ${colors.base08};
     padding: 0 6px;
     margin: 0 2px;
     font-size: 12px;
@@ -163,7 +165,7 @@ in
   #custom-notification:hover,
   #idle_inhibitor:hover {
     background-color: transparent;
-    color: #c4c4c4;
+    color: ${colors.base0A};
     box-shadow: none;
   }
 
@@ -174,7 +176,7 @@ in
 
   #network.disconnected,
   #bluetooth.disabled {
-    color: #4a4a4a;
+    color: ${colors.base04};
   }
 
   #battery.charging,
@@ -187,7 +189,7 @@ in
   }
 
   #battery.critical {
-    color: @accent_red;
+    color: @critical;
   }
 
   #custom-notification.notification {
@@ -210,7 +212,7 @@ in
   }
 
   #custom-expand-icon:hover {
-    color: #c4c4c4;
+    color: ${colors.base0A};
     background-color: transparent;
   }
 

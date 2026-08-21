@@ -1,18 +1,20 @@
+{ config, lib, ... }:
 let
-  colors = import ../../styling/palette.nix;
+  colors = config.lib.stylix.colors.withHashtag;
 in
 ''
-  @define-color background     ${colors.base};
-  @define-color background-alt ${colors.surfaceAlt};
-  @define-color foreground     ${colors.fg};
-  @define-color selected       ${colors.selected};
-  @define-color active         ${colors.active};
-  @define-color urgent         ${colors.urgent};
+  @define-color background     ${colors.base00};
+  @define-color background-alt ${colors.base01};
+  @define-color foreground     ${colors.base08};
+  @define-color selected       ${colors.base0A};
+  @define-color active         ${colors.base0D};
+  @define-color urgent         ${colors.base0F};
 
-  @define-color text-dim       ${colors.textDim};
-  @define-color surface        ${colors.surface};
+  @define-color text-dim       ${colors.base04};
+  @define-color surface        ${colors.base02};
   @define-color hover          alpha(@surface, 0.8);
-  @define-color overlay        ${colors.overlay};
+  @define-color overlay        ${colors.base01};
+  @define-color critical       ${colors.base04};
 
   * {
     all: unset;
@@ -80,21 +82,21 @@ in
   }
 
   .notification.critical .notification-background {
-    border-color: @urgent;
+    border-color: @critical;
     border-width: 2px;
-    background: alpha(@urgent, 0.18);
+    background: alpha(@critical, 0.18);
     box-shadow:
-      0 0 0 2px alpha(@urgent, 0.25),
+      0 0 0 2px alpha(@critical, 0.25),
       0 6px 18px rgba(224, 224, 224, 0.35);
     animation: pulse 2s ease-in-out infinite;
   }
 
   .notification.critical .summary {
-    color: @urgent;
+    color: @critical;
   }
 
   .notification.critical .body {
-    color: @urgent;
+    color: @critical;
   }
 
   @keyframes pulse {
@@ -137,7 +139,7 @@ in
   }
 
   .notification.critical progress::-webkit-progress-value {
-    background: @urgent;
+    background: @critical;
     border-radius: 0;
   }
 

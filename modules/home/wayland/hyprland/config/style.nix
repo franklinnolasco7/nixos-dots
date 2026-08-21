@@ -1,7 +1,7 @@
-{ ... }:
+{ config, lib, ... }:
 
 let
-  colors = import ../../../styling/palette.nix;
+  colors = config.lib.stylix.colors;
   rgba = c: a: "rgba(${c}${a})";
 in
 {
@@ -12,8 +12,8 @@ in
         gaps_out = 0;
         border_size = 2;
         col = {
-          active_border = rgba (builtins.substring 1 6 colors.borderActive) "ee";
-          inactive_border = rgba (builtins.substring 1 6 colors.borderInactive) "ee";
+          active_border = rgba colors.base0A "ee";
+          inactive_border = rgba colors.base02 "ee";
         };
         resize_on_border = false;
         allow_tearing = false;
@@ -34,7 +34,7 @@ in
           enabled = false;
           range = 8;
           render_power = 2;
-          color = "rgba(00000026)";
+          color = lib.mkForce "rgba(00000026)";
         };
         blur = {
           enabled = true;

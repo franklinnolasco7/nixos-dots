@@ -1,7 +1,12 @@
-{ pkgs }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
-  colors = import ../styling/palette.nix;
+  colors = config.lib.stylix.colors.withHashtag;
 in
 {
   name,
@@ -29,11 +34,11 @@ pkgs.writeShellScriptBin name ''
     if [[ $target == "true" ]]; then
       hyprctl eval 'hl.device({ name = "${device}", enabled = false })'
       notify-send -i "${icon}" "${title}" \
-        "<span color='${colors.notifyDanger}'>[DISABLED]</span>"
+        "<span color='${colors.base08}'>[DISABLED]</span>"
     else
       hyprctl eval 'hl.device({ name = "${device}", enabled = true })'
       notify-send -i "${icon}" "${title}" \
-        "<span color='${colors.notifySuccess}'>[ENABLED]</span>"
+        "<span color='${colors.base0B}'>[ENABLED]</span>"
     fi
   }
 

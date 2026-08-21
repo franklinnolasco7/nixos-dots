@@ -1,5 +1,12 @@
-{ pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 
+let
+  colors = config.lib.stylix.colors.withHashtag;
+in
 {
   home.packages = [
     (pkgs.writeShellScriptBin "rofi-web-search" ''
@@ -120,10 +127,10 @@
         local body
         case "$action" in
           added)
-            body="<span color='#a6e3a1'>[ADDED]</span> $entry"
+            body="<span color='${colors.base0B}'>[ADDED]</span> $entry"
             ;;
           removed)
-            body="<span color='#f38ba8'>[REMOVED]</span> $entry"
+            body="<span color='${colors.base08}'>[REMOVED]</span> $entry"
             ;;
         esac
         notify-send -a "$app" -i "$icon" "$title" "$body"

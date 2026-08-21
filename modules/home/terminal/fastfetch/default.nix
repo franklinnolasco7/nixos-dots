@@ -10,6 +10,68 @@ let
 
   # Cached, near-instant nix package count (see scripts/pkgs.nix).
   pkgsScript = import ./scripts/pkgs.nix { inherit pkgs; };
+
+  # Base16 color palette parsed from dark.yaml
+  darkYaml = builtins.readFile ./../../../../themes/base16/dark.yaml;
+  parseBase16 =
+    yaml:
+    let
+      lines = lib.splitString "\n" yaml;
+      parseLine =
+        line:
+        let
+          match = builtins.match "^[[:space:]]*(base[0-9A-Fa-f]{2}):[[:space:]]*[\"']?([0-9a-fA-F]{6})[\"']?.*$" line;
+        in
+        if match != null then
+          {
+            name = builtins.elemAt match 0;
+            value = builtins.elemAt match 1;
+          }
+        else
+          null;
+    in
+    builtins.listToAttrs (builtins.filter (x: x != null) (map parseLine lines));
+
+  palette = parseBase16 darkYaml;
+
+  hexToRgb =
+    hex:
+    let
+      r = lib.trivial.fromHexString (builtins.substring 0 2 hex);
+      g = lib.trivial.fromHexString (builtins.substring 2 2 hex);
+      b = lib.trivial.fromHexString (builtins.substring 4 2 hex);
+    in
+    "${toString r};${toString g};${toString b}";
+
+  block = hex: "{#38;2;${hexToRgb hex}}██";
+
+  paletteRow1 =
+    "  "
+    + lib.concatMapStrings (key: block palette.${key}) [
+      "base00"
+      "base01"
+      "base02"
+      "base03"
+      "base04"
+      "base05"
+      "base06"
+      "base07"
+    ]
+    + "{#}";
+
+  paletteRow2 =
+    "  "
+    + lib.concatMapStrings (key: block palette.${key}) [
+      "base08"
+      "base09"
+      "base0A"
+      "base0B"
+      "base0C"
+      "base0D"
+      "base0E"
+      "base0F"
+    ]
+    + "{#}";
 in
 {
   home.file.".local/libexec/fastfetch/pkgs" = {
@@ -157,11 +219,11 @@ in
         "break"
         {
           type = "custom";
-          format = "  {#38;2;26;26;26}██{#38;2;51;51;51}██{#38;2;77;77;77}██{#38;2;102;102;102}██{#38;2;128;128;128}██{#38;2;153;153;153}██{#38;2;179;179;179}██{#38;2;204;204;204}██{#}";
+          format = paletteRow1;
         }
         {
           type = "custom";
-          format = "  {#38;2;217;217;217}██{#38;2;230;230;230}██{#38;2;242;242;242}██{#38;2;255;255;255}██{#38;2;242;242;242}██{#38;2;230;230;230}██{#38;2;217;217;217}██{#38;2;204;204;204}██{#}";
+          format = paletteRow2;
         }
         {
           type = "custom";

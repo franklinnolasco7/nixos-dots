@@ -1,6 +1,13 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
+  colors = config.lib.stylix.colors.withHashtag;
+
   audioProps = {
     sink = {
       mutedIcon = "󰖁";
@@ -210,11 +217,11 @@ in
     if [[ $current == "1" ]]; then
       echo 0 >"$HEALTH_MODE"
       notify-send -i "battery-full-charging-symbolic" "Battery Charging Limit" \
-        "<span color='#f38ba8'>[DISABLED]</span> - Charging to 100%"
+        "<span color='${colors.base04}'>[DISABLED]</span> - Charging to 100%"
     else
       echo 1 >"$HEALTH_MODE"
       notify-send -i "battery-full-charging-symbolic" "Battery Charging Limit" \
-        "<span color='#a6e3a1'>[ENABLED]</span> - Stops at 80%"
+        "<span color='${colors.base0D}'>[ENABLED]</span> - Stops at 80%"
     fi
   '';
 

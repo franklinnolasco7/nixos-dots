@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   programs.btop = {
@@ -6,7 +6,7 @@
     package = pkgs.btop;
 
     settings = {
-      color_theme = "TTY";
+      color_theme = lib.mkForce "TTY";
       theme_background = true;
       truecolor = true;
       force_tty = false;

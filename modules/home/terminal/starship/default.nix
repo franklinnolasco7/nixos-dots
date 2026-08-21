@@ -2,6 +2,17 @@
 
 let
   minimal = config.myProfile == "minimal";
+  colors =
+    (config.lib.stylix or { }).colors.withHashtag or {
+      base06 = "#c2c2c2";
+      base07 = "#e0e0e0";
+      base08 = "#5c5c5c";
+      base0A = "#858585";
+      base0B = "#999999";
+      base0C = "#adadad";
+      base0D = "#bfbfbf";
+      base0E = "#d0d0d0";
+    };
   disabledLangs = [
     "bun"
     "c"
@@ -87,43 +98,43 @@ in
 
       cmd_duration = {
         min_time = 500;
-        format = "[$duration](bold #a6a6a6) ";
+        format = "[$duration](bold ${colors.base0A}) ";
       };
 
       character = {
         # Minimal: ASCII-only; the console TTY font has no nerd glyphs.
-        success_symbol = if minimal then "[>](bold #c8c8c8)" else "[❯](bold #c8c8c8)";
-        error_symbol = if minimal then "[!](bold #5a5a5a)" else "[❯](bold #5a5a5a)";
+        success_symbol = if minimal then "[>](bold ${colors.base0B})" else "[❯](bold ${colors.base0B})";
+        error_symbol = if minimal then "[!](bold ${colors.base07})" else "[❯](bold ${colors.base07})";
       };
 
       directory = {
-        style = "bold #e0e0e0";
+        style = "bold ${colors.base06}";
       };
 
       git_branch = {
-        style = "bold #d0d0d0";
+        style = "bold ${colors.base0D}";
       };
 
       git_status = {
-        stashed = if minimal then "" else "[](bold #a8a8a8) ";
-        style = "bold #5a5a5a";
+        stashed = if minimal then "" else "[](bold ${colors.base0B}) ";
+        style = "bold ${colors.base0B}";
       };
 
       git_commit = {
         tag_symbol = " ";
-        style = "#c0c0c0";
+        style = "${colors.base0C}";
       };
 
       aws = {
         symbol = " ";
         format = "[$symbol($profile)(\\[$region\\])]($style) ";
-        style = "#b0b0b0";
+        style = "${colors.base0E}";
       };
 
       docker_context = {
         symbol = " ";
         format = "[$symbol$context]($style) ";
-        style = "#d0d0d0";
+        style = "${colors.base0C}";
       };
 
       container = {

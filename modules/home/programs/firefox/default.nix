@@ -1,4 +1,4 @@
-{ ... }:
+{ config, lib, ... }:
 
 {
   programs.firefox = {
@@ -59,6 +59,10 @@
         "toolkit.telemetry.unified" = false;
         "toolkit.telemetry.archive.enabled" = false;
       };
+    };
+    profiles."83kzxfus.default" = {
+      id = 0;
+      isDefault = true;
     };
   };
 }

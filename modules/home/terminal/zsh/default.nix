@@ -1,5 +1,8 @@
-{ ... }:
+{ config, lib, ... }:
 
+let
+  colors = (config.lib.stylix or { }).colors.withHashtag or { };
+in
 {
   programs.zsh = {
     enable = true;
@@ -26,6 +29,9 @@
 
     sessionVariables = {
       BASH_MAX_OUTPUT_LENGTH = "15000";
+    }
+    // lib.optionalAttrs (colors != { }) {
+      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.base04}";
     };
 
     completionInit = ''
