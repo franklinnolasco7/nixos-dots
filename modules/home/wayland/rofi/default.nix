@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   imports = [
@@ -13,7 +13,7 @@
 
   programs.rofi = {
     enable = true;
-    font = "Inter 12";
+    font = lib.mkForce "Inter 12";
 
     extraConfig = {
       modi = "drun,run,ssh,window";
@@ -23,8 +23,8 @@
       display-run = "";
       display-ssh = "";
       display-window = "";
-      kb-mode-next = "Shift+Right,Control+Tab";
-      kb-mode-previous = "Shift+Left,Control+ISO_Left_Tab";
+      kb-mode-next = "Control+Tab";
+      kb-mode-previous = "Control+ISO_Left_Tab";
       kb-mode-complete = "";
     };
   };

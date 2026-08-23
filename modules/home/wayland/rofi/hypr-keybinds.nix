@@ -3,14 +3,6 @@
 let
   hyprKeybindsLua = pkgs.writeScript "hypr-keybinds.lua" ''
     #!/usr/bin/env lua
-    -- hypr-keybinds.lua -- extract keybinds from Hyprland 0.55+ Lua config.
-    --
-    -- Evaluates hyprland.lua with a stub `hl` table that records binds.
-    -- Loops (e.g. workspace binds) execute naturally; string concat resolves.
-    -- Prints TSV rows: mods<TAB>key<TAB>dispatcher<TAB>arg<TAB>flags
-    --
-    -- Usage: lua hypr-keybinds.lua [path-to-hyprland.lua]
-
     local config_path = arg[1] or (os.getenv("HOME") .. "/.config/hypr/hyprland.lua")
 
     local function dir_short(d)
@@ -22,7 +14,6 @@ let
       return type(w) == "number" and tostring(w) or (w or "")
     end
 
-    -- Lines are cached on first use so repeated macro binds don't re-read the file.
     local config_lines
     local function comment_before(line)
       if not config_lines then
@@ -45,7 +36,34 @@ let
       return { __dispatcher = dispatcher, __arg = arg or "" }
     end
 
-    hl = {} -- global: dofile'd config chunk needs to see it
+    local function serialize_args(args)
+      if type(args) == "table" then
+        local parts = {}
+        for k, v in pairs(args) do
+          parts[#parts + 1] = k .. "=" .. tostring(v)
+        end
+        return table.concat(parts, ",")
+      elseif args ~= nil then
+        return tostring(args)
+      end
+      return ""
+    end
+
+    local function make_callable(name)
+      return setmetatable({}, {
+        __call = function(self, args)
+          return { __dispatcher = name, __arg = serialize_args(args) }
+        end
+      })
+    end
+
+    local mt = {
+      __index = function(_, name)
+        return make_callable(name)
+      end,
+    }
+
+    hl = {}
     hl.dsp = setmetatable({
       exec_cmd = function(a) return ret("exec", tostring(a)) end,
       exit     = function() return ret("exit") end,
@@ -56,25 +74,24 @@ let
         end
         return ret("workspace", ws_arg(a and a.workspace))
       end,
-      window = {
+      window = setmetatable({
         close      = function() return ret("killactive") end,
         fullscreen = function() return ret("fullscreen") end,
         float      = function() return ret("togglefloating") end,
         swap       = function(a) return ret("swapwindow", dir_short(a and a.direction)) end,
-        move       = function(a) return ret("movetoworkspace", ws_arg(a and a.workspace)) end,
+        move       = function(a)
+          if a and a.direction then return ret("movewindow", dir_short(a.direction)) end
+          return ret("movetoworkspace", ws_arg(a and a.workspace))
+        end,
         drag       = function() return ret("movewindow", "mousemove") end,
         resize     = function() return ret("resizewindow", "mousemove") end,
-      },
-    }, {
-      -- unknown top-level dispatchers degrade to display-only rows (skipped on execute)
-      __index = function(_, name)
-        return function() return ret("__" .. name) end
-      end,
-    })
+      }, mt),
+    }, mt)
 
     local function noop() end
     hl.monitor, hl.config, hl.env, hl.gesture, hl.on = noop, noop, noop, noop, noop
     hl.exec_cmd, hl.animation, hl.curve, hl.device, hl.window_rule = noop, noop, noop, noop, noop
+    hl.get_workspace, hl.get_active_workspace, hl.get_active_window, hl.dispatch = noop, noop, noop, noop
 
     hl.bind = function(mods_key, dispatcher, opts)
       opts = opts or {}
@@ -108,8 +125,6 @@ let
     local chunk = f:read("*a")
     f:close()
 
-    -- Lua < 5.3 can't parse `\u{XXXX}` escapes; Hyprland configs target 5.3+.
-    -- Expand them to UTF-8 bytes so extraction works on any Lua (5.1+).
     local unpack = table.unpack or unpack
     chunk = chunk:gsub("\\u{(%x+)}", function(hex)
       local cp = tonumber(hex, 16)
@@ -134,31 +149,27 @@ in
   home.packages = [
     (pkgs.writeShellScriptBin "hypr-keybinds" ''
       CACHE_FILE="''${XDG_RUNTIME_DIR:-/tmp}/hypr_keybinds_cache"
-      CACHE_TIMEOUT=3600 # 1 hour in seconds
-
-      CONFIG_SOURCES=(
-        "$HOME/.config/hypr/hyprland.lua"
-      )
+      CACHE_TIMEOUT=3600
 
       normalize_modifiers() {
         local m="$1"
-        m=''${m//\$mainMod/󰘳}
         m=''${m//SUPER/󰘳}
         m=''${m//SHIFT/Shift}
         m=''${m//CTRL/Ctrl}
         m=''${m//Control/Ctrl}
         m=''${m//ALT/Alt}
+        m=''${m//ISO_Left_Tab/Shift+Tab}
         m=''${m//[[:space:]]/}
-        echo "''${m//+/ + }"
-      }
 
-      truncate_text() {
-        local text="$1" max=''${2:-64}
-        if [[ -n $text && ''${#text} -gt $max ]]; then
-          echo "''${text:0:$((max - 3))}..."
-        else
-          echo "$text"
-        fi
+        echo "$m" | awk -F'+' '{
+          out=""
+          for(i=1;i<=NF;i++) {
+            if(length($i)==1) $i=toupper($i)
+            if(out!="") out=out" + "
+            out=out$i
+          }
+          print out
+        }'
       }
 
       format_display() {
@@ -182,6 +193,15 @@ in
         fi
       }
 
+      truncate_text() {
+        local text="$1" max=''${2:-64}
+        if [[ -n $text && ''${#text} -gt $max ]]; then
+          echo "''${text:0:$((max - 3))}..."
+        else
+          echo "$text"
+        fi
+      }
+
       collect_bindings_from_lua() {
         local source="$1"
         [[ -r $source ]] || return
@@ -189,10 +209,67 @@ in
 
         lua ${hyprKeybindsLua} "$source" \
           | while IFS=$'\t' read -r modifier key action arg flags; do
-            [[ -z $action || $action == "__"* ]] && continue
+            [[ -z $action ]] && continue
             local note="$arg"
             [[ -n $flags ]] && note="$note [''${flags}]"
             format_display "$modifier" "$key" "$action" "$note" "" "$action|$arg"
+          done
+      }
+
+      collect_bindings_from_rofi() {
+        local rasi="$HOME/.config/rofi/config.rasi"
+        if [[ -r $rasi ]]; then
+          grep -E '^kb-mode-' "$rasi" 2>/dev/null | while IFS= read -r line; do
+            local key=''${line%%:*}
+            key=''${key## }
+            key=''${key%% }
+            local value=''${line#*:}
+            value=''${value# }
+            value=''${value%;}
+            value=''${value%\"}
+            value=''${value#\"}
+            [[ -z $value ]] && continue
+            combo=''${value#*,}
+            combo=''${combo## }
+            combo=''${combo%% }
+            [[ -z $combo ]] && continue
+            combo=''${combo//ISO_Left_Tab/Shift + Tab}
+            local kb_mod=''${combo%+*} kb_key=''${combo##*+}
+            kb_mod=''${kb_mod// /}
+            kb_key=''${kb_key// /}
+            format_display "$kb_mod" "$kb_key" "rofi → $label" "$key" ""
+          done
+        fi
+
+        local nixos_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/../nixos-dots/modules"
+        [[ -d $nixos_dir ]] || nixos_dir="$HOME/nixos-dots/modules"
+        [[ -d $nixos_dir ]] || return
+        grep -rhn '\-kb-' "$nixos_dir" 2>/dev/null \
+          | grep -v 'hypr-keybinds.nix' \
+          | grep -oE '\-kb-[a-z0-9-]+[[:space:]]+"[^"]*"' \
+          | while IFS= read -r match; do
+            local key=''${match%%[[:space:]]*}
+            key=''${key#-}
+            local value=''${match#*[[:space:]]}
+            value=''${value#\"}
+            value=''${value%\"}
+            [[ -z $value ]] && continue
+            if [[ $value == '$'* ]]; then
+              case $value in
+                '$BOOKMARK_KEY') value="Control+f"; key="kb-bookmark" ;;
+                *) continue ;;
+              esac
+            fi
+            local label=''${key#kb-}
+            IFS=',' read -ra combos <<< "$value"
+            for combo in "''${combos[@]}"; do
+              combo=''${combo## }
+              combo=''${combo%% }
+              [[ -z $combo ]] && continue
+              combo=$(normalize_modifiers "$combo")
+              local kb_mod=''${combo% + *} kb_key=''${combo##* + }
+              format_display "$kb_mod" "$kb_key" "rofi → $label" "$key" ""
+            done
           done
       }
 
@@ -204,27 +281,15 @@ in
 
       if [[ $cache_fresh == false ]] || [[ $1 == "--rebuild" ]]; then
         {
-          for source in "''${CONFIG_SOURCES[@]}"; do
-            collect_bindings_from_lua "$source"
-          done
-
-          for mode in next previous; do
-            mapfile -t combos < <(sed -n "s/.*kb-mode-''${mode}:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$HOME/.config/rofi/config.rasi" | tr ',' '\n')
-            for combo in "''${combos[@]}"; do
-              [[ -z $combo ]] && continue
-              kb_mod="''${combo%%+*}" kb_key="''${combo#*+}"
-              kb_mod="''${kb_mod// /}"
-              kb_key="''${kb_key// /}"
-              format_display "$kb_mod" "$kb_key" "rofi → switch to ''${mode} mode" "config.rasi • kb-mode-''${mode}"
-            done
-          done
+          collect_bindings_from_lua "$HOME/.config/hypr/hyprland.lua"
+          collect_bindings_from_rofi
         } >"$CACHE_FILE"
       fi
 
       mapfile -t lines <"$CACHE_FILE"
 
       [[ ''${#lines[@]} -eq 0 ]] && {
-        notify-send "Hypr keybinds" "No bindings found"
+        notify-send "Keybinds" "No bindings found"
         exit 0
       }
 
@@ -239,7 +304,7 @@ in
           -theme-str "listview { lines: ''${list_lines}; spacing: 6px; }" \
           -theme-str 'element-text { font: "JetBrainsMono Nerd Font Mono 12"; }' \
           -theme-str 'message { enabled: true; padding: 4px 16px; }' \
-          -mesg "<span size='large'><b>Hyprland Keybinds</b></span>")
+          -mesg "<span size='large'><b>Keybinds</b></span>")
 
       [[ -z $result ]] && exit 0
 
@@ -250,7 +315,11 @@ in
 
       if [[ $action == "exec" ]]; then
         eval "$param" &
-      elif [[ -n $action && $action != "rofi"* && $action != "macro"* ]]; then
+      elif [[ $action == "rofi"* ]]; then
+        :
+      elif [[ $action == "macro" || -z $action ]]; then
+        :
+      else
         [[ -n $param ]] && hyprctl dispatch "$action" "$param" || hyprctl dispatch "$action"
       fi
     '')

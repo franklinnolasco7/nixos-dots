@@ -1,12 +1,21 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
+let
+  minimal = config.myProfile == "minimal";
+  c = (config.lib.stylix or { }).colors.withHashtag or { };
+in
 {
   programs.btop = {
     enable = true;
     package = pkgs.btop;
 
     settings = {
-      color_theme = "TTY";
+      color_theme = lib.mkForce (if minimal then "TTY" else "stylix");
       theme_background = true;
       truecolor = true;
       force_tty = false;
@@ -95,5 +104,70 @@
       custom_gpu_name4 = "";
       custom_gpu_name5 = "";
     };
+  };
+
+  xdg.configFile."btop/themes/stylix.theme" = lib.mkIf (!minimal) {
+    text = ''
+      theme[main_bg]="${c.base00}"
+      theme[main_fg]="${c.base05}"
+
+      theme[title]="${c.base05}"
+
+      theme[hi_fg]="${c.base0D}"
+
+      theme[selected_bg]="${c.base0D}"
+      theme[selected_fg]="${c.base00}"
+
+      theme[inactive_fg]="${c.base03}"
+
+      theme[graph_text]="${c.base05}"
+
+      theme[meter_bg]="${c.base02}"
+
+      theme[proc_misc]="${c.base0E}"
+
+      theme[cpu_box]="${c.base0D}"
+      theme[mem_box]="${c.base0B}"
+      theme[net_box]="${c.base08}"
+      theme[proc_box]="${c.base0C}"
+
+      theme[div_line]="${c.base02}"
+
+      theme[temp_start]="${c.base0E}"
+      theme[temp_mid]="${c.base0A}"
+      theme[temp_end]="${c.base08}"
+
+      theme[cpu_start]="${c.base0D}"
+      theme[cpu_mid]="${c.base0C}"
+      theme[cpu_end]="${c.base0B}"
+
+      theme[free_start]="${c.base0E}"
+      theme[free_mid]="${c.base0A}"
+      theme[free_end]="${c.base08}"
+
+      theme[cached_start]="${c.base0C}"
+      theme[cached_mid]="${c.base0D}"
+      theme[cached_end]="${c.base0E}"
+
+      theme[available_start]="${c.base0A}"
+      theme[available_mid]="${c.base09}"
+      theme[available_end]="${c.base08}"
+
+      theme[used_start]="${c.base0B}"
+      theme[used_mid]="${c.base0C}"
+      theme[used_end]="${c.base0D}"
+
+      theme[download_start]="${c.base0D}"
+      theme[download_mid]="${c.base0B}"
+      theme[download_end]="${c.base0C}"
+
+      theme[upload_start]="${c.base0E}"
+      theme[upload_mid]="${c.base0A}"
+      theme[upload_end]="${c.base08}"
+
+      theme[process_start]="${c.base0B}"
+      theme[process_mid]="${c.base0C}"
+      theme[process_end]="${c.base0D}"
+    '';
   };
 }

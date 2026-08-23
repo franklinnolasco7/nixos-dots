@@ -1,5 +1,5 @@
 {
   imports = [
-    ./zsh
+    ./stylix.nix
   ];
 }

@@ -1,7 +1,12 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
-  colors = import ../styling/palette.nix;
+  colors = config.lib.stylix.colors.withHashtag;
 in
 {
   home.packages = [
@@ -62,7 +67,7 @@ in
           if wait_for_tunnel; then
             local loc
             loc=$(get_location)
-            notify-send -i "network-vpn-symbolic" "VPN Connected" "<span color='${colors.notifySuccess}'>''${loc:-Unknown}</span>"
+            notify-send -i "network-vpn-symbolic" "VPN Connected" "<span color='${colors.base0B}'>''${loc:-Unknown}</span>"
           else
             notify-send -u critical -i "network-vpn-symbolic" "VPN Error" "Tunnel established but no connectivity"
           fi
@@ -86,7 +91,7 @@ in
         sudo resolvconf -u &>/dev/null
 
         echo "false" >"$STATE_FILE"
-        notify-send -i "network-vpn-symbolic" "VPN Disconnected" "<span color='${colors.notifyDanger}'>[OFF]</span>"
+        notify-send -i "network-vpn-symbolic" "VPN Disconnected" "<span color='${colors.base08}'>[OFF]</span>"
       }
 
       case "''${1:-toggle}" in

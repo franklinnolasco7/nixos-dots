@@ -13,6 +13,7 @@
     ./opencode
     ./gaming
     ./spotify
+    ./vesktop
     ./obsidian
     ./thunar
     ./restic

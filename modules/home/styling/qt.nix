@@ -1,6 +1,13 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
+  colors = config.lib.stylix.colors.withHashtag;
+
   graphite-kde-theme = pkgs.fetchFromGitHub {
     owner = "vinceliuice";
     repo = "Graphite-kde-theme";
@@ -11,7 +18,7 @@ let
   recolor =
     lib.replaceStrings
       [
-        # kvconfig colors
+        # Graphite-rimless dark source colors
         "#2c2c2c"
         "#2e2e2e"
         "#4d4d4d"
@@ -19,24 +26,24 @@ let
         "#474747"
         "#282828"
         "#323232"
-        # svg chrome
         "#1a1a1a"
         "#212121"
         "#1f1f1f"
         "#1e1e1e"
       ]
       [
-        "#0f0f0f"
-        "#121212"
-        "#1f1f1f"
-        "#242424"
-        "#1c1c1c"
-        "#0a0a0a"
-        "#121212"
-        "#0f0f0f"
-        "#121212"
-        "#121212"
-        "#121212"
+        # Mapped to base16 palette tokens
+        colors.base00
+        colors.base00
+        colors.base02
+        colors.base03
+        colors.base02
+        colors.base00
+        colors.base00
+        colors.base00
+        colors.base00
+        colors.base00
+        colors.base00
       ];
 
   graphite-black-kvconfig = recolor (

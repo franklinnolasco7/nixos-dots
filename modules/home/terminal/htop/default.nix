@@ -49,7 +49,8 @@
         show_cached_memory = true;
         update_process_names = false;
         account_guest_in_cpu_meter = false;
-        color_scheme = 0;
+        color_scheme = 6;
+        save_config_on_exit = false;
         enable_mouse = true;
         delay = 15;
         hide_function_bar = false;

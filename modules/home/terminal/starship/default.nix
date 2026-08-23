@@ -2,6 +2,9 @@
 
 let
   minimal = config.myProfile == "minimal";
+
+  colors = config.lib.stylix.colors.withHashtag;
+
   disabledLangs = [
     "bun"
     "c"
@@ -85,47 +88,6 @@ in
         disabled = true;
       };
 
-      cmd_duration = {
-        min_time = 500;
-        format = "[$duration](bold #a6a6a6) ";
-      };
-
-      character = {
-        # Minimal: ASCII-only; the console TTY font has no nerd glyphs.
-        success_symbol = if minimal then "[>](bold #c8c8c8)" else "[❯](bold #c8c8c8)";
-        error_symbol = if minimal then "[!](bold #5a5a5a)" else "[❯](bold #5a5a5a)";
-      };
-
-      directory = {
-        style = "bold #e0e0e0";
-      };
-
-      git_branch = {
-        style = "bold #d0d0d0";
-      };
-
-      git_status = {
-        stashed = if minimal then "" else "[](bold #a8a8a8) ";
-        style = "bold #5a5a5a";
-      };
-
-      git_commit = {
-        tag_symbol = " ";
-        style = "#c0c0c0";
-      };
-
-      aws = {
-        symbol = " ";
-        format = "[$symbol($profile)(\\[$region\\])]($style) ";
-        style = "#b0b0b0";
-      };
-
-      docker_context = {
-        symbol = " ";
-        format = "[$symbol$context]($style) ";
-        style = "#d0d0d0";
-      };
-
       container = {
         disabled = true;
       };
@@ -141,8 +103,53 @@ in
     // lib.genAttrs (disabledLangs ++ disabledTools) (name: {
       disabled = true;
     })
+    // lib.optionalAttrs (!minimal) {
+      cmd_duration = {
+        min_time = 500;
+        format = "[$duration](bold ${colors.base0A}) ";
+      };
+
+      character = {
+        success_symbol = "[❯](bold ${colors.base06})";
+        error_symbol = "[❯](bold ${colors.base0F})";
+      };
+
+      directory = {
+        style = "bold ${colors.base06}";
+      };
+
+      git_branch = {
+        style = "bold ${colors.base0D}";
+      };
+
+      git_status = {
+        stashed = "[](bold ${colors.base0B}) ";
+        style = "bold ${colors.base0B}";
+      };
+
+      git_commit = {
+        tag_symbol = " ";
+        style = "${colors.base0C}";
+      };
+
+      aws = {
+        symbol = " ";
+        format = "[$symbol($profile)(\\[$region\\])]($style) ";
+        style = "${colors.base0E}";
+      };
+
+      docker_context = {
+        symbol = " ";
+        format = "[$symbol$context]($style) ";
+        style = "${colors.base0C}";
+      };
+    }
     // lib.optionalAttrs minimal {
-      # Nerd-glyph modules have nothing meaningful to show on a console TTY.
+      character = {
+        success_symbol = "[>]";
+        error_symbol = "[!]";
+      };
+
       aws.disabled = true;
       docker_context.disabled = true;
       git_commit.disabled = true;

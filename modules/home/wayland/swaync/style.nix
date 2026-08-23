@@ -1,18 +1,21 @@
+{ config, lib, ... }:
 let
-  colors = import ../../styling/palette.nix;
+  colors = config.lib.stylix.colors.withHashtag;
 in
 ''
-  @define-color background     ${colors.base};
-  @define-color background-alt ${colors.surfaceAlt};
-  @define-color foreground     ${colors.fg};
-  @define-color selected       ${colors.selected};
-  @define-color active         ${colors.active};
-  @define-color urgent         ${colors.urgent};
+  @define-color background     ${colors.base00};
+  @define-color background-alt ${colors.base01};
+  @define-color foreground     ${colors.base08};
+  @define-color selected       ${colors.base0A};
+  @define-color active         ${colors.base0D};
+  @define-color urgent         ${colors.base0F};
 
-  @define-color text-dim       ${colors.textDim};
-  @define-color surface        ${colors.surface};
+  @define-color text-dim       ${colors.base04};
+  @define-color surface        ${colors.base02};
   @define-color hover          alpha(@surface, 0.8);
-  @define-color overlay        ${colors.overlay};
+  @define-color overlay        ${colors.base01};
+  @define-color critical       ${colors.base0E};
+  @define-color button-hover   ${colors.base03};
 
   * {
     all: unset;
@@ -34,9 +37,6 @@ in
     border-radius: 0;
     margin: 8px;
     border: 2px solid @selected;
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.15),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
   .notification-content {
@@ -80,43 +80,20 @@ in
   }
 
   .notification.critical .notification-background {
-    border-color: @urgent;
+    border-color: @critical;
     border-width: 2px;
-    background: alpha(@urgent, 0.18);
-    box-shadow:
-      0 0 0 2px alpha(@urgent, 0.25),
-      0 6px 18px rgba(224, 224, 224, 0.35);
-    animation: pulse 2s ease-in-out infinite;
+    background: alpha(@critical, 0.18);
   }
 
   .notification.critical .summary {
-    color: @urgent;
+    color: @critical;
   }
 
   .notification.critical .body {
-    color: @urgent;
+    color: @critical;
   }
 
-  @keyframes pulse {
-    from {
-      opacity: 1;
-      box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-    50% {
-      opacity: 0.95;
-      box-shadow:
-        0 2px 12px rgba(224, 224, 224, 0.25),
-        0 0 0 1px rgba(224, 224, 224, 0.2);
-    }
-    to {
-      opacity: 1;
-      box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-  }
+
 
   .notification.low progress,
   .notification.normal progress,
@@ -137,7 +114,7 @@ in
   }
 
   .notification.critical progress::-webkit-progress-value {
-    background: @urgent;
+    background: @critical;
     border-radius: 0;
   }
 
@@ -216,7 +193,6 @@ in
     margin: 8px;
     padding: 14px;
     border: 2px solid @selected;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   }
 
   .control-center .notification-background {
@@ -254,7 +230,7 @@ in
   }
 
   .notification-group-icon {
-    color: @selected;
+    color: @active;
     margin-right: 6px;
   }
 
@@ -394,7 +370,6 @@ in
     margin: 8px 6px;
     min-width: 90px;
     min-height: 90px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }
 
   .widget-mpris-title {
@@ -465,10 +440,9 @@ in
   }
 
   .widget-buttons-grid button:hover {
-    background: @overlay;
+    background: @button-hover;
     border-color: @selected;
     transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .widget-buttons-grid button:active {
@@ -519,6 +493,7 @@ in
   }
 
   .notification-content .notification-icon {
+    color: @active;
     background: @surface;
     border-radius: 10px;
     padding: 8px;

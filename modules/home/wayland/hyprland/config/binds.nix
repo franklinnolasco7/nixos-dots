@@ -94,7 +94,7 @@ in
         (mkExec mainMod "D" ''"rofi -show drun"'' [ ])
         (mkExec mainMod "R" ''"rofi -show run -run-command 'kitty -e fish -c \"{cmd}; read\"'"'' [ ])
         (mkExec mainMod "S" ''"rofi -show ssh"'' [ ])
-        (mkExec mainMod "SHIFT + D" ''"rofi -show window"'' [ ])
+        (mkExec mainMod "TAB" ''"rofi -show window"'' [ ])
         (mkExec mainMod "W" ''"${web_search}"'' [ ])
         (mkExec mainMod "N" ''"swaync-client -t -sw"'' [ ])
         (mkExec mainMod "SHIFT + W" ''"wallpaper"'' [ ])
@@ -111,6 +111,9 @@ in
         (mkBind mainMod "right" "hl.dsp.focus({ direction = \"right\" })" [ ])
         (mkBind mainMod "up" "hl.dsp.focus({ direction = \"up\" })" [ ])
         (mkBind mainMod "down" "hl.dsp.focus({ direction = \"down\" })" [ ])
+
+        # --- Cycle All Windows ---
+        (mkBind mainMod "SPACE" "hl.dsp.window.cycle_next()" [ ])
 
         # --- Resize Window ---
         (mkBind mainMod "CTRL + left" "hl.dsp.window.resize({ x = -20, y = 0, relative = true })" [
@@ -131,6 +134,12 @@ in
         (mkBind mainMod "SHIFT + right" "hl.dsp.window.swap({ direction = \"right\" })" [ ])
         (mkBind mainMod "SHIFT + up" "hl.dsp.window.swap({ direction = \"up\" })" [ ])
         (mkBind mainMod "SHIFT + down" "hl.dsp.window.swap({ direction = \"down\" })" [ ])
+
+        # --- Move Floating Window ---
+        (mkBind mainMod "ALT + left" "hl.dsp.window.move({ direction = \"left\" })" [ ])
+        (mkBind mainMod "ALT + right" "hl.dsp.window.move({ direction = \"right\" })" [ ])
+        (mkBind mainMod "ALT + up" "hl.dsp.window.move({ direction = \"up\" })" [ ])
+        (mkBind mainMod "ALT + down" "hl.dsp.window.move({ direction = \"down\" })" [ ])
       ]
       ++ workspaceBinds
       ++ numpadBinds
@@ -179,16 +188,16 @@ in
 
         # --- Screenshots ---
         (mkBindPlain "Print" ''
-          hl.dsp.exec_cmd("hyprshot -m output -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")
+          hl.dsp.exec_cmd("hyprshot -m output -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots")
         '' [ ])
         (mkBind mainMod "SHIFT + S" ''
-          hl.dsp.exec_cmd("hyprshot -m region -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")
+          hl.dsp.exec_cmd("hyprshot -m region -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots")
         '' [ ])
         (mkBindPlain "CTRL + Print" ''
-          hl.dsp.exec_cmd("hyprshot -m window -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")
+          hl.dsp.exec_cmd("hyprshot -m window -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots")
         '' [ ])
         (mkBindPlain "SHIFT + Print" ''
-          hl.dsp.exec_cmd("hyprshot -m active -m window -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots/")
+          hl.dsp.exec_cmd("hyprshot -m active -m window -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots")
         '' [ ])
 
         # --- Recording ---

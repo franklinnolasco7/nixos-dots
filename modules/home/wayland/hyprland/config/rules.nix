@@ -1,5 +1,9 @@
-{ ... }:
+{ config, lib, ... }:
 
+let
+  colors = config.lib.stylix.colors;
+  rgba = c: a: "rgba(${c}${a})";
+in
 {
   wayland.windowManager.hyprland.settings.window_rule = [
     {
@@ -26,14 +30,23 @@
       match = {
         float = false;
       };
-      border_color = "rgba(c4c4c4ee) rgba(1a1a1aee)";
+      border_color = "${rgba colors.base0D "ee"} ${rgba colors.base01 "ee"}";
     }
 
     {
       match = {
         float = true;
+        focus = true;
       };
-      border_color = "0xff848484 0xff848484";
+      border_color = "${rgba colors.base07 "ee"} ${rgba colors.base07 "ee"}";
+    }
+
+    {
+      match = {
+        float = true;
+        focus = false;
+      };
+      border_color = "${rgba colors.base03 "ee"} ${rgba colors.base03 "ee"}";
     }
 
     {

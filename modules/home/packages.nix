@@ -9,18 +9,19 @@
   home.packages =
     # Core utilities; console-safe, always present (the minimal profile's tools).
     (with pkgs; [
-      curl
-      jq
-      gawk
-      tree
       gh
-      rtk
-      wireguard-tools
-      rsync
     ])
     ++ lib.optionals (config.myProfile == "full") (
       with pkgs;
       [
+        curl
+        jq
+        gawk
+        tree
+        rtk
+        wireguard-tools
+        rsync
+
         rofimoji
         libnotify
         chromium

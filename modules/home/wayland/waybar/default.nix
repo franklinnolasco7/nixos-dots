@@ -1,8 +1,14 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
-  scripts = import ./scripts.nix { inherit pkgs lib; };
-  style = import ./style.nix;
+  colors = config.lib.stylix.colors.withHashtag;
+  scripts = import ./scripts.nix { inherit config pkgs lib; };
+  style = import ./style.nix { inherit config lib; };
 in
 {
   programs.waybar = {
@@ -61,11 +67,11 @@ in
             weeks-pos = "right";
             on-scroll = 1;
             format = {
-              months = "<b>{}</b>";
-              days = "{}";
-              weeks = "W{}";
-              weekdays = "<b>{}</b>";
-              today = "<span color='#c4c4c4'><b><u>{}</u></b></span>";
+              months = "<span color='${colors.base0D}'><b>{}</b></span>";
+              days = "<span color='${colors.base08}'>{}</span>";
+              weeks = "<span color='${colors.base04}'>W{}</span>";
+              weekdays = "<span color='${colors.base0A}'><b>{}</b></span>";
+              today = "<span color='${colors.base0F}'><b><u>{}</u></b></span>";
             };
           };
           actions = {
@@ -167,7 +173,6 @@ in
             "󰁼"
             "󰁽"
             "󰁾"
-            "󰁿"
             "󰂀"
             "󰂁"
             "󰂂"

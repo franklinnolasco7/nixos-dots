@@ -7,7 +7,7 @@
 
 let
   scripts = import ./scripts.nix { inherit pkgs; };
-  style = import ./style.nix;
+  style = import ./style.nix { inherit config lib; };
 in
 {
   services.swaync = {

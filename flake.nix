@@ -43,6 +43,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    stylix = {
+      url = "github:nix-community/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     obsidian-extensions = {
       url = "github:karaolidis/nix-obsidian-extensions";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -59,6 +64,7 @@
       chaotic,
       spicetify-nix,
       obsidian-extensions,
+      stylix,
       ...
     }:
     let
@@ -134,6 +140,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
 
               home-manager.extraSpecialArgs = {
                 inherit inputs user profile;
@@ -194,34 +201,40 @@
         disko = {
           type = "app";
           program = "${disko.packages.${system}.disko}/bin/disko";
+          meta.description = "Disk partitioning via Nix";
         };
 
         nixos-anywhere = {
           type = "app";
           program = "${nixos-anywhere.packages.${system}.nixos-anywhere}/bin/nixos-anywhere";
+          meta.description = "Install NixOS over SSH";
         };
 
         # Pinned tooling for install.sh (avoids resolving from the channel).
         sops = {
           type = "app";
           program = "${nixpkgs.legacyPackages.${system}.sops}/bin/sops";
+          meta.description = "Secrets management";
         };
 
         ssh-to-age = {
           type = "app";
           program = "${nixpkgs.legacyPackages.${system}.ssh-to-age}/bin/ssh-to-age";
+          meta.description = "Convert SSH keys to age keys";
         };
 
         # Dedicated host age key derivation (install/init-secrets.sh).
         age-keygen = {
           type = "app";
           program = "${nixpkgs.legacyPackages.${system}.age}/bin/age-keygen";
+          meta.description = "Generate age key pairs";
         };
 
         # Passphrase-encrypted key backup (install/key-backup.sh).
         age = {
           type = "app";
           program = "${nixpkgs.legacyPackages.${system}.age}/bin/age";
+          meta.description = "File encryption tool";
         };
       };
 

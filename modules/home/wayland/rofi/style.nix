@@ -1,22 +1,21 @@
-{ config, ... }:
-
+{ config, lib, ... }:
 let
   mk = config.lib.formats.rasi.mkLiteral;
-  colors = import ../../styling/palette.nix;
+  colors = config.lib.stylix.colors.withHashtag;
 in
 {
-  programs.rofi.theme = {
+  programs.rofi.theme = lib.mkForce {
     "*" = {
-      # palette
-      background = mk colors.base;
-      "background-alt" = mk colors.surfaceAlt;
-      foreground = mk colors.fg;
-      selected = mk colors.selected;
-      active = mk colors.active;
-      urgent = mk colors.urgent;
-      surface = mk colors.surface;
-      overlay = mk colors.overlay;
-      "text-dim" = mk colors.textDim;
+      # palette - mapped from base16
+      background = mk colors.base00;
+      "background-alt" = mk colors.base01;
+      foreground = mk colors.base08;
+      selected = mk colors.base0A;
+      active = mk colors.base0D;
+      urgent = mk colors.base0F;
+      surface = mk colors.base02;
+      overlay = mk colors.base01;
+      "text-dim" = mk colors.base04;
 
       # global properties
       "border-colour" = mk "var(selected)";
@@ -291,13 +290,13 @@ in
     * {
         font: "Inter 12";
 
-        background:     ${colors.base};
-        background-alt: ${colors.surfaceAlt};
-        surface:        ${colors.surface};
-        foreground:     ${colors.fg};
-        selected:       ${colors.selected};
-        border:         ${colors.selected};
-        placeholder:    ${colors.textDim};
+        background:     ${colors.base00};
+        background-alt: ${colors.base01};
+        surface:        ${colors.base02};
+        foreground:     ${colors.base08};
+        selected:       ${colors.base0A};
+        border:         ${colors.base0A};
+        placeholder:    ${colors.base04};
     }
 
     window {
