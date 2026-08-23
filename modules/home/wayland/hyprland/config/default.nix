@@ -7,7 +7,8 @@
     ./input.nix
     ./layouts.nix
     ./misc.nix
-    ./rules.nix
+    ./workspace-rules.nix
+    ./window-rules.nix
     ./style.nix
   ];
 }

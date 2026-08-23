@@ -186,6 +186,9 @@ in
           end
         '' [ ])
 
+        # --- Special: Obsidian workspace ---
+        (mkBindPlain "ALT + TAB" "hl.dsp.workspace.toggle_special(\"obsidian\")" [ ])
+
         # --- Screenshots ---
         (mkBindPlain "Print" ''
           hl.dsp.exec_cmd("hyprshot -m output -z -o " .. os.getenv("HOME") .. "/Pictures/Screenshots")

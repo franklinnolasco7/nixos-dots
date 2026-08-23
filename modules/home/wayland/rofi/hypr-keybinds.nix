@@ -153,31 +153,72 @@ in
 
       normalize_modifiers() {
         local m="$1"
-        m=''${m//SUPER/󰘳}
-        m=''${m//SHIFT/Shift}
-        m=''${m//CTRL/Ctrl}
-        m=''${m//Control/Ctrl}
-        m=''${m//ALT/Alt}
-        m=''${m//ISO_Left_Tab/Shift+Tab}
-        m=''${m//[[:space:]]/}
+        m=$(echo "$m" | tr '[:upper:]' '[:lower:]')
+        m=$(echo "$m" | sed 's/+/\ /g')
 
-        echo "$m" | awk -F'+' '{
-          out=""
-          for(i=1;i<=NF;i++) {
-            if(length($i)==1) $i=toupper($i)
-            if(out!="") out=out" + "
-            out=out$i
+        echo "$m" | awk '
+          BEGIN {
+            keymap["ctrl"] = "Ctrl"; keymap["control"] = "Ctrl"
+            keymap["shift"] = "Shift"
+            keymap["alt"] = "Alt"; keymap["option"] = "Alt"
+            keymap["super"] = "󰘳"; keymap["meta"] = "󰘳"; keymap["cmd"] = "󰘳"; keymap["win"] = "󰘳"
+            keymap["tab"] = "Tab"
+            keymap["enter"] = "Enter"; keymap["return"] = "Enter"
+            keymap["space"] = "Space"
+            keymap["esc"] = "Esc"; keymap["escape"] = "Esc"
+            keymap["up"] = "Up"; keymap["down"] = "Down"
+            keymap["left"] = "Left"; keymap["right"] = "Right"
+            keymap["home"] = "Home"; keymap["end"] = "End"
+            keymap["pgup"] = "PgUp"; keymap["pageup"] = "PgUp"
+            keymap["pgdn"] = "PgDn"; keymap["pagedown"] = "PgDn"
+            keymap["ins"] = "Ins"; keymap["insert"] = "Ins"
+            keymap["del"] = "Del"; keymap["delete"] = "Del"
+            for (i=1; i<=12; i++) keymap["f" i] = "F" i
+
+            keymap["kp_end"] = "1"; keymap["kp_1"] = "1"
+            keymap["kp_down"] = "2"; keymap["kp_2"] = "2"
+            keymap["kp_next"] = "3"; keymap["kp_pgdn"] = "3"; keymap["kp_3"] = "3"
+            keymap["kp_left"] = "4"; keymap["kp_4"] = "4"
+            keymap["kp_begin"] = "5"; keymap["kp_5"] = "5"
+            keymap["kp_right"] = "6"; keymap["kp_6"] = "6"
+            keymap["kp_home"] = "7"; keymap["kp_7"] = "7"
+            keymap["kp_up"] = "8"; keymap["kp_8"] = "8"
+            keymap["kp_prior"] = "9"; keymap["kp_pgup"] = "9"; keymap["kp_9"] = "9"
+            keymap["kp_insert"] = "0"; keymap["kp_0"] = "0"
+            keymap["kp_add"] = "+"
+            keymap["kp_subtract"] = "-"
+            keymap["kp_multiply"] = "*"
+            keymap["kp_divide"] = "/"
+            keymap["kp_enter"] = "Enter"
+            keymap["kp_decimal"] = "."; keymap["kp_delete"] = "."
+
+            keymap["mouse:272"] = "Left Click"
+            keymap["mouse:273"] = "Right Click"
+            keymap["mouse:274"] = "Middle Click"
+            keymap["mouse:275"] = "Back"
+            keymap["mouse:276"] = "Forward"
+            keymap["mouse:277"] = "Side Button 1"
+            keymap["mouse:278"] = "Side Button 2"
           }
-          print out
-        }'
+          {
+            out = ""
+            for (i=1; i<=NF; i++) {
+              key = $i
+              if (key in keymap) display = keymap[key]
+              else display = toupper(substr(key,1,1)) substr(key,2)
+              if (out != "") out = out " + "
+              out = out display
+            }
+            print out
+          }'
       }
 
       format_display() {
-        local modifier="$1" key="$2" action="$3" note="$4" prefix="$5" data="''${6:-$3|$4}"
+        local combo="$1" action="$2" note="$3" prefix="$4" data="''${5:-$2|$3}"
         local normalized label note_display body
 
-        normalized=$(normalize_modifiers "$modifier")
-        label="''${normalized:+$normalized + }$key"
+        normalized=$(normalize_modifiers "$combo")
+        label="$normalized"
         note_display=$(truncate_text "$note")
 
         if [[ -n $note_display ]]; then
@@ -212,7 +253,8 @@ in
             [[ -z $action ]] && continue
             local note="$arg"
             [[ -n $flags ]] && note="$note [''${flags}]"
-            format_display "$modifier" "$key" "$action" "$note" "" "$action|$arg"
+            local combo="''${modifier}+''${key}"
+            format_display "$combo" "$action" "$note" "" "$action|$arg"
           done
       }
 
@@ -233,11 +275,8 @@ in
             combo=''${combo## }
             combo=''${combo%% }
             [[ -z $combo ]] && continue
-            combo=''${combo//ISO_Left_Tab/Shift + Tab}
-            local kb_mod=''${combo%+*} kb_key=''${combo##*+}
-            kb_mod=''${kb_mod// /}
-            kb_key=''${kb_key// /}
-            format_display "$kb_mod" "$kb_key" "rofi → $label" "$key" ""
+            combo=''${combo//ISO_Left_Tab/Shift+Tab}
+            format_display "$combo" "rofi → $key" "$key" ""
           done
         fi
 
@@ -266,11 +305,21 @@ in
               combo=''${combo## }
               combo=''${combo%% }
               [[ -z $combo ]] && continue
-              combo=$(normalize_modifiers "$combo")
-              local kb_mod=''${combo% + *} kb_key=''${combo##* + }
-              format_display "$kb_mod" "$kb_key" "rofi → $label" "$key" ""
+              format_display "$combo" "rofi → $label" "$key" ""
             done
           done
+      }
+
+      collect_bindings_from_kitty() {
+        local kitty_conf="$HOME/.config/kitty/kitty.conf"
+        [[ -r $kitty_conf ]] || return
+        grep -E '^map[[:space:]]+' "$kitty_conf" 2>/dev/null | while IFS= read -r line; do
+          local rest=''${line#map }
+          local mods_key=''${rest%% *}
+          local action=''${rest#* }
+          [[ -z $mods_key || -z $action ]] && continue
+          format_display "$mods_key" "$action" "kitty" ""
+        done
       }
 
       cache_fresh=false
@@ -283,6 +332,7 @@ in
         {
           collect_bindings_from_lua "$HOME/.config/hypr/hyprland.lua"
           collect_bindings_from_rofi
+          collect_bindings_from_kitty
         } >"$CACHE_FILE"
       fi
 

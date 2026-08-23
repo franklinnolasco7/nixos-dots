@@ -106,10 +106,10 @@ in
     };
 
     keybindings = {
-      "ctrl+shift+enter" = "new_tab";
-      "ctrl+shift+left" = "previous_tab";
-      "ctrl+shift+right" = "next_tab";
-      "ctrl+shift+w" = "close_tab";
+      "ctrl+t" = "new_tab";
+      "ctrl+shift+tab" = "previous_tab";
+      "ctrl+tab" = "next_tab";
+      "ctrl+w" = "close_tab";
     };
   };
 }
