@@ -2,23 +2,24 @@
 
 let
   notifier = lib.getExe pkgs.gpu-screen-recorder-notification;
+
+  notifyFn = ''
+    notify() {
+      ${notifier} \
+        --text "$1" \
+        --timeout 3.0 \
+        --icon "$2"
+    }
+  '';
+
   recordingSavedNotification = pkgs.writeShellScript "gpu-screen-recorder-saved" ''
+    ${notifyFn}
+
     case "''${2:-}" in
-      regular)
-        text="Recording saved"
-        icon="record"
-        ;;
-      replay)
-        text="Replay saved"
-        icon="replay"
-        ;;
+      regular) notify "Recording saved" record ;;
+      replay) notify "Replay saved" replay ;;
       *) exit 0 ;;
     esac
-
-    ${notifier} \
-      --text "$text" \
-      --timeout 3.0 \
-      --icon "$icon"
   '';
 in
 {
@@ -37,12 +38,10 @@ in
       RECORDING_STATE_FILE="$RUNTIME_DIR/gpu-screen-recorder-recording"
       BUFFER_SECONDS=60
 
+      ${notifyFn}
+
       show_notification() {
-        ${notifier} \
-          --text "$1" \
-          --timeout 3.0 \
-          --icon "$2" \
-          >/dev/null 2>&1 &
+        notify "$1" "$2" >/dev/null 2>&1 &
       }
 
       recorder_pid() {
@@ -67,8 +66,6 @@ in
         mkdir -p "$SAVE_DIR" "$STATE_DIR" "$RUNTIME_DIR"
         rm -f "$RECORDING_STATE_FILE"
 
-        # Hyprland exports PRIME offload globally on this host. GSR must use
-        # the AMD GPU that owns eDP-1, not the headless NVIDIA render device.
         (
           unset __NV_PRIME_RENDER_OFFLOAD
           unset __NV_PRIME_RENDER_OFFLOAD_PROVIDER

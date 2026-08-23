@@ -3,6 +3,27 @@
 let
   colors = config.lib.stylix.colors;
   rgba = c: a: "rgba(${c}${a})";
+
+  mkCurve = name: p1: p2: {
+    _args = [
+      name
+      {
+        type = "bezier";
+        points = [
+          p1
+          p2
+        ];
+      }
+    ];
+  };
+
+  mkAnim =
+    leaf: speed: bezier: extra:
+    {
+      inherit leaf speed bezier;
+      enabled = true;
+    }
+    // extra;
 in
 {
   wayland.windowManager.hyprland.settings = {
@@ -54,196 +75,67 @@ in
     };
 
     curve = [
-      {
-        _args = [
-          "easeOutQuint"
-          {
-            type = "bezier";
-            points = [
-              [
-                0.23
-                1
-              ]
-              [
-                0.32
-                1
-              ]
-            ];
-          }
-        ];
-      }
-      {
-        _args = [
-          "quick"
-          {
-            type = "bezier";
-            points = [
-              [
-                0.15
-                0
-              ]
-              [
-                0.1
-                1
-              ]
-            ];
-          }
-        ];
-      }
-      {
-        _args = [
-          "linear"
-          {
-            type = "bezier";
-            points = [
-              [
-                0
-                0
-              ]
-              [
-                1
-                1
-              ]
-            ];
-          }
-        ];
-      }
-      {
-        _args = [
-          "snap"
-          {
-            type = "bezier";
-            points = [
-              [
-                0.16
-                1
-              ]
-              [
-                0.3
-                1
-              ]
-            ];
-          }
-        ];
-      }
+      (mkCurve "easeOutQuint"
+        [
+          0.23
+          1
+        ]
+        [
+          0.32
+          1
+        ]
+      )
+      (mkCurve "quick"
+        [
+          0.15
+          0
+        ]
+        [
+          0.1
+          1
+        ]
+      )
+      (mkCurve "linear"
+        [
+          0
+          0
+        ]
+        [
+          1
+          1
+        ]
+      )
+      (mkCurve "snap"
+        [
+          0.16
+          1
+        ]
+        [
+          0.3
+          1
+        ]
+      )
     ];
 
     animation = [
-      {
-        leaf = "global";
-        enabled = true;
-        speed = 3;
-        bezier = "default";
-      }
-      {
-        leaf = "border";
-        enabled = true;
-        speed = 4;
-        bezier = "easeOutQuint";
-      }
-      {
-        leaf = "windows";
-        enabled = true;
-        speed = 2;
-        bezier = "easeOutQuint";
-      }
-      {
-        leaf = "windowsIn";
-        enabled = true;
-        speed = 1.7;
-        bezier = "easeOutQuint";
-        style = "popin 90%";
-      }
-      {
-        leaf = "windowsOut";
-        enabled = true;
-        speed = 1.5;
-        bezier = "linear";
-        style = "popin 90%";
-      }
-      {
-        leaf = "windowsMove";
-        enabled = true;
-        speed = 1.5;
-        bezier = "quick";
-      }
-      {
-        leaf = "fadeIn";
-        enabled = true;
-        speed = 2;
-        bezier = "quick";
-      }
-      {
-        leaf = "fadeOut";
-        enabled = true;
-        speed = 2;
-        bezier = "quick";
-      }
-      {
-        leaf = "fade";
-        enabled = true;
-        speed = 2;
-        bezier = "quick";
-      }
-      {
-        leaf = "layers";
-        enabled = true;
-        speed = 3;
-        bezier = "easeOutQuint";
-      }
-      {
-        leaf = "layersIn";
-        enabled = true;
-        speed = 3;
-        bezier = "easeOutQuint";
-        style = "fade";
-      }
-      {
-        leaf = "layersOut";
-        enabled = true;
-        speed = 2;
-        bezier = "linear";
-        style = "fade";
-      }
-      {
-        leaf = "fadeLayersIn";
-        enabled = true;
-        speed = 2;
-        bezier = "quick";
-      }
-      {
-        leaf = "fadeLayersOut";
-        enabled = true;
-        speed = 2;
-        bezier = "quick";
-      }
-      {
-        leaf = "workspaces";
-        enabled = true;
-        speed = 2;
-        bezier = "easeOutQuint";
-        style = "fade";
-      }
-      {
-        leaf = "workspacesIn";
-        enabled = true;
-        speed = 1.5;
-        bezier = "easeOutQuint";
-        style = "fade";
-      }
-      {
-        leaf = "workspacesOut";
-        enabled = true;
-        speed = 1.5;
-        bezier = "easeOutQuint";
-        style = "fade";
-      }
-      {
-        leaf = "zoomFactor";
-        enabled = true;
-        speed = 7;
-        bezier = "quick";
-      }
+      (mkAnim "global" 3 "default" { })
+      (mkAnim "border" 4 "easeOutQuint" { })
+      (mkAnim "windows" 2 "easeOutQuint" { })
+      (mkAnim "windowsIn" 1.7 "easeOutQuint" { style = "popin 90%"; })
+      (mkAnim "windowsOut" 1.5 "linear" { style = "popin 90%"; })
+      (mkAnim "windowsMove" 1.5 "quick" { })
+      (mkAnim "fadeIn" 2 "quick" { })
+      (mkAnim "fadeOut" 2 "quick" { })
+      (mkAnim "fade" 2 "quick" { })
+      (mkAnim "layers" 3 "easeOutQuint" { })
+      (mkAnim "layersIn" 3 "easeOutQuint" { style = "fade"; })
+      (mkAnim "layersOut" 2 "linear" { style = "fade"; })
+      (mkAnim "fadeLayersIn" 2 "quick" { })
+      (mkAnim "fadeLayersOut" 2 "quick" { })
+      (mkAnim "workspaces" 2 "easeOutQuint" { style = "fade"; })
+      (mkAnim "workspacesIn" 1.5 "easeOutQuint" { style = "fade"; })
+      (mkAnim "workspacesOut" 1.5 "easeOutQuint" { style = "fade"; })
+      (mkAnim "zoomFactor" 7 "quick" { })
     ];
   };
 }

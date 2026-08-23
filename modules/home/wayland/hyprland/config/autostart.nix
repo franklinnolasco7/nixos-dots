@@ -6,47 +6,47 @@
 
 let
   inline = lib.generators.mkLuaInline;
-  # battery-notify only exists when the host declares a battery path.
-  batteryNotify = lib.optionalString (
-    config.myHost.batteryPath != ""
-  ) "hl.exec_cmd(\"battery-notify &\")";
+
+  mkFnBody =
+    cmds:
+    ''
+      function()
+    ''
+    + lib.concatMapStringsSep "\n" (c: ''hl.exec_cmd("${c}")'') cmds
+    + ''
+
+      end
+    '';
+
+  mkOnEvent = event: cmds: {
+    _args = [
+      event
+      (inline (mkFnBody cmds))
+    ];
+  };
+
+  restoreCmds = [
+    "toggle-laptop-kb restore"
+    "toggle-laptop-tp restore"
+  ];
+
+  startupCmds = [
+    "dbus-update-activation-environment --systemd HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+    "systemctl --user import-environment"
+    "wl-paste --type text --watch cliphist store"
+    "wl-paste --type image --watch cliphist store"
+    "wl-clip-persist --clipboard regular"
+    "waypaper --restore"
+    "waybar"
+    "gsr start"
+  ]
+  ++ lib.optional (config.myHost.batteryPath != "") "battery-notify &"
+  ++ [ "airplane-mode restore" ]
+  ++ restoreCmds;
 in
 {
   wayland.windowManager.hyprland.settings.on = [
-    {
-      _args = [
-        "hyprland.start"
-        (inline ''
-          function()
-            hl.exec_cmd("dbus-update-activation-environment --systemd HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-            hl.exec_cmd("systemctl --user import-environment")
-            hl.exec_cmd("wl-paste --type text --watch cliphist store")
-            hl.exec_cmd("wl-paste --type image --watch cliphist store")
-            hl.exec_cmd("wl-clip-persist --clipboard regular")
-            -- Boot restore only; interactive changes go through the wallpaper picker (rofi/wallpaper.nix)
-            hl.exec_cmd("waypaper --restore")
-            hl.exec_cmd("waybar")
-            hl.exec_cmd("gsr start")
-            ${batteryNotify}
-            hl.exec_cmd("airplane-mode restore")
-            hl.exec_cmd("toggle-laptop-kb restore")
-            hl.exec_cmd("toggle-laptop-tp restore")
-          end
-        '')
-      ];
-    }
-
-    # exec-always equivalent: re-run on reload
-    {
-      _args = [
-        "config.reloaded"
-        (inline ''
-          function()
-            hl.exec_cmd("toggle-laptop-kb restore")
-            hl.exec_cmd("toggle-laptop-tp restore")
-          end
-        '')
-      ];
-    }
+    (mkOnEvent "hyprland.start" startupCmds)
+    (mkOnEvent "config.reloaded" restoreCmds)
   ];
 }
