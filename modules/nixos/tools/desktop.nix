@@ -19,7 +19,7 @@
     ];
   };
 
-  environment.systemPackages = [ pkgs.engrampa ];
+  environment.systemPackages = [ pkgs.file-roller ];
 
   xdg.portal = {
     enable = true;
