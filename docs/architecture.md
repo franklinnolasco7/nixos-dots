@@ -15,11 +15,11 @@ nixos-dots/
 ├── modules/
 │   ├── nixos/     # reusable system modules, grouped into categories
 │   │   ├── system/   # base OS (common, boot, gc, networking, hardware, audio, printing, smartd, hardening, ...)
-│   │   └── tools/    # feature modules (desktop, gaming, virtualization, nvidia, sops)
+│   │   └── tools/    # feature modules (desktop, gaming, virtualization, nvidia, samba, sops)
 │   ├── home/      # reusable home modules, grouped into categories
 │   │   ├── wayland/   # desktop stack, one folder per app (hyprland, hypridle, hyprlock, waybar, rofi, swaync, gpu-screen-recorder); full profile only
-│   │   ├── terminal/  # per-app folders (zsh, starship, btop, htop, fastfetch, cava) imported by shell.nix, + emulator.nix (kitty, full only)
-│   │   ├── programs/  # standalone apps, one folder per app (micro; firefox, gaming, obsidian, opencode, spotify, thunar, full only)
+│   │   ├── terminal/  # per-app folders (zsh, starship, btop, htop, fastfetch, cava) imported by shell.nix, + flat aggregators emulator.nix (kitty) and tui.nix (full only)
+│   │   ├── programs/  # standalone apps, one folder per app (micro, restic; firefox, gaming, obsidian, opencode, spotify, thunar, vesktop, full only)
 │   │   ├── development/ # dev tooling (git; toolchain, full only)
 │   │   ├── styling/   # appearance (gtk, qt, cursor, fonts)
 │   │   ├── xdg/       # desktop integration (mimetypes); full profile only
@@ -157,6 +157,11 @@ shows `nixos-laptop` vs `nixos-laptop-minimal`.
   the CachyOS kernel + NVIDIA drivers (`linuxPackages_cachyos`, `nvidia_cachyos`).
 - `nvidia-patch`; follows nixpkgs. FBC/NVENC patch overlay for the NVIDIA
   driver (used in `modules/nixos/tools/nvidia.nix`).
+- `spicetify-nix`; Spicetify home-manager module + package set, consumed by the
+  spotify module (`modules/home/programs/spotify/default.nix`).
+- `obsidian-extensions`; overlay providing Obsidian community plugins/themes
+  (`pkgs.obsidianPlugins`, `pkgs.obsidianThemes`), used in
+  `modules/home/programs/obsidian/default.nix`.
 - `mcp-servers-nix`; follows nixpkgs. MCP servers for opencode
   (`modules/home/programs/opencode/default.nix`).
 - `home-manager`, `sops-nix`, `disko`, `nixos-anywhere`; follow nixpkgs.
