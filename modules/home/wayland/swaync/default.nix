@@ -13,7 +13,7 @@ in
   services.swaync = {
     enable = true;
 
-    style = style;
+    inherit style;
 
     settings = {
       positionX = "right";

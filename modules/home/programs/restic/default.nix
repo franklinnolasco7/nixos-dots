@@ -22,10 +22,10 @@ let
       pathArgs
       retentionArgs
       ;
-    sizeLimit = cfg.sizeLimit;
+    inherit (cfg) sizeLimit;
   };
 
-  restic-backup = scripts.restic-backup;
+  inherit (scripts) restic-backup;
 in
 {
   options.backups.restic = {

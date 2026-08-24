@@ -1,7 +1,9 @@
 {
-  networking.networkmanager.enable = true;
-  networking.networkmanager.dns = "systemd-resolved";
-  # Lower Wi-Fi latency; powersave causes periodic RX stalls that jitter ping.
-  networking.networkmanager.wifi.powersave = false;
+  networking.networkmanager = {
+    enable = true;
+    dns = "systemd-resolved";
+    # Lower Wi-Fi latency; powersave causes periodic RX stalls that jitter ping.
+    wifi.powersave = false;
+  };
   services.resolved.enable = true;
 }
