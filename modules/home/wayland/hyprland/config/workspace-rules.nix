@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ ... }:
 {
   wayland.windowManager.hyprland.settings.workspace_rule = [
     {

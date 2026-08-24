@@ -101,7 +101,7 @@ in
         disabled = true;
       };
     }
-    // lib.genAttrs (disabledLangs ++ disabledTools) (name: {
+    // lib.genAttrs (disabledLangs ++ disabledTools) (_: {
       disabled = true;
     })
     // lib.optionalAttrs (!minimal) {

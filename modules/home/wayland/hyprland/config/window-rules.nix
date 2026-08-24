@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, ... }:
 let
   colors = config.myPalette;
   rgba = c: a: "rgba(${c}${a})";

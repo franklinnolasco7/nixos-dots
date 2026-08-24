@@ -1,8 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}:
+{ ... }:
 {
   myPalette = {
     base00 = "0a0a0a";
