@@ -6,7 +6,8 @@
 }:
 
 let
-  colors = config.lib.stylix.colors.withHashtag;
+  raw = config.myPalette;
+  colors = lib.mapAttrs (_: v: "#${v}") raw;
   scripts = import ./scripts.nix { inherit config pkgs lib; };
   style = import ./style.nix { inherit config lib; };
 in

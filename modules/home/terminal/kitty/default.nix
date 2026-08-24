@@ -1,7 +1,8 @@
 { config, lib, ... }:
 
 let
-  colors = config.lib.stylix.colors.withHashtag;
+  raw = config.myPalette;
+  colors = lib.mapAttrs (_: v: "#${v}") raw;
 
   t = fg: bg: "${fg},${bg}";
 

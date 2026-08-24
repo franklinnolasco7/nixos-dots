@@ -1,7 +1,8 @@
 { config, lib, ... }:
 
 let
-  colors = (config.lib.stylix or { }).colors.withHashtag or { };
+  raw = config.myPalette;
+  colors = lib.mapAttrs (_: v: "#${v}") raw;
 in
 {
   programs.zsh = {
@@ -30,7 +31,7 @@ in
     sessionVariables = {
       BASH_MAX_OUTPUT_LENGTH = "15000";
     }
-    // lib.optionalAttrs (config.myProfile == "full" && colors != { }) {
+    // lib.optionalAttrs (config.myProfile == "full" && raw != { }) {
       ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.base04}";
     };
 

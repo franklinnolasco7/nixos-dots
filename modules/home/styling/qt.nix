@@ -6,7 +6,8 @@
 }:
 
 let
-  colors = config.lib.stylix.colors.withHashtag;
+  raw = config.myPalette;
+  colors = lib.mapAttrs (_: v: "#${v}") raw;
 
   graphite-kde-theme = pkgs.fetchFromGitHub {
     owner = "vinceliuice";

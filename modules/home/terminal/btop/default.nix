@@ -7,7 +7,8 @@
 
 let
   minimal = config.myProfile == "minimal";
-  c = (config.lib.stylix or { }).colors.withHashtag or { };
+  raw = config.myPalette;
+  c = lib.mapAttrs (_: v: "#${v}") raw;
 in
 {
   programs.btop = {
@@ -15,7 +16,7 @@ in
     package = pkgs.btop;
 
     settings = {
-      color_theme = lib.mkForce (if minimal then "TTY" else "stylix");
+      color_theme = lib.mkForce (if minimal then "TTY" else "monochrome");
       theme_background = true;
       truecolor = true;
       force_tty = false;
@@ -106,7 +107,7 @@ in
     };
   };
 
-  xdg.configFile."btop/themes/stylix.theme" = lib.mkIf (!minimal) {
+  xdg.configFile."btop/themes/monochrome.theme" = lib.mkIf (!minimal) {
     text = ''
       theme[main_bg]="${c.base00}"
       theme[main_fg]="${c.base05}"

@@ -19,6 +19,15 @@
     default = "full";
   };
 
+  options.myPalette = lib.mkOption {
+    description = ''
+      Base16 hex values (without "#") for home-module theming.
+      Empty in the minimal profile so console stays unthemed.
+    '';
+    type = lib.types.attrsOf lib.types.str;
+    default = { };
+  };
+
   options.myHost = {
     batteryPath = lib.mkOption {
       description = ''

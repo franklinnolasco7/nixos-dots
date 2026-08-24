@@ -7,8 +7,9 @@
 
 let
   minimal = config.myProfile == "minimal";
-  colors = config.lib.stylix.colors;
-  hex = config.lib.stylix.colors.withHashtag;
+  raw = config.myPalette;
+  colors = raw;
+  hex = lib.mapAttrs (_: v: "#${v}") raw;
 
   # Cached, near-instant nix package count (see scripts/pkgs.nix).
   pkgsScript = import ./scripts/pkgs.nix { inherit pkgs; };

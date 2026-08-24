@@ -7,7 +7,7 @@
 
 let
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-  colors = config.lib.stylix.colors;
+  colors = config.myPalette;
 in
 {
   programs.spicetify = {
@@ -37,8 +37,8 @@ in
     };
 
     enabledExtensions = with spicePkgs.extensions; [
+      adblockify
       shuffle
-      hidePodcasts
     ];
 
     enabledCustomApps = [

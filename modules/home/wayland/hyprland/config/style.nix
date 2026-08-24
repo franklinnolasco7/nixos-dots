@@ -1,7 +1,7 @@
 { config, lib, ... }:
 
 let
-  colors = config.lib.stylix.colors;
+  colors = config.myPalette;
   rgba = c: a: "rgba(${c}${a})";
 
   mkCurve = name: p1: p2: {

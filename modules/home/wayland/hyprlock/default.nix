@@ -6,7 +6,7 @@
 }:
 
 let
-  colors = config.lib.stylix.colors;
+  colors = config.myPalette;
 in
 {
   programs.hyprlock = {

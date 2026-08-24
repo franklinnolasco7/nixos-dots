@@ -1,13 +1,14 @@
 { config, lib, ... }:
 
 let
-  colors = (config.lib.stylix or { }).colors.withHashtag or { };
+  raw = config.myPalette;
+  colors = lib.mapAttrs (_: v: "#${v}") raw;
 in
 {
   programs.cava = {
     enable = true;
 
-    settings = lib.optionalAttrs (colors != { }) {
+    settings = {
       color = {
         gradient = 1;
         gradient_color_1 = "'${colors.base04}'";
