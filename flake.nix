@@ -132,19 +132,21 @@
             home-manager.nixosModules.home-manager
 
             {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "backup";
 
-              home-manager.extraSpecialArgs = {
-                inherit inputs user profile;
-              };
+                extraSpecialArgs = {
+                  inherit inputs user profile;
+                };
 
-              home-manager.users.${user} = {
-                imports = [
-                  spicetify-nix.homeManagerModules.default
-                  (import ./users/${user}/default.nix)
-                ];
+                users.${user} = {
+                  imports = [
+                    spicetify-nix.homeManagerModules.default
+                    (import ./users/${user}/default.nix)
+                  ];
+                };
               };
             }
           ];
@@ -235,6 +237,8 @@
       devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
         packages = with nixpkgs.legacyPackages.${system}; [
           nixfmt
+          deadnix
+          statix
           stylua
           shfmt
           taplo
