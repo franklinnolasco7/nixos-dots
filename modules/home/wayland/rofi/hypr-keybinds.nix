@@ -49,11 +49,15 @@ let
       return ""
     end
 
-    local function make_callable(name)
+    local function make_callable(path)
       return setmetatable({}, {
         __call = function(self, args)
-          return { __dispatcher = name, __arg = serialize_args(args) }
-        end
+          local name = path:match "[^.]+$" or path
+          return { __dispatcher = (name:gsub("_", "")), __arg = serialize_args(args) }
+        end,
+        __index = function(_, name)
+          return make_callable(path .. "." .. name)
+        end,
       })
     end
 
@@ -90,8 +94,8 @@ let
 
     local function noop() end
     hl.monitor, hl.config, hl.env, hl.gesture, hl.on = noop, noop, noop, noop, noop
-    hl.exec_cmd, hl.animation, hl.curve, hl.device, hl.window_rule = noop, noop, noop, noop, noop
-    hl.get_workspace, hl.get_active_workspace, hl.get_active_window, hl.dispatch = noop, noop, noop, noop
+    hl.exec_cmd, hl.animation, hl.curve, hl.device, hl.window_rule, hl.workspace_rule = noop, noop, noop, noop, noop, noop
+    hl.get_workspace, hl.get_active_workspace, hl.get_active_window, hl.get_config, hl.dispatch = noop, noop, noop, noop, noop
 
     hl.bind = function(mods_key, dispatcher, opts)
       opts = opts or {}

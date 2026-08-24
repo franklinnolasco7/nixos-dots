@@ -106,10 +106,10 @@ in
     };
 
     keybindings = {
-      "ctrl+t" = "new_tab";
+      "ctrl+shift+t" = "new_tab";
       "ctrl+shift+tab" = "previous_tab";
       "ctrl+tab" = "next_tab";
-      "ctrl+w" = "close_tab";
+      "ctrl+shift+w" = "close_tab";
     };
   };
 }
