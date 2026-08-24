@@ -6,7 +6,7 @@
 }:
 
 let
-  mkToggle = import ./mkToggle.nix { inherit config lib pkgs; };
+  mkToggle = import ./mk-toggle.nix { inherit config lib pkgs; };
 in
 {
   home.packages = [
