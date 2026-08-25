@@ -9,7 +9,6 @@
 [![Flakes](https://img.shields.io/badge/Flakes-enabled-2b2b2b?style=flat-square&logo=nixos&logoColor=white)](https://nixos.wiki/wiki/Flakes)
 [![Home Manager](https://img.shields.io/badge/Home%20Manager-configured-2b2b2b?style=flat-square)](https://github.com/nix-community/home-manager)
 [![Disko](https://img.shields.io/badge/Disko-declarative%20disks-2b2b2b?style=flat-square)](https://github.com/nix-community/disko)
-[![nixos-anywhere](https://img.shields.io/badge/nixos--anywhere-installs-2b2b2b?style=flat-square)](https://github.com/nix-community/nixos-anywhere)
 
 Declarative NixOS system configuration, managed with Flakes, Home Manager & Disko, installed via nixos-anywhere.
 
@@ -27,34 +26,5 @@ This repository holds my complete NixOS setup: system configuration, Home Manage
 - **Declarative over imperative.** Describe the end state, let Nix figure out how to get there.
 - **Secure by default.** Secrets stay out of the store, and the system should fail safe, not silently.
 
-# Preview
 
-<div align="center">
 
-<img width="850" alt="Desktop preview" src="https://github.com/user-attachments/assets/f437ce70-0fe4-4c90-a070-251a1f2e85c2" />
-
-</div>
-
-# Docs
-
-| Guide | Description |
-|---|---|
-| [Installation](docs/installation.md) | Fresh install via nixos-anywhere, wipe to first boot |
-| [Maintenance](docs/maintenance.md) | Updating, rebuilding, and garbage collection |
-| [Architecture](docs/architecture.md) | How the flake and modules are organized |
-| [Troubleshooting](docs/troubleshooting.md) | Common issues and fixes |
-| [Secrets](docs/secrets.md) | Secrets management |
-| [Forking](docs/forking.md) | Rename user, git identity, secrets bootstrap |
-| [Per-host: Aspire 7](docs/aspire7.md) | Hardware-specific config for the Aspire 7 |
-
-# Contributing
-
-- [Contributing Guide](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [License](LICENSE)
-
----
-
-<div align="center">
-<sub>This repo changes frequently as the setup evolves. Expect things to shift.</sub>
-</div>
