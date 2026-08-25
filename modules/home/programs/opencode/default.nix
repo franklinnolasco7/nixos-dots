@@ -222,6 +222,14 @@ in
     # Useful env vars: OPENCODE_BASE_URL (default http://127.0.0.1:4096),
     # OPENCODE_SERVER_PASSWORD, OPENCODE_AUTO_SERVE, OPENCODE_DEFAULT_MODEL.
 
+    # Not packaged in nixpkgs or mcp-servers-nix; consumed from upstream's
+    # own flake via settings.servers (the custom-server escape hatch).
+    mcp-servers.settings.servers.quickshell-docs = {
+      command = "${
+        inputs.quickshell-docs-mcp.packages.${pkgs.stdenv.hostPlatform.system}.default
+      }/bin/quickshell-docs-mcp";
+    };
+
     mcp-servers.programs = {
       nixos.enable = true;
       context7.enable = true;

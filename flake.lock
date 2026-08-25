@@ -299,6 +299,26 @@
         "type": "github"
       }
     },
+    "quickshell-docs-mcp": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787667141,
+        "narHash": "sha256-wXpSlQxShZebWwqwe58F64R74+SZS3OyM9AAcGxq6pI=",
+        "owner": "franklinnolasco7",
+        "repo": "quickshell-docs-mcp",
+        "rev": "8927f608e480c97d82b20a35bed392265981fbd7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "franklinnolasco7",
+        "repo": "quickshell-docs-mcp",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "chaotic": "chaotic",
@@ -309,6 +329,7 @@
         "nixpkgs": "nixpkgs_2",
         "nvidia-patch": "nvidia-patch",
         "obsidian-extensions": "obsidian-extensions",
+        "quickshell-docs-mcp": "quickshell-docs-mcp",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix"
       }
