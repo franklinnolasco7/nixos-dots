@@ -188,6 +188,26 @@ in
           external_directory = "ask";
         };
 
+        provider = {
+          bai = {
+            npm = "@ai-sdk/openai-compatible";
+            name = "B.AI";
+
+            options = {
+              baseURL = "https://api.b.ai/v1";
+            };
+
+            models = {
+              "deepseek-v4-flash-vision-exp" = {
+                name = "B.AI DeepSeek v4 Flash Vision (Exp)";
+              };
+              "deepseek-v4-flash" = {
+                name = "B.AI DeepSeek v4 Flash";
+              };
+            };
+          };
+        };
+
         # rtk's opencode plugin (hooks/opencode/rtk.ts) rewrites bash commands
         # through `rtk` to cut bash output tokens. Requires `rtk` in PATH,
         # which is provided by pkgs.rtk (see modules/home/packages.nix).
