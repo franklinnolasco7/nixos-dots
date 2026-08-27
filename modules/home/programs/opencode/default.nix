@@ -244,10 +244,10 @@ in
 
     # Not packaged in nixpkgs or mcp-servers-nix; consumed from upstream's
     # own flake via settings.servers (the custom-server escape hatch).
-    mcp-servers.settings.servers.quickshell-docs = {
+    mcp-servers.settings.servers.quickshell = {
       command = "${
-        inputs.quickshell-docs-mcp.packages.${pkgs.stdenv.hostPlatform.system}.default
-      }/bin/quickshell-docs-mcp";
+        inputs.quickshell-mcp.packages.${pkgs.stdenv.hostPlatform.system}.default
+      }/bin/quickshell-mcp";
     };
 
     mcp-servers.programs = {

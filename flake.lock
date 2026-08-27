@@ -299,23 +299,23 @@
         "type": "github"
       }
     },
-    "quickshell-docs-mcp": {
+    "quickshell-mcp": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1787780725,
-        "narHash": "sha256-DBVNO+LveSm6I0LLJqRAeu/Z2PoZGMiNlQCpZDWuJ6s=",
+        "lastModified": 1787798749,
+        "narHash": "sha256-NeUqKVL+w/q2RXkm6Wh08HK721SBkkMhe9GqD0sTTgs=",
         "owner": "franklinnolasco7",
-        "repo": "quickshell-docs-mcp",
-        "rev": "05b519ac7e3470b1db6b21c895f82573ec7bbe0e",
+        "repo": "quickshell-mcp",
+        "rev": "7e2b441db92e0c2e8d593be97fb2d22f11ce2185",
         "type": "github"
       },
       "original": {
         "owner": "franklinnolasco7",
-        "repo": "quickshell-docs-mcp",
+        "repo": "quickshell-mcp",
         "type": "github"
       }
     },
@@ -329,7 +329,7 @@
         "nixpkgs": "nixpkgs_2",
         "nvidia-patch": "nvidia-patch",
         "obsidian-extensions": "obsidian-extensions",
-        "quickshell-docs-mcp": "quickshell-docs-mcp",
+        "quickshell-mcp": "quickshell-mcp",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix"
       }
