@@ -5,6 +5,10 @@
     (pkgs.writeShellScriptBin "wallpaper" ''
       set -uo pipefail
 
+      # Keyboard-driven wallpaper switcher via awww (animated transitions).
+      # Boot restore is waypaper's job (`waypaper --restore` in
+      # autostart.nix), re-applied from swww state; deliberately independent
+      # of the last pick made here, since awww doesn't persist its image.
       WALLPAPER_DIR="$HOME/nixos-dots/themes/wallpapers"
       DRY_RUN=0
       case "''${1:-}" in
@@ -130,30 +134,6 @@
           || warn "failed to apply $1"
       }
 
-      persist_selection() {
-        local img=$1 cfg
-        [[ $img == "$HOME"/* ]] && img="~''${img#"$HOME"}"
-        cfg="$HOME/.config/waypaper/config.ini"
-        mkdir -p "$(dirname "$cfg")"
-        [[ -f $cfg ]] || printf '[Settings]\nbackend = awww\n' >"$cfg"
-        python3 -c '
-        
-      import configparser
-      import sys
-
-      img, cfg = sys.argv[1], sys.argv[2]
-      p = configparser.ConfigParser()
-      p.read(cfg)
-      if not p.has_section("Settings"):
-          p.add_section("Settings")
-      p.set("Settings", "backend", "awww")
-      p.set("Settings", "monitors", "All")
-      p.set("Settings", "wallpaper", img)
-      with open(cfg, "w") as f:
-          p.write(f)
-      ' "$img" "$cfg"
-            }
-
       if [[ $DRY_RUN -eq 1 ]]; then
         read_history
         scan_wallpapers
@@ -174,10 +154,7 @@
         -format s)
 
       if [[ -n $selection ]]; then
-        apply_wallpaper "''${WALLPAPERS[$selection]}" && {
-          persist_selection "''${WALLPAPERS[$selection]}"
-          store_history "$selection"
-        }
+        apply_wallpaper "''${WALLPAPERS[$selection]}" && store_history "$selection"
       fi
     '')
   ];

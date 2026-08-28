@@ -206,21 +206,6 @@ in
               };
             };
           };
-
-          sensenova = {
-            npm = "@ai-sdk/openai-compatible";
-            name = "SenseNova";
-
-            options = {
-              baseURL = "https://token.sensenova.ai/v1";
-            };
-
-            models = {
-              "sensenova-6.8-flash-lite" = {
-                name = "SenseNova 6.8 Flash Lite";
-              };
-            };
-          };
         };
 
         # rtk's opencode plugin (hooks/opencode/rtk.ts) rewrites bash commands
@@ -259,10 +244,10 @@ in
 
     # Not packaged in nixpkgs or mcp-servers-nix; consumed from upstream's
     # own flake via settings.servers (the custom-server escape hatch).
-    mcp-servers.settings.servers.quickshell = {
+    mcp-servers.settings.servers.quickshell-docs = {
       command = "${
-        inputs.quickshell-mcp.packages.${pkgs.stdenv.hostPlatform.system}.default
-      }/bin/quickshell-mcp";
+        inputs.quickshell-docs-mcp.packages.${pkgs.stdenv.hostPlatform.system}.default
+      }/bin/quickshell-docs-mcp";
     };
 
     mcp-servers.programs = {

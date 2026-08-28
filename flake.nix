@@ -38,8 +38,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    quickshell-mcp = {
-      url = "github:franklinnolasco7/quickshell-mcp";
+    quickshell-docs-mcp = {
+      url = "github:franklinnolasco7/quickshell-docs-mcp";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

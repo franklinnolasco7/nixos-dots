@@ -52,6 +52,15 @@
         "wayland"
       ];
     }
+    # NixOS sets TZDIR for sessions, but Hyprland's setuid wrapper strips it
+    # (wrapper.c unsecvars), breaking Qt named-zone lookups in spawned apps
+    # (nixpkgs#526193). Re-set it here so children inherit a valid value.
+    {
+      _args = [
+        "TZDIR"
+        "/etc/zoneinfo"
+      ];
+    }
     {
       _args = [
         "ELECTRON_OZONE_PLATFORM_HINT"

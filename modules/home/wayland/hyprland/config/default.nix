@@ -5,6 +5,7 @@
     ./env.nix
     ./gestures.nix
     ./input.nix
+    ./layer-rules.nix
     ./layouts.nix
     ./misc.nix
     ./workspace-rules.nix

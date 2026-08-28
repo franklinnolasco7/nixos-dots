@@ -4,6 +4,7 @@
     ./hypridle
     ./hyprland
     ./hyprlock
+    ./quickshell
     ./rofi
     ./swaync
     ./waybar

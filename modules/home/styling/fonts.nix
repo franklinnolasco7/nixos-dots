@@ -32,5 +32,7 @@
     ++ lib.optionals (config.myProfile == "full") [
       # Nerd-glyph font; the full profile's terminal/starship/fastfetch glyphs.
       nerd-fonts.jetbrains-mono
+      # Google Material Symbols; icon family for the quickshell bar.
+      material-symbols
     ];
 }
