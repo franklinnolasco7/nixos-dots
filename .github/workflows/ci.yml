@@ -13,18 +13,19 @@ jobs:
     permissions:
       pull-requests: read
     steps:
-      # PR titles must be Conventional Commits (CONTRIBUTING.md); a bad title
+      # PR titles must be Scoped Commits (<scope>: <description>); a bad title
       # would otherwise reach main unchecked via squash merge.
-      - uses: amannn/action-semantic-pull-request@v6
+      - name: Validate PR title is Scoped Commit
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          types: |
-            feat
-            fix
-            docs
-            chore
-            refactor
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! echo "$TITLE" | grep -qE '^[a-z][a-z0-9,-]*: .+$'; then
+            echo "PR title must be a Scoped Commit: <scope>: <description>"
+            echo "  e.g. 'hyprland: split monitors across outputs'"
+            echo "Multi-scope: comma-separate scopes, e.g. 'hyprland,ci: ...'"
+            echo "Got: $TITLE"
+            exit 1
+          fi
 
   check:
     runs-on: ubuntu-latest

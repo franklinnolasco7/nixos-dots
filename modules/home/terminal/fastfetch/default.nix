@@ -135,13 +135,14 @@ in
         }
         # Built-in "packages" pays 5+ nix-store spawns every run (~66ms),
         # mostly to re-verify counts that only change on rebuild. This
-        # command module caches the count keyed by generation fingerprints,
-        # so steady state is ~1ms with the same output (see scripts/pkgs.nix).
+        # command module caches the counts keyed by generation fingerprints,
+        # so steady state is ~1ms with the same output. The script reports
+        # the system and user store closures separately (see scripts/pkgs.nix).
         {
           type = "command";
           key = "pkgs";
           text = "${config.home.homeDirectory}/.local/libexec/fastfetch/pkgs";
-          format = "{result} (nix)";
+          format = "{result}";
         }
         {
           type = "shell";
