@@ -12,58 +12,74 @@
 #
 # Partition layout:
 #
+#   tmpfs (RAM)      -> / (stateless root; wiped every reboot)
 #   GPT
 #   ├── 1 GiB  EFI System Partition  -> /boot
-#   └── rest    LUKS (luks-root) -> ext4 -> /
+#   └── rest    LUKS (luks-persist) -> ext4 -> /nix
 #
-# Root is LUKS2-encrypted; disko's initrdUnlock (default) generates the
-# boot.initrd.luks.devices.luks-root entry at build time, so no explicit boot
-# module is needed. The passphrase is typed during install (disko) and again at
-# boot. Swap comes from zramSwap (modules/nixos/system/boot.nix), not a disk
-# partition.
+# Root is a tmpfs: everything not explicitly persisted (impermanence,
+# modules/nixos/system/impermanence.nix) is reset on reboot. The nix store
+# and persistent state live on the LUKS-encrypted partition mounted at /nix;
+# disko's initrdUnlock (default) generates the
+# boot.initrd.luks.devices.luks-persist entry at build time, so no explicit
+# boot module is needed. The passphrase is typed during install (disko) and
+# again at boot. Swap comes from zramSwap (modules/nixos/system/boot.nix),
+# not a disk partition.
 
 { device }:
 
 {
-  disko.devices.disk.main = {
-    type = "disk";
-    inherit device;
+  disko.devices = {
+    nodev = {
+      "/" = {
+        fsType = "tmpfs";
+        mountOptions = [
+          "size=4G"
+          "mode=755"
+        ];
+      };
+    };
 
-    content = {
-      type = "gpt";
+    disk.main = {
+      type = "disk";
+      inherit device;
 
-      partitions = {
-        boot = {
-          size = "1G";
-          type = "EF00";
+      content = {
+        type = "gpt";
 
-          content = {
-            type = "filesystem";
-            format = "vfat";
-            mountpoint = "/boot";
-
-            mountOptions = [
-              "fmask=0077"
-              "dmask=0077"
-            ];
-          };
-        };
-
-        root = {
-          size = "100%";
-
-          content = {
-            type = "luks";
-            name = "luks-root";
-
-            # dm-crypt passes discards through so the weekly fstrim.timer
-            # reaches the NVMe; leaks which sectors are free to an attacker.
-            settings.allowDiscards = true;
+        partitions = {
+          boot = {
+            size = "1G";
+            type = "EF00";
 
             content = {
               type = "filesystem";
-              format = "ext4";
-              mountpoint = "/";
+              format = "vfat";
+              mountpoint = "/boot";
+
+              mountOptions = [
+                "fmask=0077"
+                "dmask=0077"
+              ];
+            };
+          };
+
+          persist = {
+            size = "100%";
+
+            content = {
+              type = "luks";
+              name = "luks-persist";
+
+              # dm-crypt passes discards through so the weekly fstrim.timer
+              # reaches the NVMe; leaks which sectors are free to an attacker.
+              settings.allowDiscards = true;
+
+              content = {
+                type = "filesystem";
+                format = "ext4";
+                mountpoint = "/nix";
+              };
             };
           };
         };

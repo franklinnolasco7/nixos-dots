@@ -66,6 +66,17 @@ in
           group = "users";
           mode = "0400";
         };
+
+        # Proton WireGuard profile (modules/nixos/tools/wireguard.nix).
+        # Re-encrypt this secret to the new recipient (init-secrets.sh) after
+        # a reinstall; the file is stage 0600 root and sops rewrites it at
+        # every activation, so /etc/wireguard stays current.
+        wg0-conf = {
+          path = "/etc/wireguard/wg0.conf";
+          owner = "root";
+          group = "root";
+          mode = "0600";
+        };
       };
     };
 

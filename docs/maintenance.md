@@ -55,22 +55,27 @@ All pass → `./install/rebuild.sh`.
 
 Broken system: [troubleshooting.md](troubleshooting.md).
 
-## WireGuard VPN (manual)
+## WireGuard VPN (sops-managed)
 
-The Proton profile stays out of the flake; `wg0.conf` is personal.
+`wg0.conf` is a sops secret (`wg0-conf`, modules/nixos/tools/sops.nix), written
+to `/etc/wireguard/wg0.conf` at activation and re-decrypted every boot, so it
+survives reinstalls without manual file copies. The interface is declared in
+`modules/nixos/tools/wireguard.nix` with `autostart = false`: the tunnel is
+brought up on demand by `vpn-toggle`, not at boot.
 
-1. Get `wg0.conf` from Proton (VPN → WireGuard configuration → generate keys).
-2. Install it:
+1. Set the value (one-time):
    ```bash
-   sudo mkdir -p /etc/wireguard
-   sudo cp wg0.conf /etc/wireguard/wg0.conf
-   sudo chmod 600 /etc/wireguard/wg0.conf
+   nix run .#sops -- --set '["wg0-conf"]' '"<contents of Proton wg0.conf>"' secrets/secrets.yaml
    ```
    > [!IMPORTANT]
    > `DNS = <proton-dns>` is **required** in `wg0.conf` (e.g. `10.2.0.2` for
    > Proton). wg-quick pushes DNS through the resolver only when the `DNS`
    > key is present; without it the tunnel comes up but resolution leaks to
    > the clearnet.
+2. Rebuild; the secret lands at `/etc/wireguard/wg0.conf`:
+   ```bash
+   install/rebuild.sh
+   ```
 3. Toggle with `vpn-toggle` (toggle button in the swaync control center,
    `modules/home/wayland/swaync/default.nix`):
    ```bash

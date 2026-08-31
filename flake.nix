@@ -19,6 +19,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Stateless root: bind-mounts declared persistent state from /nix/persist
+    # back into the tmpfs root (/). See modules/nixos/system/impermanence.nix.
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -60,6 +67,7 @@
       disko,
       nixos-anywhere,
       home-manager,
+      impermanence,
       sops-nix,
       chaotic,
       spicetify-nix,
@@ -131,6 +139,11 @@
             }
 
             sops-nix.nixosModules.sops
+
+            # Stateless root: all hosts mount / as tmpfs (see
+            # modules/disko/gpt-layout.nix); impermanence bind-mounts declared
+            # persistent state from /nix/persist back into the root.
+            impermanence.nixosModules.impermanence
 
             chaotic.nixosModules.default
 

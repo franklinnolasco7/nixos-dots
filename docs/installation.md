@@ -4,13 +4,15 @@
 
 - **Wipes the entire disk.** Disko runs in `destroy,format,mount` mode on the
   device from `hosts/<host>/disko.nix` (all hosts share the GPT layout in
-  `modules/disko/gpt-layout.nix`: 1 GiB ESP + LUKS root at 100% of the disk).
-  Every existing partition is destroyed: other operating systems and their
-  bootloaders, stray LUKS or swap partitions, the old ESP. No manual partition
-  cleanup is needed, and nothing on the disk survives. The machine ends up
-  single-boot NixOS by design.
+  `modules/disko/gpt-layout.nix`: 1 GiB ESP + LUKS persist partition at 100% of
+  the disk, mounted at `/nix`; `/` is a tmpfs). Every existing partition is
+  destroyed: other operating systems and their bootloaders, stray LUKS or swap
+  partitions, the old ESP. No manual partition cleanup is needed, and nothing
+  on the disk survives. The machine ends up single-boot NixOS by design.
 - **Restores the dedicated sops age key and the SSH host key** from the repo's
-  encrypted backup, so sops secrets stay readable on the new system.
+  encrypted backup, so sops secrets stay readable on the new system. Because
+  `/` is tmpfs, install.sh stages these into `nix/persist/...` on the target;
+  impermanence bind-mounts them back to `/etc` on first boot.
 - **Does not reboot.** The installer finishes with the disk mounted; you
   reboot manually.
 
@@ -213,10 +215,10 @@ git add hosts/<host>/hardware-configuration.nix && git commit
 Per-host checklist and LUKS header backup: [aspire7.md](aspire7.md).
 
 - LUKS hosts: back up the disk header off-machine while it is healthy; it is
-  the only way to unlock the root after a lost or corrupt header:
+  the only way to unlock the persist partition after a lost or corrupt header:
 
 > [!IMPORTANT]
-> `sudo cryptsetup luksHeaderBackup /dev/disk/by-partlabel/disk-main-root --header-backup-file <off-machine-path>`
+> `sudo cryptsetup luksHeaderBackup /dev/disk/by-partlabel/disk-main-persist --header-backup-file <off-machine-path>`
 - Nix provides only the fresh-install bootstrap password `123`. Login
   passwords are otherwise mutable and not managed by sops; later `passwd`
   changes are preserved by rebuilds.

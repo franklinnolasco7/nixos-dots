@@ -231,16 +231,18 @@ fi
 echo
 
 # Stage the sops decryption identity (dedicated age key), the SSH host key,
-# and root's safe.directory into the tree nixos-anywhere copies to the root
-# (/) of the new system.
-install -d -m 0700 "$extra/etc/sops-nix"
-install -m 0600 "$HOST_KEY_SRC/sops-age-key.txt" "$extra/etc/sops-nix/keys.txt"
-install -d -m 0755 "$extra/etc/ssh"
-install -m 0600 "$HOST_KEY_SRC/ssh_host_ed25519_key" "$extra/etc/ssh/ssh_host_ed25519_key"
-install -m 0644 "$HOST_KEY_SRC/ssh_host_ed25519_key.pub" "$extra/etc/ssh/ssh_host_ed25519_key.pub"
-install -d -m 0700 "$extra/root"
-printf '[safe]\n\tdirectory = *\n' >"$extra/root/.gitconfig"
-chmod 0600 "$extra/root/.gitconfig"
+# and root's safe.directory into the persistent storage subtree
+# (nix/persist/) of the new system. Root is tmpfs (see modules/disko/gpt-layout.nix),
+# so /etc and /root vanish on reboot; impermanence bind-mounts these files
+# from /nix/persist back into the root at boot.
+install -d -m 0700 "$extra/nix/persist/etc/sops-nix"
+install -m 0600 "$HOST_KEY_SRC/sops-age-key.txt" "$extra/nix/persist/etc/sops-nix/keys.txt"
+install -d -m 0755 "$extra/nix/persist/etc/ssh"
+install -m 0600 "$HOST_KEY_SRC/ssh_host_ed25519_key" "$extra/nix/persist/etc/ssh/ssh_host_ed25519_key"
+install -m 0644 "$HOST_KEY_SRC/ssh_host_ed25519_key.pub" "$extra/nix/persist/etc/ssh/ssh_host_ed25519_key.pub"
+install -d -m 0700 "$extra/nix/persist/root"
+printf '[safe]\n\tdirectory = *\n' >"$extra/nix/persist/root/.gitconfig"
+chmod 0600 "$extra/nix/persist/root/.gitconfig"
 
 echo "==> [2/5] Running nixos-anywhere (phases: disko,install); target: $TARGET_HOST"
 # Real self-install (no --target): the build machine IS the ISO. The VM
@@ -272,14 +274,17 @@ nixos_anywhere_args+=("${PASS_ARGS[@]}")
 nix --experimental-features "nix-command flakes" run .#nixos-anywhere -- "${nixos_anywhere_args[@]}"
 
 echo "==> [3/5] Setting safe.directory for root on the new system..."
-if [[ -d /mnt/root ]]; then
-  install -d -m 0700 /mnt/root
-  printf '[safe]\n\tdirectory = *\n' >/mnt/root/.gitconfig
-  chmod 0600 /mnt/root/.gitconfig
-  echo "  wrote /mnt/root/.gitconfig (safe.directory = *); no sudo rebuild friction"
+# Root is tmpfs; the persisted copy lives under /nix/persist and is bind-mounted
+# to /root at boot. Written here for the local (self-install) case; the remote
+# case already staged it via --extra-files.
+if [[ -d /mnt/nix/persist/root ]]; then
+  install -d -m 0700 /mnt/nix/persist/root
+  printf '[safe]\n\tdirectory = *\n' >/mnt/nix/persist/root/.gitconfig
+  chmod 0600 /mnt/nix/persist/root/.gitconfig
+  echo "  wrote /mnt/nix/persist/root/.gitconfig (safe.directory = *); no sudo rebuild friction"
 else
-  echo "  target's /mnt is not local (remote install); root safe.directory was"
-  echo "  already written into the new root via --extra-files."
+  echo "  target's /nix/persist is not local (remote install); root safe.directory was"
+  echo "  already written into the new system via --extra-files."
 fi
 
 echo "==> [4/5] Setting the login password for declarative user '$LOGIN_USER'..."

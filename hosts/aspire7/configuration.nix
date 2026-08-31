@@ -11,6 +11,7 @@
   imports = [
     ../../modules/nixos
     ../../modules/nixos/tools/sops.nix
+    ../../modules/nixos/tools/wireguard.nix
   ]
   ++ lib.optionals (profile == "full") [
     # NVIDIA driver; GUI-only; the minimal console uses the amdgpu iGPU.

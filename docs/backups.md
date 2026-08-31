@@ -9,6 +9,11 @@ Declared in `modules/home/programs/restic/`:
 - **Paths**: `backups.restic.paths` (default `~/Backups`). Changing what gets
   backed up means editing the module and rebuilding — there is no editable
   runtime file.
+- **Stateless root**: `/` is tmpfs (see [architecture.md](architecture.md)), so
+  `~/Backups` must be in the persistence set or it resets every reboot. It is:
+  `users.frank.directories = [ "Backups" ... ]` in
+  `modules/nixos/system/impermanence.nix`. New backup sources under the home
+  dir need the same entry.
 - **Free-tier budget**: `backups.restic.sizeLimit` (default `9 GiB`). B2 bills
   once the bucket passes 10 GB stored; restic dedups unchanged files, so stored
   size tracks source size. Before uploading, the script sums the source and

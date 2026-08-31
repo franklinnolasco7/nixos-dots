@@ -66,6 +66,14 @@ feeds two consumers:
   layout into `fileSystems`/`swapDevices` at build time, so the regenerated
   `hardware-configuration.nix` is UUID-free.
 
+The layout is **stateless by default**: `/` is a tmpfs, the ESP is `/boot`,
+and the LUKS-encrypted `persist` partition mounts at `/nix` (the store plus
+persistent state). Everything on `/` resets on reboot; state that must survive
+is declared in `modules/nixos/system/impermanence.nix`
+(`environment.persistence."/nix/persist"`) and bind-mounted back into the root.
+The dedicated sops age key and SSH host keys live there too, so `install.sh`
+stages them under `nix/persist/` rather than `/etc/`.
+
 During installation, `nixos-anywhere` (phases `disko,install`) runs the
 system's disko script, regenerates `hardware-configuration.nix`
 (`--no-filesystems`), and installs the built toplevel.
@@ -155,6 +163,8 @@ shows `nixos-laptop` vs `nixos-laptop-minimal`.
   resolve from this pinned nixpkgs.
 - `chaotic`; nyx `nyxpkgs-unstable`, served from the nyx binary cache. Provides
   the CachyOS kernel + NVIDIA drivers (`linuxPackages_cachyos`, `nvidia_cachyos`).
+- `impermanence`; follows nixpkgs. Stateless-root bind mounts for the tmpfs
+  `/` (`modules/nixos/system/impermanence.nix`).
 - `nvidia-patch`; follows nixpkgs. FBC/NVENC patch overlay for the NVIDIA
   driver (used in `modules/nixos/tools/nvidia.nix`).
 - `spicetify-nix`; Spicetify home-manager module + package set, consumed by the

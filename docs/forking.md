@@ -79,7 +79,7 @@ public fork.
 ## 6. Optional cleanups
 
 - `README.md` / `docs/installation.md`: replace the upstream clone URL.
-- `docs/installation.md` VPN section: your own `wg0.conf` stays out of the
-  repo (see the section for the manual steps).
+- `docs/maintenance.md` VPN section: your own `wg0.conf` stays out of the
+  repo (see the section for the sops-secret steps).
 - `.github/workflows/project-automation.yml` and `CONTRIBUTING.md` reference
   the upstream board; drop or point to your own.

@@ -131,6 +131,12 @@ activation fails) until the real key is provisioned.
   sudo install -m 0600 /tmp/sops-age-key.txt /etc/sops-nix/keys.txt
   rm /tmp/sops-age-key.txt
   ```
+  > [!NOTE]
+  > `/` is tmpfs (impermanence, see [architecture.md](architecture.md));
+  > `/etc/sops-nix/keys.txt` is a bind mount of `/nix/persist/etc/sops-nix/keys.txt`,
+  > so the manual install above writes through to the persisted copy. Don't
+  > write to the `/nix/persist/...` path directly — the bind mount is the
+  > source of truth.
 - Fresh hosts: follow the repository's bootstrap/rehearsal flow
   ([installation.md](installation.md#new-host)): pregenerate a key, install
   with `SKIP_SOPS_CHECK=1 HOST_KEY_SRC=/tmp/newhost-key`, then register the

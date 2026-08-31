@@ -8,6 +8,7 @@
     ./gc.nix
     ./hardening.nix
     ./hardware.nix
+    ./impermanence.nix
     ./keyring.nix
     ./networking.nix
     ./printing.nix
