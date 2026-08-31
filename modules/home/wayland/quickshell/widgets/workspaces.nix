@@ -8,46 +8,29 @@
 
       height: parent.height
       spacing: 2
-      readonly property int moduleMargin: 0
 
-      // Track whether a special workspace is open on the focused monitor.
-      // Hyprland's socket2 "activespecial" event is the only reactive signal;
-      // monitors[].specialWorkspace and focusedWorkspace don't update for it.
-      property bool specialOpen: false
-      property string specialName: ""
+      // A special/scratchpad workspace is "active" when the focused monitor
+      // has one open (its specialWorkspace.name is set). Hyprland's workspace
+      // `active`/`focused` flags don't reflect this, so read the monitor's
+      // lastIpcObject like the reference shells do; it's refreshed via the
+      // socket event below because lastIpcObject only updates on a fetch.
+      readonly property string specialName: Hyprland.focusedMonitor
+          ? Hyprland.focusedMonitor.lastIpcObject.specialWorkspace?.name ?? "" : ""
+      readonly property bool specialActive: root.specialName !== ""
 
       Connections {
           target: Hyprland
           function onRawEvent(event) {
-              if (event.name !== "activespecial") return;
-              const parts = event.parse(2);
-              const mon = Hyprland.focusedMonitor;
-              if (mon && parts[1] === mon.name) {
-                  specialOpen = parts[0] !== "";
-                  specialName = parts[0];
-              }
+              if (event.name === "activespecial")
+                  Hyprland.refreshMonitors();
           }
       }
 
-      Component.onCompleted: {
-          // lastIpcObject isn't fresh until the monitor info is refetched,
-          // so pull it first or the initial special-workspace state is stale.
-          Hyprland.refreshMonitors();
-          const mon = Hyprland.focusedMonitor;
-          if (mon) {
-              const sw = mon.lastIpcObject.specialWorkspace;
-              specialName = sw ? sw.name : "";
-              specialOpen = specialName !== "";
-          }
-      }
-
-      leftPadding: moduleMargin
-      rightPadding: moduleMargin
       Repeater {
-          // Hide the special workspace icon unless it is open; a closed
-          // special workspace (name mismatch) drops out of the model.
           model: Hyprland.workspaces.values.filter(w =>
-              !w.name.startsWith("special:") || w.name === root.specialName)
+              !w.name.startsWith("special:")
+              || w.name === root.specialName
+              || w.toplevels.values.length > 0)
 
           delegate: Item {
               id: ws
@@ -64,10 +47,12 @@
                   anchors.centerIn: parent
                   text: isSpecial ? "\uf4c8" : ws.modelData.name !== ""
                       ? ws.modelData.name : String(ws.modelData.id)
+                  // The open special lights up; regular workspaces dim while a
+                  // special is the current view, otherwise highlight on active.
                   color: ws.modelData.urgent ? "${colors.base0F}"
                       : ma.containsMouse ? "${colors.base0A}"
-                      : isSpecial ? (root.specialOpen ? "${colors.base0D}" : "${colors.base04}")
-                      : root.specialOpen ? "${colors.base04}"
+                      : isSpecial ? (ws.modelData.name === root.specialName ? "${colors.base0D}" : "${colors.base04}")
+                      : root.specialActive ? "${colors.base04}"
                       : ws.modelData.active ? "${colors.base0D}"
                       : "${colors.base04}"
                   font.family: isSpecial ? "Material Symbols Rounded" : "Inter"
