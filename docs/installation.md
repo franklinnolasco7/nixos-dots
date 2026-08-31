@@ -180,6 +180,100 @@ Use `--minimal` for the console-TTY variant (no display server). The `-min`
 suffix is reserved for profile variants of an existing host; it is never a
 real hostname.
 
+## Manual install from the minimal ISO (no nixos-anywhere)
+
+Use this path when the target only has Wi-Fi. nixos-anywhere's kexec handover
+drops the wireless link (an upstream limitation), but the live ISO keeps its
+full network stack, so `nmtui` Wi-Fi covers the whole install.
+
+> [!NOTE] ISO store is RAM-backed
+> The minimal ISO's `/nix` is a tmpfs, so the system built during
+> `nixos-install` must fit in RAM. Install the **minimal** profile
+> (`.#<host>-min`) from the ISO, then switch to full on first boot (the switch
+> builds on the target's disk-backed store). The full profile from the ISO
+> needs RAM >= the unpacked closure (~20-30 GiB) and will not fit this laptop.
+
+### Pre-flight
+
+```bash
+cd ~/nixos-dots
+git add -A && git commit -m "chore: pre-install sync" || true
+git push
+```
+
+### Phase 1: Boot NixOS ISO
+
+1. Plug in Ethernet or have Wi-Fi ready (this path supports both).
+2. Boot from the NixOS USB (`F12` → select USB), log in as `nixos`.
+
+### Phase 2: Install minimal
+
+Set a password on the ISO user and connect to the network:
+
+```bash
+passwd
+nmtui        # activate Wi-Fi (Ethernet needs nothing)
+ping -c1 1.1.1.1
+```
+
+Clone the repo:
+
+```bash
+git clone https://github.com/franklinnolasco7/nixos-dots.git
+cd nixos-dots
+```
+
+Run the ISO installer (root). It bootstraps the nyx binary cache for the
+CachyOS kernel, wipes the disk with disko, regenerates the hardware config,
+installs the minimal profile, and stages the sops age key, SSH host key, and
+root's gitconfig into `/nix/persist` (impermanence bind-mounts them at boot):
+
+```bash
+sudo ./install/iso-install.sh
+```
+
+Prompts, in order: the age backup passphrase, `yes` to confirm the wipe, and
+the new LUKS disk passphrase (twice, then again at every boot).
+
+Reboot (remove the USB when the screen goes black):
+
+```bash
+sudo reboot
+```
+
+### Phase 3: Switch to full desktop
+
+1. Type the LUKS passphrase at boot; log in as `frank` (bootstrap password
+   `123`).
+
+```bash
+git clone https://github.com/franklinnolasco7/nixos-dots.git
+cd nixos-dots
+git add hosts/aspire7/hardware-configuration.nix && git commit -m "chore: regenerate hardware config"
+bash install/key-backup.sh decrypt   # restore user ssh + age keys
+sudo nixos-rebuild switch --flake .#aspire7
+```
+
+After the switch completes:
+
+```bash
+reboot
+```
+
+### Phase 4: Verify
+
+```bash
+hostname
+nvidia-smi
+nix eval --raw '.#nixosConfigurations.aspire7.config.myProfile'
+ls ~/.config/opencode/context7-key
+```
+
+> [!NOTE]
+> This path covers its own post-install steps in Phase 3 (clone, restore user
+> keys, commit the hardware config). The `## Post-install` section below is
+> written for the nixos-anywhere flow and repeats those steps.
+
 ## Post-install
 
 The wipe destroyed the repo, so clone it back first (signed commits need the

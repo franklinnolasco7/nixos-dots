@@ -27,6 +27,10 @@ sudo bash install/key-backup.sh encrypt   # age-passphrase backup → commits + 
 reboot
 ```
 
+Wi-Fi only? Use the manual ISO path instead: install minimal from the ISO,
+then switch to full on first boot. See
+[installation.md](installation.md#manual-install-from-the-minimal-iso-no-nixos-anywhere).
+
 The target user needs passwordless sudo (one `sudoers.d` line; see
 installation.md). sshd here is key-only, so the agent key authenticates and
 `--env-password` is neither needed nor accepted.
