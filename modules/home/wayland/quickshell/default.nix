@@ -8,6 +8,8 @@
 let
   colors = lib.mapAttrs (_: v: "#${v}") config.myPalette;
   hasBattery = config.myHost.batteryPath != "";
+  backlightDevice = config.myHost.backlightDevice;
+  hasBacklight = backlightDevice != "";
 
   qml =
     {
@@ -72,6 +74,21 @@ let
     {
       name = "Wifi.qml";
       path = ./widgets/wifi.nix;
+    }
+    {
+      name = "VolumeSlider.qml";
+      path = ./widgets/volume-slider.nix;
+    }
+    {
+      name = "ControlPanel.qml";
+      path = ./widgets/control-panel.nix;
+      extraArgs = {
+        inherit backlightDevice hasBacklight;
+      };
+    }
+    {
+      name = "Control.qml";
+      path = ./widgets/control.nix;
     }
   ]
   ++ lib.optionals hasBattery [

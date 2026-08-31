@@ -30,6 +30,9 @@
       }
 
       Component.onCompleted: {
+          // lastIpcObject isn't fresh until the monitor info is refetched,
+          // so pull it first or the initial special-workspace state is stale.
+          Hyprland.refreshMonitors();
           const mon = Hyprland.focusedMonitor;
           if (mon) {
               const sw = mon.lastIpcObject.specialWorkspace;

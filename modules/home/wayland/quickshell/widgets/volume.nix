@@ -46,8 +46,15 @@ in
           anchors.fill: parent
           hoverEnabled: true
           onClicked: {
+              // The bar window may not be attached yet if the shell is still
+              // spinning up right after load; guard so we never dereference
+              // a null window (which would take the whole bar with it).
               const win = root.QsWindow.window;
+              if (!win)
+                  return;
               const rect = win.itemRect(root);
+              if (!rect)
+                  return;
               panel.anchor.window = win;
               panel.anchor.rect.x = rect.x + rect.width / 2 - panel.width / 2;
               panel.anchor.rect.y = rect.y + rect.height + 4;

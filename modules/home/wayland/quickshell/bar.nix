@@ -67,6 +67,7 @@
                   ${if hasBattery then "Battery {}" else ""}
                   Tray {}
                   Clock {}
+                  Control {}
               }
           }
       }

@@ -10,7 +10,7 @@ in
       id: root
 
       readonly property var dev: UPower.displayDevice
-      // quickshell exposes percentage as a 0-1 ratio, unlike upower's 0-100.
+      // UPower.percentage is a 0-1 ratio (energy / energyCapacity), not 0-100.
       readonly property int pct: Math.round(dev.percentage * 100)
       readonly property bool charging: dev.state == UPowerDeviceState.Charging
           || dev.state == UPowerDeviceState.PendingCharge

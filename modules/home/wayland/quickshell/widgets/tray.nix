@@ -53,9 +53,16 @@
                   acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
 
                   onClicked: mouse => {
+                      // The bar window may not be attached yet if the shell is
+                      // still spinning up right after load; guard so we never
+                      // dereference a null window (which would take the bar with it).
                       if (mouse.button === Qt.RightButton || (mouse.button === Qt.LeftButton && cell.modelData.onlyMenu)) {
                           const win = cell.QsWindow.window;
+                          if (!win)
+                              return;
                           const rect = win.itemRect(cell);
+                          if (!rect)
+                              return;
                           cell.modelData.display(win, rect.x + rect.width / 2, rect.y + rect.height);
                       } else if (mouse.button === Qt.MiddleButton) {
                           cell.modelData.secondaryActivate();
