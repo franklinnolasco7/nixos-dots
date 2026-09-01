@@ -6,29 +6,30 @@ free egress up to 3x storage).
 
 Declared in `modules/home/programs/restic/`:
 
-- **Paths**: `backups.restic.paths` (default `~/Backups`). Changing what gets
-  backed up means editing the module and rebuilding — there is no editable
-  runtime file.
-- **Stateless root**: `/` is tmpfs (see [architecture.md](architecture.md)), so
-  `~/Backups` must be in the persistence set or it resets every reboot. It is:
-  `users.frank.directories = [ "Backups" ... ]` in
-  `modules/nixos/system/impermanence.nix`. New backup sources under the home
-  dir need the same entry.
-- **Free-tier budget**: `backups.restic.sizeLimit` (default `9 GiB`). B2 bills
-  once the bucket passes 10 GB stored; restic dedups unchanged files, so stored
-  size tracks source size. Before uploading, the script sums the source and
-  aborts with a notification (nothing uploaded) if it exceeds this ceiling.
-- **Retention**: `backups.restic.retention` (`--keep-daily=7
-  --keep-weekly=4 --keep-monthly=3`).
-- **Schedule**: systemd user timer `restic-backup.timer`, daily 02:00,
-  `Persistent=true`, 30 min jitter. A failed run notifies via notify-send.
+The module backs up `backups.restic.paths` (default `~/Backups`). Changing
+what gets backed up means editing the module and rebuilding; there is no
+editable runtime file. Since `/` is tmpfs, `~/Backups` must be in the
+persistence set or it resets every reboot. It is: `users.frank.directories =
+[ "Backups" ... ]` in `modules/nixos/system/impermanence.nix`. New backup
+sources under the home dir need the same entry.
+
+The free-tier budget caps the source with `backups.restic.sizeLimit` (default
+`9 GiB`). B2 bills once the bucket passes 10 GB stored; restic dedups
+unchanged files, so stored size tracks source size. Before uploading, the
+script sums the source and aborts with a notification (nothing uploaded) if
+it exceeds this ceiling.
+
+Retention follows `backups.restic.retention` (`--keep-daily=7
+--keep-weekly=4 --keep-monthly=3`). A systemd user timer
+`restic-backup.timer` runs daily at 02:00 with `Persistent=true` and 30 min
+jitter; a failed run notifies via notify-send.
 
 Enabled on the physical host via `backups.restic.enable = true`
 (`hosts/aspire7/home.nix`). The VM and the minimal profile leave it off.
 
 > [!NOTE]
 > Originally planned as R2 + B2 (two independent providers); R2 is deferred
-> until the account is set up. The module is B2-only for now — adding R2 later
+> until the account is set up. The module is B2-only for now. Adding R2 later
 > means re-adding the provider call, two options and two secrets.
 
 ## One-time setup
@@ -81,7 +82,7 @@ nix shell nixpkgs#sops -c sops secrets/secrets.yaml
 ```
 
 Set the three values (placeholder values make backups fail with a notification
-until they are real — safe):
+until they are real, which is safe):
 
 | Key                   | Value                            |
 | --------------------- | -------------------------------- |

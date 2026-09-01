@@ -2,10 +2,10 @@
 # Install a host directly from the NixOS minimal ISO, without nixos-anywhere.
 #
 # Run this ON the booted installer ISO (after `nmtui` connects the network):
-#   sudo ./install/iso-install.sh [host] [--minimal]
+#   sudo ./install/iso-install.sh [host] [--minimal|--full]
 #
-# Defaults: host=aspire7, profile=minimal (the ISO's /nix is RAM-backed, so the
-# minimal profile is the safe choice; see docs/installation.md).
+# Defaults: host=aspire7, profile=minimal. Pass --full to install the full
+# desktop directly, or switch to it after boot via nixos-rebuild.
 #
 # The script:
 #   1. Bootstraps the nyx binary cache into root's nix.conf (CachyOS kernel).
@@ -25,10 +25,11 @@ cd "$(dirname "$0")/.."
 HOST="${1:-aspire7}"
 shift || true
 
-MINIMAL=0
+MINIMAL=1
 for arg in "$@"; do
   case "$arg" in
     --minimal) MINIMAL=1 ;;
+    --full) MINIMAL=0 ;;
     *)
       echo "Error: unknown argument: $arg" >&2
       exit 1

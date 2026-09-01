@@ -40,7 +40,7 @@ SSH key, the user age key, and `~/.ssh/id_ed25519` into
 `secrets/key-backup-<hostname>.tar.age` under an age passphrase and commits +
 pushes it. The installer decrypts the blob automatically before wiping
 (details: [secrets.md](secrets.md)). Keep the passphrase in a password
-manager; also export `/etc/sops-nix/keys.txt` to Bitwarden - it is an
+manager; also export `/etc/sops-nix/keys.txt` to Bitwarden; it is an
 independent recovery artifact.
 
 The installer aborts unless that backup exists and asks you to type `yes`

@@ -123,7 +123,7 @@ existing encrypted secrets, so committed secrets fail closed (decryption at
 activation fails) until the real key is provisioned.
 
 - Existing installations: stage/provision the intended dedicated age key
-  **before** activation — `install.sh` does this automatically from the key
+  **before** activation. `install.sh` does this automatically from the key
   backup, or manually:
   ```bash
   nix shell nixpkgs#age -c age-keygen -o /tmp/sops-age-key.txt
@@ -135,7 +135,7 @@ activation fails) until the real key is provisioned.
   > `/` is tmpfs (impermanence, see [architecture.md](architecture.md));
   > `/etc/sops-nix/keys.txt` is a bind mount of `/nix/persist/etc/sops-nix/keys.txt`,
   > so the manual install above writes through to the persisted copy. Don't
-  > write to the `/nix/persist/...` path directly — the bind mount is the
+  > write to the `/nix/persist/...` path directly; the bind mount is the
   > source of truth.
 - Fresh hosts: follow the repository's bootstrap/rehearsal flow
   ([installation.md](installation.md#new-host)): pregenerate a key, install

@@ -1,20 +1,21 @@
 # Installation
 
-`install/install.sh` drives the whole install via nixos-anywhere:
+`install/install.sh` drives the whole install via nixos-anywhere. It wipes
+the entire disk: disko runs in `destroy,format,mount` mode on the device from
+`hosts/<host>/disko.nix` (all hosts share the GPT layout in
+`modules/disko/gpt-layout.nix`: 1 GiB ESP + LUKS persist partition at 100% of
+the disk, mounted at `/nix`; `/` is a tmpfs). Every existing partition is
+destroyed: other operating systems and their bootloaders, stray LUKS or swap
+partitions, the old ESP. No manual partition cleanup is needed, and nothing
+on the disk survives. The machine ends up single-boot NixOS.
 
-- **Wipes the entire disk.** Disko runs in `destroy,format,mount` mode on the
-  device from `hosts/<host>/disko.nix` (all hosts share the GPT layout in
-  `modules/disko/gpt-layout.nix`: 1 GiB ESP + LUKS persist partition at 100% of
-  the disk, mounted at `/nix`; `/` is a tmpfs). Every existing partition is
-  destroyed: other operating systems and their bootloaders, stray LUKS or swap
-  partitions, the old ESP. No manual partition cleanup is needed, and nothing
-  on the disk survives. The machine ends up single-boot NixOS by design.
-- **Restores the dedicated sops age key and the SSH host key** from the repo's
-  encrypted backup, so sops secrets stay readable on the new system. Because
-  `/` is tmpfs, install.sh stages these into `nix/persist/...` on the target;
-  impermanence bind-mounts them back to `/etc` on first boot.
-- **Does not reboot.** The installer finishes with the disk mounted; you
-  reboot manually.
+It also restores the dedicated sops age key and the SSH host key from the
+repo's encrypted backup, so sops secrets stay readable on the new system.
+Because `/` is tmpfs, install.sh stages these into `nix/persist/...` on the
+target; impermanence bind-mounts them back to `/etc` on first boot.
+
+It does not reboot. The installer finishes with the disk mounted; you reboot
+manually.
 
 > [!WARNING]
 > The wipe is the whole point: every partition on the target disk is
@@ -51,14 +52,14 @@ Debian, Fedora, ...):
 
 ## Pre-flight runbook
 
-Run these in order before any install; nothing here is destructive yet:
+Run these before any install; nothing here is destructive yet:
 
 1. The SSH key must be in the agent (signed commits and the installer's SSH
    auth both go through it):
    ```bash
    ssh-add -l        # should list id_ed25519; if not: ssh-add
    ```
-2. Repo committed + pushed — the wipe destroys the working copy:
+2. Repo committed and pushed, since the wipe destroys the working copy:
    ```bash
    git status --short      # must be empty
    git push
@@ -68,14 +69,14 @@ Run these in order before any install; nothing here is destructive yet:
    ```bash
    sudo bash install/key-backup.sh encrypt
    ```
-   - Prompts: age passphrase (type + confirm — save it; it is the single
-     secret).
+   - Prompts: age passphrase (type it and confirm, then save it; it is the
+     single secret).
    - Verify: `ls secrets/key-backup-<hostname>.tar.age`, and `git status`
      shows the new blob (the script commits + pushes it). On a reinstall,
      rerunning encrypt refreshes it in place.
    - Failure fallback: if the script errors (git identity, push), fix and
-     rerun — do not proceed to the wipe.
-4. Passwordless sudo for nixos-anywhere. Temporary by construction: the wipe
+     rerun. Do not proceed to the wipe.
+4. Passwordless sudo for nixos-anywhere. Temporary: the wipe
    destroys the drop-in it writes, so nothing needs cleanup afterwards:
    ```bash
    echo '<user> ALL=(ALL:ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/99-nixos-anywhere
@@ -84,7 +85,7 @@ Run these in order before any install; nothing here is destructive yet:
 5. Temporary root SSH for the kexec handover. nixos-anywhere uploads its
    installer key to `root@localhost`, but this repo's hosts harden root login
    away (`PermitRootLogin = "no"`), so the wipe fails at the key upload. On
-   NixOS, `/etc/ssh/sshd_config` is a read-only symlink to the Nix store —
+   NixOS, `/etc/ssh/sshd_config` is a read-only symlink to the Nix store, so
    drop-in files in `/etc/ssh/sshd_config.d/` are ignored (the generated
    config has no `Include` line). The only way to change it is through the
    NixOS module. Temporarily allow key-only root login; the wipe destroys
@@ -120,9 +121,9 @@ Run these in order before any install; nothing here is destructive yet:
 ## Install
 
 The installer builds the system closure on the machine that runs
-`install.sh`, then copies it to the target. The NixOS minimal ISO's nix store
-is RAM-backed and cannot hold a desktop-profile closure, so the ISO is a
-recovery and rehearsal medium, not the install medium.
+`install.sh`, then copies it to the target. The NixOS minimal ISO is a
+recovery and rehearsal medium, not the install medium. The manual ISO path
+in the next section is the exception and builds on the target itself.
 
 ### On an existing NixOS machine (recommended)
 
@@ -139,11 +140,11 @@ SSHPASS='<login password>' ./install/install.sh <host> --target <user>@localhost
 > `SSHPASS`/`--env-password` is the password-auth form, used by the rehearsal
 > VM. This repo's hosts run key-only sshd: the command form is
 > `./install/install.sh <host> --target <user>@localhost`, with the key in
-> the agent (`ssh-add -l`; load it once per login — the persistent agent does
-> not auto-load keys). `nix flake check` is a cheap pre-flight that catches a
+> the agent (`ssh-add -l`; load it once per login, since the persistent agent
+> does not auto-load keys). `nix flake check` is a cheap pre-flight that catches a
 > broken flake before the long build.
 
-Prompts, in order: the age backup passphrase, `yes` to confirm the wipe, and
+Prompts: the age backup passphrase, `yes` to confirm the wipe, and
 the new LUKS disk passphrase (twice, then again at every boot). The machine
 goes briefly offline during the kexec handover and reconnects on its own.
 
@@ -173,7 +174,7 @@ Any machine with Nix and SSH access can install any host:
 ```
 
 A target with no OS yet: boot the minimal ISO on it (USB or netboot), set a
-password (`passwd`), then install from here with `--target nixos@<iso-ip>` —
+password (`passwd`), then install from here with `--target nixos@<iso-ip>`.
 nixos-anywhere detects the installer and skips the kexec step.
 
 Use `--minimal` for the console-TTY variant (no display server). The `-min`
@@ -186,12 +187,9 @@ Use this path when the target only has Wi-Fi. nixos-anywhere's kexec handover
 drops the wireless link (an upstream limitation), but the live ISO keeps its
 full network stack, so `nmtui` Wi-Fi covers the whole install.
 
-> [!NOTE] ISO store is RAM-backed
-> The minimal ISO's `/nix` is a tmpfs, so the system built during
-> `nixos-install` must fit in RAM. Install the **minimal** profile
-> (`.#<host>-min`) from the ISO, then switch to full on first boot (the switch
-> builds on the target's disk-backed store). The full profile from the ISO
-> needs RAM >= the unpacked closure (~20-30 GiB) and will not fit this laptop.
+> [!NOTE]
+> `iso-install.sh` installs the minimal profile by default. Pass `--full` to
+> install the full desktop directly. Phase 2 shows both.
 
 ### Pre-flight
 
@@ -206,7 +204,7 @@ git push
 1. Plug in Ethernet or have Wi-Fi ready (this path supports both).
 2. Boot from the NixOS USB (`F12` → select USB), log in as `nixos`.
 
-### Phase 2: Install minimal
+### Phase 2: Install (minimal or full)
 
 Set a password on the ISO user and connect to the network:
 
@@ -223,17 +221,18 @@ git clone https://github.com/franklinnolasco7/nixos-dots.git
 cd nixos-dots
 ```
 
-Run the ISO installer (root). It bootstraps the nyx binary cache for the
-CachyOS kernel, wipes the disk with disko, regenerates the hardware config,
-installs the minimal profile, and stages the sops age key, SSH host key, and
+Run the ISO installer as root. It sets up the nyx binary cache for the
+CachyOS kernel, wipes the disk with disko, and generates the hardware config.
+Then it installs the system and copies the sops age key, SSH host key, and
 root's gitconfig into `/nix/persist` (impermanence bind-mounts them at boot):
 
 ```bash
-sudo ./install/iso-install.sh
+sudo ./install/iso-install.sh          # minimal profile (.#<host>-min)
+sudo ./install/iso-install.sh --full   # full desktop directly
 ```
 
-Prompts, in order: the age backup passphrase, `yes` to confirm the wipe, and
-the new LUKS disk passphrase (twice, then again at every boot).
+Prompts: the age backup passphrase, `yes` to confirm the wipe, and the new
+LUKS disk passphrase (twice, then again at every boot).
 
 Reboot (remove the USB when the screen goes black):
 
@@ -241,7 +240,10 @@ Reboot (remove the USB when the screen goes black):
 sudo reboot
 ```
 
-### Phase 3: Switch to full desktop
+### Phase 3: Switch to full desktop (minimal installs only)
+
+Skip this phase if you installed with `--full` in Phase 2. You're already on
+the full desktop. Go straight to [Phase 4](#phase-4-verify).
 
 1. Type the LUKS passphrase at boot; log in as `frank` (bootstrap password
    `123`).
@@ -251,8 +253,11 @@ git clone https://github.com/franklinnolasco7/nixos-dots.git
 cd nixos-dots
 git add hosts/aspire7/hardware-configuration.nix && git commit -m "chore: regenerate hardware config"
 bash install/key-backup.sh decrypt   # restore user ssh + age keys
-sudo nixos-rebuild switch --flake .#aspire7
+sudo nixos-rebuild switch --flake .#aspire7   # full profile (no -min suffix)
 ```
+
+The `.#aspire7` flake attr (no `-min` suffix) moves you from the minimal
+profile to the full desktop.
 
 After the switch completes:
 
@@ -270,9 +275,9 @@ ls ~/.config/opencode/context7-key
 ```
 
 > [!NOTE]
-> This path covers its own post-install steps in Phase 3 (clone, restore user
-> keys, commit the hardware config). The `## Post-install` section below is
-> written for the nixos-anywhere flow and repeats those steps.
+> This path handles post-install in Phase 3 (clone, restore user keys, commit
+> the hardware config). The `## Post-install` section below is for the
+> nixos-anywhere flow and repeats those steps.
 
 ## Post-install
 

@@ -3,7 +3,7 @@
 ## Sops secrets fail to decrypt
 
 Secret decryption uses the dedicated age key at `/etc/sops-nix/keys.txt`,
-never the SSH host key - rotating `/etc/ssh/ssh_host_ed25519_key` does not
+never the SSH host key. Rotating `/etc/ssh/ssh_host_ed25519_key` does not
 affect sops. If secrets fail to decrypt:
 
 1. Check the key exists: `sudo test -f /etc/sops-nix/keys.txt`
