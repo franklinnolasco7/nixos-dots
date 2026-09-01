@@ -71,7 +71,6 @@ in
           unset __NV_PRIME_RENDER_OFFLOAD_PROVIDER
           unset __GLX_VENDOR_LIBRARY_NAME
           unset __VK_LAYER_NV_optimus
-          unset GBM_BACKEND
           unset NVD_BACKEND
           export __EGL_VENDOR_LIBRARY_FILENAMES="${pkgs.mesa}/share/glvnd/egl_vendor.d/50_mesa.json"
           export LIBVA_DRIVERS_PATH="${pkgs.mesa}/lib/dri"

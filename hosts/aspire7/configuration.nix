@@ -23,6 +23,19 @@
   myHost.batteryPath = "/sys/class/power_supply/BAT1";
 
   # ---------------------------------------------------------------------------
+  # Persistent /home (bind mount from the LUKS partition). Root / stays
+  # tmpfs/impermanent; /home is a standard fstab mount with no impermanence
+  # involvement. Merges alongside the disko-derived fileSystems.
+  # ---------------------------------------------------------------------------
+
+  fileSystems."/home" = {
+    device = "/nix/home";
+    fsType = "none";
+    options = [ "bind" ];
+    depends = [ "/nix" ];
+  };
+
+  # ---------------------------------------------------------------------------
   # Kernel (host-specific; Chaotic-Nyx CachyOS build; see nyx.chaotic.cx)
   # ---------------------------------------------------------------------------
 

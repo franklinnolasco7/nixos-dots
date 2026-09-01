@@ -44,12 +44,6 @@
       }
       {
         _args = [
-          "GBM_BACKEND"
-          "nvidia-drm"
-        ];
-      }
-      {
-        _args = [
           "__NV_PRIME_RENDER_OFFLOAD"
           "1"
         ];
@@ -64,12 +58,6 @@
         _args = [
           "NVD_BACKEND"
           "direct"
-        ];
-      }
-      {
-        _args = [
-          "AQ_DRM_DEVICES"
-          "/dev/dri/card1:/dev/dri/card0"
         ];
       }
       {

@@ -18,8 +18,15 @@ in
       # staged - that generated identity is not an authorized recipient of
       # existing committed secrets (see docs/secrets.md).
       age = {
-        keyFile = "/etc/sops-nix/keys.txt";
-        generateKey = true;
+        # Read directly from the persist store, avoiding a bind-mount cycle:
+        # /nix/persist is on the LUKS partition which is mounted in initrd
+        # (x-initrd.mount), so the key is available during activation.
+        keyFile = "/nix/persist/etc/sops-nix/keys.txt";
+        # Never mint a throwaway identity — the staged key is the only
+        # authorized recipient of committed secrets.
+        generateKey = false;
+        # Dedicated age key is used; no need to import SSH host keys.
+        sshKeyPaths = [ ];
       };
 
       secrets = {
