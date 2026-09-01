@@ -51,15 +51,15 @@ in
           return 0
         fi
 
-        sudo rm -f /run/resolvconf/lock
+        sudo /run/current-system/sw/bin/rm -f /run/resolvconf/lock
 
-        err=$(sudo wg-quick up "$INTERFACE" 2>&1) || {
-          sudo resolvconf -u &>/dev/null
+        err=$(sudo /run/current-system/sw/bin/wg-quick up "$INTERFACE" 2>&1) || {
+          sudo /run/current-system/sw/bin/resolvconf -u &>/dev/null
           notify-send -u critical -i "network-vpn-symbolic" "VPN Error" "Failed to connect: ''${err:-unknown error}"
           return 1
         }
 
-        sudo resolvconf -u &>/dev/null
+        sudo /run/current-system/sw/bin/resolvconf -u &>/dev/null
 
         echo "true" >"$STATE_FILE"
         notify-send -i "network-vpn-symbolic" "VPN" "Connecting..."
@@ -81,15 +81,15 @@ in
           return 0
         fi
 
-        sudo rm -f /run/resolvconf/lock
+        sudo /run/current-system/sw/bin/rm -f /run/resolvconf/lock
 
-        err=$(sudo wg-quick down "$INTERFACE" 2>&1) || {
-          sudo resolvconf -u &>/dev/null
+        err=$(sudo /run/current-system/sw/bin/wg-quick down "$INTERFACE" 2>&1) || {
+          sudo /run/current-system/sw/bin/resolvconf -u &>/dev/null
           notify-send -u critical -i "network-vpn-symbolic" "VPN Error" "Failed to disconnect: ''${err:-unknown error}"
           return 1
         }
 
-        sudo resolvconf -u &>/dev/null
+        sudo /run/current-system/sw/bin/resolvconf -u &>/dev/null
 
         echo "false" >"$STATE_FILE"
         notify-send -i "network-vpn-symbolic" "VPN Disconnected" "<span color='${colors.base08}'>[OFF]</span>"
