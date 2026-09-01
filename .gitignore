@@ -42,3 +42,4 @@ lost+found/
 
 # Local agent files
 AGENTS.md
+*.serena

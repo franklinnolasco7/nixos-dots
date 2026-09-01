@@ -34,6 +34,9 @@
       "/" = {
         fsType = "tmpfs";
         mountOptions = [
+          # 4G is sufficient for the services in this config (no large builds,
+          # no heavy /tmp usage).  Increase this or switch to "size=50%" if
+          # services are added that use significant tmpfs.
           "size=4G"
           "mode=755"
         ];
@@ -73,6 +76,8 @@
 
               # dm-crypt passes discards through so the weekly fstrim.timer
               # reaches the NVMe; leaks which sectors are free to an attacker.
+              # Acceptable for a personal laptop; revisit if the threat model
+              # changes (e.g. shared machine, high-value data at rest).
               settings.allowDiscards = true;
 
               content = {

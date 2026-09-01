@@ -15,15 +15,32 @@
     directories = [
       # WiFi passwords + saved connections (NM keyfile plugin path).
       "/etc/NetworkManager/system-connections"
-      # Wholesale app state: subsumes bluetooth, libvirt, NetworkManager,
-      # nixos, systemd/backlight (brightness), systemd/random-seed,
-      # systemd/timers, systemd/coredump, upower, power-profiles-daemon,
-      # cups, samba, alsa, ... Per the FHS this state must survive reboot.
-      "/var/lib"
+
+      # /var/lib — explicit allowlist instead of blanket persist.
+      # Each entry is the minimal set of state directories that must survive
+      # reboot for the services this config actually enables.  The blanket
+      # "/var/lib" was removed to avoid silently persisting security-sensitive
+      # data (coredumps, stale journal) and to keep the tmpfs root small.
+      #
+      # When adding a new NixOS service, check whether it writes state here
+      # and add the relevant subdirectory.
+      "/var/lib/NetworkManager" # connection state, DHCP leases
+      "/var/lib/systemd" # linger, random-seed, timers, backlight
+      "/var/lib/nixos" # uid-map, group-map (NixOS identity)
+      "/var/lib/bluetooth" # paired device records
+      "/var/lib/alsa" # mixer state (volume levels)
+      "/var/lib/upower" # battery history statistics
+      "/var/lib/power-profiles-daemon" # active power profile
+      "/var/lib/libvirt" # VM disks, networks, secrets
+      "/var/lib/cups" # printer configs, SSL certs
+      "/var/lib/samba" # machine account, share definitions
+      "/var/lib/misc" # dnsmasq leases (NM DNS backend)
+      # NOT persisted:
+      #   /var/lib/systemd/coredump — security-sensitive process memory dumps
+      #   /var/lib/pipewire — runtime-only, recreated each boot
+
       "/var/log"
-      # FHS: files in /var/tmp must not be deleted at boot.
       "/var/tmp"
-      # App caches off the small tmpfs root; clean out stale entries manually.
       "/var/cache"
     ];
 
@@ -33,9 +50,13 @@
       # stages both halves into /nix/persist/etc/ssh.
       "/etc/ssh/ssh_host_ed25519_key"
       "/etc/ssh/ssh_host_ed25519_key.pub"
-      # git safe.directory for root (install.sh stages it into persist).
+      # git safe.directory for root.  Dual provisioned: install.sh stages
+      # this during initial install, and impermanence rebinds it on boot.
+      # Both paths are needed — install.sh for first boot, impermanence
+      # for every subsequent boot.
       "/root/.gitconfig"
       # Ly display-manager state: last-selected user + session index.
+      # Remove this line if switching to a different display manager.
       "/etc/ly/save.txt"
     ];
   };
@@ -48,6 +69,8 @@
   systemd.services."persist-shadow-restore" = {
     description = "Restore /etc/shadow from persistent store";
     wantedBy = [ "multi-user.target" ];
+    after = [ "local-fs.target" ];
+    requires = [ "local-fs.target" ];
     before = [
       "systemd-logind.service"
       "systemd-user-sessions.service"
@@ -73,4 +96,22 @@
         /etc/shadow /nix/persist/etc/shadow
     '';
   };
+
+  # Periodic cleanup for cache and logs that accumulate on the persistent
+  # tmpfs-backed root.  Without these, /var/cache and /var/log grow unbounded
+  # across reboots since impermanence bind-mounts them from the LUKS partition.
+  systemd.tmpfiles.rules = [
+    # Remove cache entries older than 7 days.
+    "d /var/cache 0755 root root 7d"
+    # Remove log files older than 14 days.
+    "d /var/log 0755 root root 14d"
+    # Remove any stray coredumps that may have been written before the
+    # /var/lib/systemd/coredump exclusion took effect.
+    "R /var/lib/systemd/coredump - - - - -"
+  ];
+
+  # NOTE: When adding new NixOS services, check if they write state to /etc or
+  # /var/lib. If so, add the relevant paths to the persist declarations above.
+  # A missing entry means the service's state silently resets on reboot — often
+  # noticed only as "my WiFi vanished" or "the VM is gone."
 }
