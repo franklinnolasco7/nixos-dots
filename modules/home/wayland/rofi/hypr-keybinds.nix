@@ -148,73 +148,89 @@ let
 
     assert(load(chunk, config_path))()
   '';
+
+  # Resolved to a store path at build time so the script works regardless of
+  # where this repo lives on disk.
+  modulesDir = ../../../../modules;
 in
 {
   home.packages = [
     (pkgs.writeShellScriptBin "hypr-keybinds" ''
-      CACHE_FILE="''${XDG_RUNTIME_DIR:-/tmp}/hypr_keybinds_cache"
-      CACHE_TIMEOUT=3600
+      # Cache under ~/.cache so it survives reboots (XDG_RUNTIME_DIR is wiped
+      # each boot). Invalidation is by build stamp, not TTL: the bindings only
+      # change on rebuild, and the store path changes iff the module sources do.
+      CACHE_DIR="$HOME/.cache/hypr-keybinds"
+      CACHE_FILE="$CACHE_DIR/cache"
+      CACHE_STAMP_FILE="$CACHE_DIR/stamp"
+      BUILD_STAMP="${modulesDir}"
+      MODULES_DIR="${modulesDir}"
+
+      # Pure bash, no per-binding subprocess spawns: with ~120 bindings each
+      # spawning tr/sed/awk the menu took seconds to open. Same lookup table
+      # as the old awk, keyed lowercase; unknown tokens get title-cased.
+      # Built once into a global — a `local -A` per call re-parses the table
+      # and is ~5x slower.
+      declare -A KB_KEYMAP
+      kb_init_keymap() {
+        KB_KEYMAP=(
+          [ctrl]="Ctrl" [control]="Ctrl"
+          [shift]="Shift"
+          [alt]="Alt" [option]="Alt"
+          [super]="󰘳" [meta]="󰘳" [cmd]="󰘳" [win]="󰘳"
+          [tab]="Tab"
+          [enter]="Enter" [return]="Enter"
+          [space]="Space"
+          [esc]="Esc" [escape]="Esc"
+          [up]="Up" [down]="Down"
+          [left]="Left" [right]="Right"
+          [home]="Home" [end]="End"
+          [pgup]="PgUp" [pageup]="PgUp"
+          [pgdn]="PgDn" [pagedown]="PgDn"
+          [ins]="Ins" [insert]="Ins"
+          [del]="Del" [delete]="Del"
+          [kp_end]="1" [kp_1]="1"
+          [kp_down]="2" [kp_2]="2"
+          [kp_next]="3" [kp_pgdn]="3" [kp_3]="3"
+          [kp_left]="4" [kp_4]="4"
+          [kp_begin]="5" [kp_5]="5"
+          [kp_right]="6" [kp_6]="6"
+          [kp_home]="7" [kp_7]="7"
+          [kp_up]="8" [kp_8]="8"
+          [kp_prior]="9" [kp_pgup]="9" [kp_9]="9"
+          [kp_insert]="0" [kp_0]="0"
+          [kp_add]="+"
+          [kp_subtract]="-"
+          [kp_multiply]="*"
+          [kp_divide]="/"
+          [kp_enter]="Enter"
+          [kp_decimal]="." [kp_delete]="."
+          [mouse:272]="Left Click"
+          [mouse:273]="Right Click"
+          [mouse:274]="Middle Click"
+          [mouse:275]="Back"
+          [mouse:276]="Forward"
+          [mouse:277]="Side Button 1"
+          [mouse:278]="Side Button 2"
+        )
+        local i
+        for i in {1..12}; do KB_KEYMAP["f$i"]="F$i"; done
+      }
+      kb_init_keymap
 
       normalize_modifiers() {
-        local m="$1"
-        m=$(echo "$m" | tr '[:upper:]' '[:lower:]')
-        m=$(echo "$m" | sed 's/+/\ /g')
-
-        echo "$m" | awk '
-          BEGIN {
-            keymap["ctrl"] = "Ctrl"; keymap["control"] = "Ctrl"
-            keymap["shift"] = "Shift"
-            keymap["alt"] = "Alt"; keymap["option"] = "Alt"
-            keymap["super"] = "󰘳"; keymap["meta"] = "󰘳"; keymap["cmd"] = "󰘳"; keymap["win"] = "󰘳"
-            keymap["tab"] = "Tab"
-            keymap["enter"] = "Enter"; keymap["return"] = "Enter"
-            keymap["space"] = "Space"
-            keymap["esc"] = "Esc"; keymap["escape"] = "Esc"
-            keymap["up"] = "Up"; keymap["down"] = "Down"
-            keymap["left"] = "Left"; keymap["right"] = "Right"
-            keymap["home"] = "Home"; keymap["end"] = "End"
-            keymap["pgup"] = "PgUp"; keymap["pageup"] = "PgUp"
-            keymap["pgdn"] = "PgDn"; keymap["pagedown"] = "PgDn"
-            keymap["ins"] = "Ins"; keymap["insert"] = "Ins"
-            keymap["del"] = "Del"; keymap["delete"] = "Del"
-            for (i=1; i<=12; i++) keymap["f" i] = "F" i
-
-            keymap["kp_end"] = "1"; keymap["kp_1"] = "1"
-            keymap["kp_down"] = "2"; keymap["kp_2"] = "2"
-            keymap["kp_next"] = "3"; keymap["kp_pgdn"] = "3"; keymap["kp_3"] = "3"
-            keymap["kp_left"] = "4"; keymap["kp_4"] = "4"
-            keymap["kp_begin"] = "5"; keymap["kp_5"] = "5"
-            keymap["kp_right"] = "6"; keymap["kp_6"] = "6"
-            keymap["kp_home"] = "7"; keymap["kp_7"] = "7"
-            keymap["kp_up"] = "8"; keymap["kp_8"] = "8"
-            keymap["kp_prior"] = "9"; keymap["kp_pgup"] = "9"; keymap["kp_9"] = "9"
-            keymap["kp_insert"] = "0"; keymap["kp_0"] = "0"
-            keymap["kp_add"] = "+"
-            keymap["kp_subtract"] = "-"
-            keymap["kp_multiply"] = "*"
-            keymap["kp_divide"] = "/"
-            keymap["kp_enter"] = "Enter"
-            keymap["kp_decimal"] = "."; keymap["kp_delete"] = "."
-
-            keymap["mouse:272"] = "Left Click"
-            keymap["mouse:273"] = "Right Click"
-            keymap["mouse:274"] = "Middle Click"
-            keymap["mouse:275"] = "Back"
-            keymap["mouse:276"] = "Forward"
-            keymap["mouse:277"] = "Side Button 1"
-            keymap["mouse:278"] = "Side Button 2"
-          }
-          {
-            out = ""
-            for (i=1; i<=NF; i++) {
-              key = $i
-              if (key in keymap) display = keymap[key]
-              else display = toupper(substr(key,1,1)) substr(key,2)
-              if (out != "") out = out " + "
-              out = out display
-            }
-            print out
-          }'
+        local m="$1" key display out=""
+        m=''${m,,}
+        m=''${m//+/ }
+        for key in $m; do
+          if [[ ''${KB_KEYMAP[$key]+x} ]]; then
+            display=''${KB_KEYMAP[$key]}
+          else
+            display=''${key^}
+          fi
+          [[ -n $out ]] && out+=" + "
+          out+="$display"
+        done
+        printf '%s' "$out"
       }
 
       format_display() {
@@ -284,8 +300,7 @@ in
           done
         fi
 
-        local nixos_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/../nixos-dots/modules"
-        [[ -d $nixos_dir ]] || nixos_dir="$HOME/nixos-dots/modules"
+        local nixos_dir="$MODULES_DIR"
         [[ -d $nixos_dir ]] || return
         grep -rhn '\-kb-' "$nixos_dir" 2>/dev/null \
           | grep -v 'hypr-keybinds.nix' \
@@ -326,10 +341,12 @@ in
         done
       }
 
+      mkdir -p "$CACHE_DIR"
       cache_fresh=false
-      if [[ -f $CACHE_FILE ]]; then
-        cache_age=$(($(date +%s) - $(stat -c %Y "$CACHE_FILE" 2>/dev/null || echo 0)))
-        [[ $cache_age -lt $CACHE_TIMEOUT ]] && cache_fresh=true
+      if [[ -f $CACHE_STAMP_FILE ]] \
+        && [[ $(cat "$CACHE_STAMP_FILE") == "$BUILD_STAMP" ]] \
+        && [[ -f $CACHE_FILE ]]; then
+        cache_fresh=true
       fi
 
       if [[ $cache_fresh == false ]] || [[ $1 == "--rebuild" ]]; then
@@ -338,6 +355,7 @@ in
           collect_bindings_from_rofi
           collect_bindings_from_kitty
         } >"$CACHE_FILE"
+        printf '%s' "$BUILD_STAMP" >"$CACHE_STAMP_FILE"
       fi
 
       mapfile -t lines <"$CACHE_FILE"

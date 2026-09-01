@@ -1,11 +1,14 @@
 { pkgs, ... }:
 
+let
+  wallpaperDir = ../../../../themes/wallpapers;
+in
 {
   home.packages = [
     (pkgs.writeShellScriptBin "wallpaper" ''
       set -uo pipefail
 
-      WALLPAPER_DIR="$HOME/nixos-dots/themes/wallpapers"
+      WALLPAPER_DIR="${wallpaperDir}"
       DRY_RUN=0
       case "''${1:-}" in
         --dry-run) DRY_RUN=1 ;;
