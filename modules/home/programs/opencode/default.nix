@@ -206,21 +206,6 @@ in
               };
             };
           };
-
-          sensenova = {
-            npm = "@ai-sdk/openai-compatible";
-            name = "SenseNova";
-
-            options = {
-              baseURL = "https://token.sensenova.ai/v1";
-            };
-
-            models = {
-              "sensenova-6.8-flash-lite" = {
-                name = "SenseNova 6.8 Flash Lite";
-              };
-            };
-          };
         };
 
         # rtk's opencode plugin (hooks/opencode/rtk.ts) rewrites bash commands
