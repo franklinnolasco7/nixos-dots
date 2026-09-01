@@ -76,6 +76,10 @@ in
       window_border_width = 0;
       cursor_shape = "block";
       cursor_blink_interval = "0.8";
+      cursor_trail = "100";
+      cursor_trail_decay = "0.15 0.3";
+      cursor_trail_start_threshold = "1";
+      cursor_trail_color = "${colors.base08}";
       shell_integration = "enabled";
       notify_on_cmd_finish = "unfocused 5.0";
 
