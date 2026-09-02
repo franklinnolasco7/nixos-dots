@@ -47,6 +47,8 @@ let
   # config lives in Nix modules.
   notifyPlugin = pkgs.writeText "opencode-notify.ts" ''
     export const NotifyPlugin = async ({ $ }) => {
+      let lastIdle = 0
+
       const kittyFocused = async () => {
         try {
           const active = JSON.parse(await $`hyprctl activewindow -j`.text())
@@ -66,6 +68,9 @@ let
         },
         event: async ({ event }) => {
           if (event.type === "session.idle") {
+            const now = Date.now()
+            if (now - lastIdle < 2000) return
+            lastIdle = now
             await $`notify-send -a opencode -i terminal "opencode" "opencode finished the task"`
             return
           }
