@@ -9,13 +9,29 @@
     ./micro
   ]
   ++ lib.optionals (profile == "full") [
+    ./awww
+    ./brightnessctl
+    ./cliphist
+    ./cpupower
+    ./ffmpeg
     ./firefox
-    ./opencode
     ./gaming
-    ./spotify
-    ./vesktop
+    ./grim
+    ./hyprpicker
+    ./hyprshot
+    ./imagemagick
+    ./imv
     ./obsidian
-    ./thunar
+    ./opencode
+    ./playerctl
     ./restic
+    ./rofimoji
+    ./satty
+    ./slurp
+    ./spotify
+    ./thunar
+    ./vesktop
+    ./waypaper
+    ./wl-clipboard
   ];
 }

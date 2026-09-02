@@ -28,30 +28,11 @@
         bat
         fzf
 
-        rofimoji
         libnotify
         chromium
-        vesktop
         xdg-utils
-        wl-clipboard
-        wl-clip-persist
-        cliphist
-        imv
-        imagemagick
-        ffmpeg
-        awww
-        waypaper
-        grim
-        slurp
-        satty
         glib
         mpv
-
-        hyprpicker
-        hyprshot
-        brightnessctl
-        playerctl
-        linuxPackages.cpupower
 
         neovim
         vscodium
