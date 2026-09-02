@@ -209,6 +209,12 @@ in
               "deepseek-v4-flash" = {
                 name = "B.AI DeepSeek v4 Flash";
               };
+              "qwen3.8-flash" = {
+                name = "B.AI Qwen 3.8 Flash";
+              };
+              "hy3" = {
+                name = "B.AI hy3";
+              };
             };
           };
         };
