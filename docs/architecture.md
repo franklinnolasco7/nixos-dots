@@ -26,10 +26,12 @@ nixos-dots/
 │   │   └── scripts/   # helper binaries (airplane-mode, vpn-toggle, battery-notify, ...); full profile only
 │   └── disko/     # shared GPT partition layout (gpt-layout.nix)
 ├── users/frank/   # per-user home-manager entry point (default.nix)
-├── pkgs/          # custom derivations (graphite-gtk-theme)
+├── pkgs/          # custom derivations (graphite-gtk-theme, codeburn)
 ├── overlays/      # exports pkgs/* into the nixpkgs set
 ├── themes/
-│   └── wallpapers/ # committed pool; subfolders = gitignored local temp sets
+│   ├── base16/          # monochrome palette reference
+│   ├── firefox-theme.txt
+│   └── wallpapers/      # committed pool; subfolders = gitignored local temp sets
 ├── install/       # ops: install.sh, rebuild.sh, update.sh, format.sh, init-secrets.sh, key-backup.sh, run-vm.sh, aspire7.sh
 ├── docs/          # one page per topic
 └── secrets/       # sops-encrypted (committed; enabled via modules/nixos/tools/sops.nix)
