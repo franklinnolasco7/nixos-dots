@@ -85,10 +85,11 @@ system's disko script, regenerates `hardware-configuration.nix`
 Every user config is declared natively inside `modules/home/`; either through
 home-manager's typed `programs.*.settings` options or through
 `xdg.configFile`/`home.file` with the config written inline in the module. Apps
-with large configs are split across `config.nix` / `style.nix` / `scripts.nix`
-(e.g. hyprland, waybar, rofi, swaync); standalone helper binaries live as
-per-script modules under `scripts/`. There is no raw config directory to
-drift from Nix.
+with large configs are split inside their folders: `style.nix` / `scripts.nix`
+alongside `default.nix` (waybar, rofi, swaync), while hyprland splits its
+settings per concern under `config/` (binds, input, window-rules, ...);
+standalone helper binaries live as per-script modules under `scripts/`. There
+is no raw config directory to drift from Nix.
 
 ## Where does new config go?
 
