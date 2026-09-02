@@ -11,6 +11,7 @@
     ./impermanence.nix
     ./keyring.nix
     ./networking.nix
+    ./power.nix
     ./printing.nix
     ./smartd.nix
     ./tuning.nix
