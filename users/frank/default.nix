@@ -11,8 +11,10 @@
     ../../modules/home
   ];
 
-  home.username = user;
-  home.homeDirectory = "/home/${user}";
+  home = {
+    username = user;
+    homeDirectory = "/home/${user}";
+  };
 
   # Git identity (shared modules/home/development/git.nix keeps the generic settings).
   programs.git.settings.user = {
