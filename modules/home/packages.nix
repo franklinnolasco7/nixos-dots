@@ -22,6 +22,12 @@
         wireguard-tools
         rsync
 
+        ripgrep
+        fd
+        eza
+        bat
+        fzf
+
         rofimoji
         libnotify
         chromium
@@ -32,6 +38,7 @@
         cliphist
         imv
         imagemagick
+        ffmpeg
         awww
         waypaper
         grim
