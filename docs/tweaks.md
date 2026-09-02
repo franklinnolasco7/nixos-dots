@@ -1,21 +1,21 @@
 # Tweaks
 
 Every performance/reliability tweak in one place, for future reference when
-something misbehaves. Source: CachyOS kernel + settings
-([wiki.cachyos.org](https://wiki.cachyos.org/), [nyx.chaotic.cx](https://www.nyx.chaotic.cx/)).
+something misbehaves. Source: Zen kernel + settings
+([wiki.archlinux.org/title/Linux-zen](https://wiki.archlinux.org/title/Linux-zen), [cache.nixos.org](https://cache.nixos.org/)).
 
 ## Kernel
 
 | What | Where | Effect |
 |---|---|---|
-| `linuxPackages_cachyos` | `hosts/aspire7/configuration.nix` | EEVDF/BORE scheduler, sched-ext, BBR3, ntsync built in; cached on nyx |
+| `linuxPackages_zen` | `hosts/aspire7/configuration.nix` | EEVDF, sched-ext, ntsync built in; cached on cache.nixos.org |
 
 ## sysctl: `modules/nixos/system/tuning.nix`
 
 | Key | Value | Why |
 |---|---|---|
 | `vm.swappiness` | 180 | zram companion: swap early, compress instead of evicting page cache |
-| `net.ipv4.tcp_congestion_control` | `bbr3` | BBRv3 (module `tcp_bbr3` in `boot.kernelModules`) |
+| `net.ipv4.tcp_congestion_control` | `bbr` | BBR (module `tcp_bbr` in `boot.kernelModules`) |
 | `vm.page-cluster` | 0 | no swap readahead with zram |
 | `kernel.nmi_watchdog` | 0 | drops per-core NMI overhead; loses NMI lockup detection |
 | `net.core.netdev_max_backlog` | 65536 | network receive backlog headroom |
@@ -53,21 +53,17 @@ battery. Saved value kept in `/run/udev/snd-hda-intel-powersave`.
 
 ## NVIDIA: `modules/nixos/tools/nvidia.nix`
 
-- `nvidia_cachyos` driver (CachyOS parity build), `modesetting` +
-  `powerManagement` enabled.
+- `modesetting` + `powerManagement` enabled.
 - `powerManagement.finegrained` adds `NVreg_DynamicPowerManagement=0x02` +
   runtime-PM bind/unbind udev rules (mobile dGPU powers down when idle; needs
   offload mode).
 - `boot.extraModprobeConfig`: `NVreg_InitializeSystemMemoryAllocations=0`
   (skip clearing GPU allocations) + `NVreg_EnableS0ixPowerManagement=1`.
-- `-ffile-prefix-map` override remaps the kernel `-dev` tree so the module
-  output stays self-contained (see comment in file for the `allowedReferences`
-  failure it fixes).
 
 ## Verify after a rebuild
 
 ```bash
-sysctl net.ipv4.tcp_congestion_control   # bbr3
+sysctl net.ipv4.tcp_congestion_control   # bbr
 cat /proc/sys/vm/page-cluster             # 0
 cat /sys/module/snd_hda_intel/parameters/power_save  # 0 on AC, 10 on battery
 systemctl status scx_rustland fstrim.timer
@@ -75,7 +71,5 @@ systemctl status scx_rustland fstrim.timer
 
 ## Deliberately not applied
 
-- `chaotic.mesa-git`; breaks NVIDIA libgbm on PRIME; stock mesa stays.
-- `chaotic.hdr`; AMD-only.
-- CPU microarch override; no nyx cache for it → costly local kernel build.
-- `linuxPackages_cachyos-hardened` / `-bmq`; no sched-ext.
+- CPU microarch override; no cache for it → costly local kernel build.
+- `linuxPackages_zen-hardened` / `-bmq`; no sched-ext.

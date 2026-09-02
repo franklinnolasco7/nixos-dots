@@ -8,11 +8,6 @@
   programs.steam.enable = true;
   programs.steam.gamescopeSession.enable = true;
 
-  # Proton-CachyOS (GE-Proton fork with CachyOS patches) ships a steamcompattool
-  # output; it shows up under Steam → Settings → Compatibility
-  # (wiki.nixos.org/wiki/Steam "Proton").
-  programs.steam.extraCompatPackages = [ pkgs.proton-cachyos ];
-
   # MangoHud must live inside Steam's FHS env so games can dlopen its overlay;
   # enable it per game with the MANGOHUD=1 environment variable.
   programs.steam.extraPackages = [ pkgs.mangohud ];
@@ -26,7 +21,7 @@
     capSysNice = true;
   };
 
-  # The cachyos kernel builds NTSYNC (CONFIG_NTSYNC=y) but nixpkgs ships no udev
+  # The zen kernel builds NTSYNC (CONFIG_NTSYNC=y) but nixpkgs ships no udev
   # rule for it, leaving /dev/ntsync root-only; Proton then silently falls back
   # to esync. Grant uaccess so user-run games can open it.
   services.udev.extraRules = ''
@@ -77,22 +72,5 @@
       systemctl restart pci-latency
     '';
   };
-
-  # Auto-nice daemon with CachyOS's gaming-tuned rules; pairs with the
-  # scx_rustland scheduler (modules/nixos/system/tuning.nix).
-  services.ananicy = {
-    enable = true;
-    package = pkgs.ananicy-cpp;
-    rulesProvider = pkgs.ananicy-rules-cachyos_git;
-  };
-
-  # systemd only enables the cpu controller in the root cgroup subtree_control
-  # on demand (when the first user session starts, seconds after boot). ananicy
-  # probes cgroups once at startup and caches "no cgroups", so its cpu-quota
-  # rules (cpu80/85/90) would silently never apply. Enable the controller
-  # explicitly before the daemon starts.
-  systemd.services.ananicy-cpp.serviceConfig.ExecStartPre = [
-    "${pkgs.bash}/bin/bash -c 'echo +cpu > /sys/fs/cgroup/cgroup.subtree_control || true'"
-  ];
 
 }

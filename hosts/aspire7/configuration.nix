@@ -36,11 +36,11 @@
   };
 
   # ---------------------------------------------------------------------------
-  # Kernel (host-specific; Chaotic-Nyx CachyOS build; see nyx.chaotic.cx)
+  # Kernel (zen-linux; EEVDF, sched-ext, ntsync built in; cached on
+  # cache.nixos.org)
   # ---------------------------------------------------------------------------
 
-  # CachyOS kernel with kconfig parity to upstream; uses the nyx binary cache.
-  boot.kernelPackages = pkgs.linuxPackages_cachyos;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
 
   # ---------------------------------------------------------------------------
   # Networking (host-specific; NetworkManager lives in

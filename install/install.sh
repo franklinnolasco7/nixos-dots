@@ -109,10 +109,10 @@ fi
 LOGIN_USER="${NORMAL_USERS[0]}"
 
 # Self-install (localhost target): the system is built ON the ISO by root, so
-# the flake's build caches (e.g. nyx-cache.chaotic.cx) must be configured for
-# root; nixos-anywhere only writes them to the *nixos* user's nix config on a
-# remote target, which the local root build never reads. Without this the
-# CachyOS kernel etc. would be compiled from source on the ISO.
+# the flake's build caches (e.g. cache.nixos.org) must be configured for root;
+# nixos-anywhere only writes them to the *nixos* user's nix config on a remote
+# target, which the local root build never reads. Without this the kernel etc.
+# would be compiled from source on the ISO.
 bootstrap_local_nix_cache() {
   local conf=/root/.config/nix/nix.conf
   local sub keys

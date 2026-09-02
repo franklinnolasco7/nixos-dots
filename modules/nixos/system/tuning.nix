@@ -2,17 +2,14 @@
 
 {
   boot = {
-    kernelModules = [ "tcp_bbr3" ];
-
     kernel.sysctl = {
       "vm.swappiness" = 180;
-      # CachyOS-aligned (see wiki.cachyos.org, nyx.chaotic.cx)
-      "net.ipv4.tcp_congestion_control" = "bbr3";
+      "net.ipv4.tcp_congestion_control" = "bbr";
       "vm.page-cluster" = 0;
       # Keep more page cache (dentries/inodes) resident instead of recycling it.
       "vm.vfs_cache_pressure" = 50;
-      # Cap writeback burst size (CachyOS values): a smaller background limit
-      # smooths NVMe write spikes under load instead of one big stall on flush.
+      # Cap writeback burst size: a smaller background limit smooths NVMe write
+      # spikes under load instead of one big stall on flush.
       "vm.dirty_background_bytes" = 67108864;
       "vm.dirty_bytes" = 268435456;
       "vm.dirty_writeback_centisecs" = 1500;
@@ -37,7 +34,7 @@
   services.journald.extraConfig = "SystemMaxUse=50M";
 
   # sched-ext userspace scheduler (scx_rustland); requires kernel ≥ 6.12
-  # (sched_ext is upstream; the cachyos kernel has it enabled).
+  # (sched_ext is upstream and enabled in both zen and stock kernels).
   services.scx = {
     enable = true;
     scheduler = "scx_rustland";

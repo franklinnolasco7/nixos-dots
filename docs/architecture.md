@@ -164,12 +164,8 @@ shows `nixos-laptop` vs `nixos-laptop-minimal`.
 - `nixpkgs`; `nixos-unstable`. Hyprland is no longer a flake input: both sides
   (NixOS `programs.hyprland`, home-manager `wayland.windowManager.hyprland`)
   resolve from this pinned nixpkgs.
-- `chaotic`; nyx `nyxpkgs-unstable`, served from the nyx binary cache. Provides
-  the CachyOS kernel + NVIDIA drivers (`linuxPackages_cachyos`, `nvidia_cachyos`).
 - `impermanence`; follows nixpkgs. Stateless-root bind mounts for the tmpfs
   `/` (`modules/nixos/system/impermanence.nix`).
-- `nvidia-patch`; follows nixpkgs. FBC/NVENC patch overlay for the NVIDIA
-  driver (used in `modules/nixos/tools/nvidia.nix`).
 - `spicetify-nix`; Spicetify home-manager module + package set, consumed by the
   spotify module (`modules/home/programs/spotify/default.nix`).
 - `obsidian-extensions`; overlay providing Obsidian community plugins/themes

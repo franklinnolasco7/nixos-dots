@@ -43,8 +43,8 @@
     };
   };
 
-  # CachyOS audio power management (see wiki.cachyos.org): disable
-  # snd-hda-intel power saving on AC to prevent audio cracks, restore on battery.
+  # Audio power management: disable snd-hda-intel power saving on AC to prevent
+  # audio cracks, restore on battery.
   # Skipped when the host declares no battery path.
   services.udev.extraRules = lib.mkIf (config.myHost.batteryPath != "") ''
     ACTION=="add", SUBSYSTEM=="sound", KERNEL=="card*", DRIVERS=="snd_hda_intel", TEST!="/run/udev/snd-hda-intel-powersave", \

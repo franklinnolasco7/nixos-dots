@@ -221,10 +221,10 @@ git clone https://github.com/franklinnolasco7/nixos-dots.git
 cd nixos-dots
 ```
 
-Run the ISO installer as root. It sets up the nyx binary cache for the
-CachyOS kernel, wipes the disk with disko, and generates the hardware config.
-Then it installs the system and copies the sops age key, SSH host key, and
-root's gitconfig into `/nix/persist` (impermanence bind-mounts them at boot):
+Run the ISO installer as root. It bootstraps the flake's build caches into root's
+nix config, wipes the disk with disko, and generates the hardware config. Then
+it installs the system and copies the sops age key, SSH host key, and root's
+gitconfig into `/nix/persist` (impermanence bind-mounts them at boot):
 
 ```bash
 sudo ./install/iso-install.sh          # minimal profile (.#<host>-min)

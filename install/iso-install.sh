@@ -8,7 +8,7 @@
 # desktop directly, or switch to it after boot via nixos-rebuild.
 #
 # The script:
-#   1. Bootstraps the nyx binary cache into root's nix.conf (CachyOS kernel).
+#   1. Bootstraps the flake's build caches into root's nix.conf.
 #   2. Checks for a key backup (see key-backup.sh) and decrypts it.
 #   3. Wipes + formats the disk with disko (prompts 'yes').
 #   4. Generates the hardware config.
@@ -58,8 +58,8 @@ if [[ ! -f "hosts/$HOST/disko.nix" ]]; then
 fi
 
 # The flake build runs as root on the ISO, so root needs the flake's binary
-# caches (e.g. nyx-cache.chaotic.cx); without this the CachyOS kernel builds
-# from source on the ISO.
+# caches (e.g. cache.nixos.org); without this the kernel builds from source
+# on the ISO.
 bootstrap_local_nix_cache() {
   local conf=/root/.config/nix/nix.conf
   local sub keys
