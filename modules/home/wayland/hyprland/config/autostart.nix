@@ -36,7 +36,9 @@ let
     "wl-paste --type text --watch cliphist store"
     "wl-paste --type image --watch cliphist store"
     "wl-clip-persist --clipboard regular"
-    "waypaper --restore"
+    # Restore the last wallpaper picked via rofi (written by
+    # modules/home/wayland/rofi/wallpaper.nix). awww already owns the daemon.
+    "$([ -f ~/.cache/rofi-wallpaper/last ] && xargs -r awww img < ~/.cache/rofi-wallpaper/last)"
     "waybar"
     "gsr start"
   ]

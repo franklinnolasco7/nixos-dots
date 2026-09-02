@@ -134,28 +134,8 @@ in
       }
 
       persist_selection() {
-        local img=$1 cfg
-        [[ $img == "$HOME"/* ]] && img="~''${img#"$HOME"}"
-        cfg="$HOME/.config/waypaper/config.ini"
-        mkdir -p "$(dirname "$cfg")"
-        [[ -f $cfg ]] || printf '[Settings]\nbackend = awww\n' >"$cfg"
-        python3 -c '
-        
-      import configparser
-      import sys
-
-      img, cfg = sys.argv[1], sys.argv[2]
-      p = configparser.ConfigParser()
-      p.read(cfg)
-      if not p.has_section("Settings"):
-          p.add_section("Settings")
-      p.set("Settings", "backend", "awww")
-      p.set("Settings", "monitors", "All")
-      p.set("Settings", "wallpaper", img)
-      with open(cfg, "w") as f:
-          p.write(f)
-      ' "$img" "$cfg"
-            }
+        printf '%s\n' "$1" >"$THUMBNAIL_DIR/last"
+      }
 
       if [[ $DRY_RUN -eq 1 ]]; then
         read_history

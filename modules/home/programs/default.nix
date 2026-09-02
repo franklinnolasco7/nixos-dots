@@ -31,7 +31,6 @@
     ./spotify
     ./thunar
     ./vesktop
-    ./waypaper
     ./wl-clipboard
   ];
 }
