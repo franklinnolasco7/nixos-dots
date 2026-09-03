@@ -316,6 +316,7 @@ in
     ++ [
       (mkExec mainMod "F10" ''"gsr toggle"'' [ ])
       (mkExec mainMod "F9" ''"gsr save"'' [ ])
+      (mkExec mainMod "F1" ''"toggle-resolution"'' [ ])
     ]
     ++ zoomBinds
     ++ mediaBinds;

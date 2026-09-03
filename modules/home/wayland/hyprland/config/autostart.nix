@@ -28,6 +28,7 @@ let
   restoreCmds = [
     "toggle-laptop-kb restore"
     "toggle-laptop-tp restore"
+    "toggle-resolution restore"
   ];
 
   startupCmds = [

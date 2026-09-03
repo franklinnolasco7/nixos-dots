@@ -5,6 +5,7 @@
     ./battery-notify.nix
     ./toggle-laptop-kb.nix
     ./toggle-laptop-tp.nix
+    ./toggle-resolution.nix
     ./vpn-toggle.nix
   ];
 }
