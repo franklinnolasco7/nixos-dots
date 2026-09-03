@@ -203,17 +203,14 @@ in
             };
 
             models = {
-              "deepseek-v4-flash-vision-exp" = {
-                name = "B.AI DeepSeek v4 Flash Vision (Exp)";
-              };
-              "deepseek-v4-flash" = {
-                name = "B.AI DeepSeek v4 Flash";
-              };
               "qwen3.8-flash" = {
                 name = "B.AI Qwen 3.8 Flash";
               };
               "hy3" = {
                 name = "B.AI hy3";
+              };
+              "glm-5.3-flash" = {
+                name = "B.AI GLM 5.3 Flash";
               };
             };
           };
