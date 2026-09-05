@@ -79,9 +79,8 @@ in
           {
             type = "kitty";
             source = "${./logo.webp}";
-            width = 32;
+            width = 40;
             height = 16;
-            preserveAspectRatio = true;
             padding = {
               top = 2;
               right = 2;
