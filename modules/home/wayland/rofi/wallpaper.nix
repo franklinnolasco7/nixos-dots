@@ -10,8 +10,10 @@ in
 
       WALLPAPER_DIR="${wallpaperDir}"
       DRY_RUN=0
+      RESTORE=0
       case "''${1:-}" in
         --dry-run) DRY_RUN=1 ;;
+        --restore) RESTORE=1 ;;
         *) WALLPAPER_DIR="''${1:-$WALLPAPER_DIR}" ;;
       esac
 
@@ -141,6 +143,15 @@ in
         read_history
         scan_wallpapers
         build_menu
+        exit 0
+      fi
+
+      # Boot restore: re-apply the last pick. Must start the daemon itself;
+      # nothing else launches it before this runs at hyprland.start.
+      if [[ $RESTORE -eq 1 ]]; then
+        [[ -f $THUMBNAIL_DIR/last ]] || exit 0
+        ensure_daemon
+        apply_wallpaper "$(<"$THUMBNAIL_DIR/last")"
         exit 0
       fi
 
