@@ -31,7 +31,7 @@
     DefaultLimitNOFILE = 1048576;
   };
 
-  services.journald.extraConfig = "SystemMaxUse=50M";
+  services.journald.settings.Journal.SystemMaxUse = "50M";
 
   # sched-ext userspace scheduler (scx_rustland); requires kernel ≥ 6.12
   # (sched_ext is upstream and enabled in both zen and stock kernels).
