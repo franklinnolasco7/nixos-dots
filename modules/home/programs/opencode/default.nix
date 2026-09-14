@@ -263,11 +263,21 @@ in
       context7.enable = true;
       filesystem = {
         enable = true;
+        package = pkgs.mcp-server-filesystem;
         args = [ config.home.homeDirectory ];
       };
-      git.enable = true;
-      fetch.enable = true;
-      sequential-thinking.enable = true;
+      git = {
+        enable = true;
+        package = pkgs.mcp-server-git;
+      };
+      fetch = {
+        enable = true;
+        package = pkgs.mcp-server-fetch;
+      };
+      sequential-thinking = {
+        enable = true;
+        package = pkgs.mcp-server-sequential-thinking;
+      };
       serena.enable = true;
       playwright.enable = true;
 
@@ -276,6 +286,7 @@ in
       # in the nix store or the generated opencode.json.
       github = lib.mkIf config.programs.opencode.enableGithubMcpServer {
         enable = true;
+        package = pkgs.github-mcp-server;
         passwordCommand = {
           GITHUB_PERSONAL_ACCESS_TOKEN = [
             "${pkgs.coreutils}/bin/cat"
