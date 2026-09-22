@@ -1,13 +1,10 @@
 {
-  config,
   lib,
   pkgs,
   ...
 }:
 
 let
-  raw = config.myPalette;
-  colors = lib.mapAttrs (_: v: "#${v}") raw;
   monitor = "eDP-1";
   modes = [
     "1080"
@@ -19,8 +16,6 @@ in
     (pkgs.writeShellScriptBin "toggle-resolution" ''
       STATE_FILE="''${XDG_RUNTIME_DIR:-/tmp}/resolution_state"
       MONITOR="${monitor}"
-      ICON="video-display-symbolic"
-      TITLE="Display Resolution"
 
       MODES=(${(lib.concatMapStringsSep " " (m: "\"${m}\"") modes)})
       NATIVE_H="''${MODES[0]}"
@@ -47,13 +42,6 @@ in
         local h="$1"
         echo "$h" >"$STATE_FILE"
         hyprctl eval "hl.monitor({output=\"$MONITOR\", mode=\"1920x''${h}@60\", position=\"0x0\", scale=1})"
-        if [[ $h == "$NATIVE_H" ]]; then
-          notify-send -i "$ICON" "$TITLE" \
-            "<span color='${colors.base0B}'>[NATIVE 1920x''${h}]</span>"
-        else
-          notify-send -i "$ICON" "$TITLE" \
-            "<span color='${colors.base08}'>[CUSTOM 1920x''${h}]</span>"
-        fi
       }
 
       restore() {
