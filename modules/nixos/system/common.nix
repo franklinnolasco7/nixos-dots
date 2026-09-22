@@ -13,7 +13,23 @@
     "flakes"
   ];
 
-  programs.nix-ld.enable = true;
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      libx11
+      libxcb
+      libGL
+      mesa
+      libgbm
+      libdrm
+      fontconfig
+      expat
+      alsa-lib
+      e2fsprogs
+      libgpg-error
+      sqlite
+    ];
+  };
 
   time.timeZone = "Asia/Manila";
 
