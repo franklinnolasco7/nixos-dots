@@ -13,6 +13,8 @@
     "flakes"
   ];
 
+  programs.nix-ld.enable = true;
+
   time.timeZone = "Asia/Manila";
 
   i18n.defaultLocale = "en_US.UTF-8";
